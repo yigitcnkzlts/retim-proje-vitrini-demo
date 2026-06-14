@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" fill="none">
+  <rect width="800" height="500" fill="#f0ebe4"/>
+  <rect x="100" y="120" width="600" height="300" fill="#d9cfc0" stroke="#a8957d" stroke-width="2"/>
+  <rect x="140" y="160" width="80" height="120" fill="#b8a992"/>
+  <rect x="260" y="160" width="80" height="120" fill="#b8a992"/>
+  <rect x="380" y="160" width="80" height="120" fill="#b8a992"/>
+  <rect x="500" y="160" width="80" height="120" fill="#b8a992"/>
+  <rect x="120" y="300" width="560" height="80" fill="#a8957d"/>
+  <text x="400" y="60" text-anchor="middle" fill="#1a2332" font-family="Arial,sans-serif" font-size="22" font-weight="700">Tarihi Bina Restorasyonu</text>
+</svg>

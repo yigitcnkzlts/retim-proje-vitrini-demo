@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" fill="none">
+  <rect width="800" height="500" fill="#e8edf2"/>
+  <rect x="60" y="80" width="680" height="360" fill="#f7f9fb" stroke="#c5cdd6" stroke-width="2"/>
+  <rect x="100" y="120" width="120" height="280" fill="#d4dce6"/>
+  <rect x="250" y="120" width="120" height="280" fill="#d4dce6"/>
+  <rect x="400" y="120" width="120" height="280" fill="#d4dce6"/>
+  <rect x="550" y="120" width="120" height="280" fill="#d4dce6"/>
+  <rect x="80" y="100" width="640" height="24" fill="#e85d04"/>
+  <text x="400" y="55" text-anchor="middle" fill="#1a2332" font-family="Arial,sans-serif" font-size="22" font-weight="700">Mantolama Uygulamas1</text>
+</svg>
