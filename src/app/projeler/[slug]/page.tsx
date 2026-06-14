@@ -52,15 +52,16 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
         <div className="container-main">
           <div className="grid gap-10 lg:grid-cols-3">
             <div className="lg:col-span-2">
-              <div className="relative mb-8 h-64 overflow-hidden rounded md:h-96">
+              <div className="group relative mb-8 h-64 overflow-hidden rounded-sm md:h-96">
                 <Image
                   src={project.image}
                   alt={project.name}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
                   sizes="(max-width: 1024px) 100vw, 66vw"
                   priority
                 />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-retim-navy/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
               </div>
 
               <h2 className="text-xl font-semibold text-retim-navy">Proje Açıklaması</h2>
@@ -69,7 +70,10 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
               <h2 className="mt-10 text-xl font-semibold text-retim-navy">Uygulama Kapsamı</h2>
               <ul className="mt-4 space-y-2">
                 {project.scope.map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-gray-600">
+                  <li
+                    key={item}
+                    className="flex items-start gap-3 rounded-sm px-2 py-1.5 text-gray-600 transition-all duration-200 hover:translate-x-1 hover:bg-retim-orange/5"
+                  >
                     <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-retim-orange" />
                     {item}
                   </li>
@@ -81,7 +85,10 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
               </h2>
               <ul className="mt-4 space-y-2">
                 {project.highlights.map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-gray-600">
+                  <li
+                    key={item}
+                    className="flex items-start gap-3 rounded-sm px-2 py-1.5 text-gray-600 transition-all duration-200 hover:translate-x-1 hover:bg-retim-orange/5"
+                  >
                     <svg
                       className="mt-0.5 h-5 w-5 flex-shrink-0 text-retim-orange"
                       fill="none"
@@ -102,7 +109,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
             </div>
 
             <div>
-              <div className="sticky top-24 rounded border border-retim-gray-dark bg-retim-gray p-6">
+              <div className="stat-card sticky top-24 p-6 text-left">
                 <h3 className="text-lg font-semibold text-retim-navy">Proje Bilgileri</h3>
                 <dl className="mt-4 space-y-3 text-sm">
                   <div className="flex justify-between border-b border-retim-gray-dark pb-3">

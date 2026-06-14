@@ -67,7 +67,7 @@ export default function ProjectFilters({
               placeholder="Proje adı, semt veya hizmet ara..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-sm border border-retim-gray-dark bg-white px-4 py-2.5 text-sm focus:border-retim-orange focus:outline-none focus:ring-1 focus:ring-retim-orange"
+              className="input-field"
             />
           </div>
           <div>
@@ -78,7 +78,7 @@ export default function ProjectFilters({
               id="category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full rounded-sm border border-retim-gray-dark bg-white px-4 py-2.5 text-sm focus:border-retim-orange focus:outline-none focus:ring-1 focus:ring-retim-orange"
+              className="input-field"
             >
               <option value="">Tümü</option>
               {serviceCategories.map((cat) => (
@@ -96,7 +96,7 @@ export default function ProjectFilters({
               id="district"
               value={district}
               onChange={(e) => setDistrict(e.target.value)}
-              className="w-full rounded-sm border border-retim-gray-dark bg-white px-4 py-2.5 text-sm focus:border-retim-orange focus:outline-none focus:ring-1 focus:ring-retim-orange"
+              className="input-field"
             >
               <option value="">Tümü</option>
               {districts.map((d) => (
@@ -109,7 +109,13 @@ export default function ProjectFilters({
         </div>
         <div className="mt-4 flex items-center justify-between">
           <p className="text-sm text-gray-600">
-            <span className="font-bold text-retim-navy">{filtered.length}</span> proje bulundu
+            <span
+              key={filtered.length}
+              className="inline-block animate-count-pulse font-bold text-retim-navy"
+            >
+              {filtered.length}
+            </span>{" "}
+            proje bulundu
           </p>
           {hasFilters && (
             <button
@@ -125,8 +131,14 @@ export default function ProjectFilters({
 
       {filtered.length > 0 ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((project) => (
-            <ProjectCard key={project.slug} project={project} />
+          {filtered.map((project, index) => (
+            <div
+              key={project.slug}
+              className="animate-fade-up opacity-0"
+              style={{ animationDelay: `${Math.min(index * 60, 600)}ms`, animationFillMode: "forwards" }}
+            >
+              <ProjectCard project={project} />
+            </div>
           ))}
         </div>
       ) : (

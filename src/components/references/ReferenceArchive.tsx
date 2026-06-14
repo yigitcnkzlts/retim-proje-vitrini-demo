@@ -105,7 +105,7 @@ export default function ReferenceArchive() {
 
 function ReferenceRow({ ref }: { ref: Reference }) {
   return (
-    <tr className="hover:bg-retim-gray">
+    <tr className="table-row-interactive">
       <td className="table-cell font-mono text-xs">{ref.refNo}</td>
       <td className="table-cell font-medium">{ref.projectName}</td>
       <td className="table-cell">{ref.service}</td>

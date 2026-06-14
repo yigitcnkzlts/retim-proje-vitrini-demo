@@ -38,7 +38,7 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
             name="name"
             type="text"
             required
-            className="w-full rounded-sm border border-retim-gray-dark px-4 py-2.5 text-sm focus:border-retim-orange focus:outline-none focus:ring-1 focus:ring-retim-orange"
+            className="input-field"
           />
         </div>
         <div>
@@ -50,7 +50,7 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
             name="phone"
             type="tel"
             required
-            className="w-full rounded-sm border border-retim-gray-dark px-4 py-2.5 text-sm focus:border-retim-orange focus:outline-none focus:ring-1 focus:ring-retim-orange"
+            className="input-field"
           />
         </div>
       </div>
@@ -64,7 +64,7 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
               id="email"
               name="email"
               type="email"
-              className="w-full rounded-sm border border-retim-gray-dark px-4 py-2.5 text-sm focus:border-retim-orange focus:outline-none focus:ring-1 focus:ring-retim-orange"
+              className="input-field"
             />
           </div>
           <div>
@@ -75,7 +75,7 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
               id="building"
               name="building"
               type="text"
-              className="w-full rounded-sm border border-retim-gray-dark px-4 py-2.5 text-sm focus:border-retim-orange focus:outline-none focus:ring-1 focus:ring-retim-orange"
+              className="input-field"
             />
           </div>
           <div>
@@ -85,7 +85,7 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
             <select
               id="service"
               name="service"
-              className="w-full rounded-sm border border-retim-gray-dark px-4 py-2.5 text-sm focus:border-retim-orange focus:outline-none focus:ring-1 focus:ring-retim-orange"
+              className="input-field"
             >
               <option value="">Seçiniz</option>
               <option value="mantolama">Mantolama işlemleri</option>
@@ -109,7 +109,7 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
           id="message"
           name="message"
           rows={compact ? 3 : 4}
-          className="w-full rounded-sm border border-retim-gray-dark px-4 py-2.5 text-sm focus:border-retim-orange focus:outline-none focus:ring-1 focus:ring-retim-orange"
+          className="input-field"
           placeholder="Projeniz hakkında kısa bilgi verin..."
         />
       </div>

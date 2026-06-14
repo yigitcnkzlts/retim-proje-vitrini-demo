@@ -19,9 +19,10 @@ export const siteConfig = {
 export const navigation = [
   { name: "Ana Sayfa", href: "/" },
   { name: "Kurumsal", href: "/hakkimizda" },
-  { name: "Hizmetler", href: "/hizmetler" },
+  { name: "Hizmetler", href: "/hizmetler", hasDropdown: true },
   { name: "Projeler", href: "/projeler" },
   { name: "Referanslar", href: "/referanslar" },
+  { name: "Çözüm Ortakları", href: "/cozum-ortaklari" },
   { name: "İletişim", href: "/iletisim" },
 ];
 
@@ -30,7 +31,26 @@ export const footerLinks = [
   { name: "Hakkımızda", href: "/hakkimizda" },
   { name: "Projeler", href: "/projeler" },
   { name: "Referanslar", href: "/referanslar" },
+  { name: "Çözüm Ortakları", href: "/cozum-ortaklari" },
   { name: "İletişim", href: "/iletisim" },
+];
+
+export const socialLinks = [
+  {
+    name: "LinkedIn",
+    href: "https://www.linkedin.com/company/retim",
+    icon: "linkedin",
+  },
+  {
+    name: "Instagram",
+    href: "https://www.instagram.com/retim",
+    icon: "instagram",
+  },
+  {
+    name: "Facebook",
+    href: "https://www.facebook.com/retim",
+    icon: "facebook",
+  },
 ];
 
 export const lastFiveProjects = [
