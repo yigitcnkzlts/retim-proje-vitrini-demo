@@ -10,6 +10,10 @@
   body {
     @apply bg-white text-retim-anthracite antialiased;
   }
+
+  ::selection {
+    @apply bg-retim-orange/20 text-retim-navy;
+  }
 }
 
 @layer components {
@@ -18,15 +22,31 @@
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-sm bg-retim-orange px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-retim-orange-dark;
+    @apply relative inline-flex items-center justify-center overflow-hidden rounded-sm bg-retim-orange px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-soft transition-all duration-300;
+  }
+
+  .btn-primary:hover {
+    @apply -translate-y-0.5 bg-retim-orange-dark shadow-glow;
+  }
+
+  .btn-primary:active {
+    @apply translate-y-0;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-sm border-2 border-retim-navy px-6 py-3 text-sm font-semibold uppercase tracking-wide text-retim-navy transition-colors hover:bg-retim-navy hover:text-white;
+    @apply relative inline-flex items-center justify-center rounded-sm border-2 border-retim-navy bg-transparent px-6 py-3 text-sm font-semibold uppercase tracking-wide text-retim-navy transition-all duration-300;
+  }
+
+  .btn-secondary:hover {
+    @apply -translate-y-0.5 bg-retim-navy text-white shadow-lift;
   }
 
   .btn-outline-white {
-    @apply inline-flex items-center justify-center rounded-sm border-2 border-white px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-white hover:text-retim-navy;
+    @apply relative inline-flex items-center justify-center rounded-sm border-2 border-white/80 bg-white/5 px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white backdrop-blur-sm transition-all duration-300;
+  }
+
+  .btn-outline-white:hover {
+    @apply -translate-y-0.5 border-white bg-white text-retim-navy shadow-lift;
   }
 
   .section-label {
@@ -42,11 +62,33 @@
   }
 
   .card-base {
-    @apply rounded-sm border border-retim-gray-dark bg-white p-5 transition-shadow hover:shadow-lg;
+    @apply rounded-sm border border-retim-gray-dark bg-white p-5 shadow-soft transition-all duration-300;
+  }
+
+  .card-base:hover {
+    @apply -translate-y-1 border-retim-orange/30 shadow-lift;
+  }
+
+  .card-interactive {
+    @apply card-base relative overflow-hidden;
+  }
+
+  .card-interactive::before {
+    content: "";
+    @apply absolute left-0 top-0 h-1 w-0 bg-retim-orange transition-all duration-300;
+  }
+
+  .card-interactive:hover::before {
+    @apply w-full;
   }
 
   .tag {
-    @apply inline-flex items-center rounded-sm bg-retim-gray px-2.5 py-1 text-xs font-medium uppercase tracking-wide text-retim-anthracite;
+    @apply inline-flex items-center rounded-sm bg-retim-gray px-2.5 py-1 text-xs font-medium uppercase tracking-wide text-retim-anthracite transition-colors duration-200;
+  }
+
+  .card-interactive:hover .tag,
+  .project-card:hover .tag {
+    @apply bg-retim-orange/10 text-retim-orange;
   }
 
   .table-header {
@@ -54,6 +96,221 @@
   }
 
   .table-cell {
-    @apply border-b border-retim-gray-dark px-4 py-3.5 text-sm text-retim-anthracite;
+    @apply border-b border-retim-gray-dark px-4 py-3.5 text-sm text-retim-anthracite transition-colors duration-200;
+  }
+
+  .table-row-interactive {
+    @apply transition-all duration-200;
+  }
+
+  .table-row-interactive:hover {
+    @apply bg-retim-orange/5;
+  }
+
+  .table-row-interactive:hover .table-cell {
+    @apply text-retim-navy;
+  }
+
+  .nav-link {
+    @apply relative px-3 py-2 text-xs font-semibold uppercase tracking-wide transition-colors duration-200;
+  }
+
+  .nav-link::after {
+    content: "";
+    @apply absolute bottom-0 left-1/2 h-0.5 w-0 -translate-x-1/2 bg-retim-orange transition-all duration-300;
+  }
+
+  .nav-link:hover::after,
+  .nav-link-active::after {
+    @apply w-full;
+  }
+
+  .stat-card {
+    @apply relative overflow-hidden rounded-sm border border-retim-gray-dark bg-white p-5 text-center shadow-soft transition-all duration-300;
+  }
+
+  .stat-card:hover {
+    @apply -translate-y-1 border-retim-orange/40 shadow-lift;
+  }
+
+  .stat-card::after {
+    content: "";
+    @apply absolute inset-x-0 bottom-0 h-1 scale-x-0 bg-gradient-to-r from-retim-orange to-retim-orange-dark transition-transform duration-300;
+  }
+
+  .stat-card:hover::after {
+    @apply scale-x-100;
+  }
+
+  .district-pill {
+    @apply relative flex items-center justify-center overflow-hidden rounded-sm border border-retim-gray-dark bg-white px-4 py-3 text-xs font-semibold uppercase tracking-wide text-retim-navy transition-all duration-300;
+  }
+
+  .district-pill:hover {
+    @apply -translate-y-0.5 border-retim-orange bg-retim-navy text-white shadow-lift;
+  }
+
+  .district-pill::before {
+    content: "";
+    @apply absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500;
+  }
+
+  .district-pill:hover::before {
+    @apply translate-x-full;
+  }
+
+  .service-tile {
+    @apply card-interactive flex items-center justify-between gap-3 p-4;
+  }
+
+  .approach-card {
+    @apply card-base relative;
+  }
+
+  .approach-card:hover .approach-number {
+    @apply scale-110 bg-retim-orange shadow-glow;
+  }
+
+  .approach-number {
+    @apply mb-4 flex h-10 w-10 items-center justify-center rounded-sm bg-retim-navy text-sm font-bold text-white transition-all duration-300;
+  }
+
+  .input-field {
+    @apply w-full rounded-sm border border-retim-gray-dark bg-white px-4 py-2.5 text-sm transition-all duration-200;
+  }
+
+  .input-field:focus {
+    @apply border-retim-orange outline-none ring-2 ring-retim-orange/20;
+  }
+
+  .hero-glow-orb {
+    @apply pointer-events-none absolute rounded-full bg-retim-orange/20 blur-3xl;
+    animation: hero-glow-pulse 10s ease-in-out infinite;
+  }
+
+  .page-hero-pattern {
+    background-image: radial-gradient(circle at 1px 1px, rgba(26, 35, 50, 0.06) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+
+  .reveal-hidden {
+    @apply opacity-0 translate-y-6;
+  }
+
+  .reveal-visible {
+    animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .text-shimmer {
+    background: linear-gradient(90deg, #e85d04 0%, #ffb347 40%, #e85d04 80%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: text-shimmer 3s linear infinite;
+  }
+
+  .hero-grid {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .marquee-mask {
+    overflow: hidden;
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee-scroll 45s linear infinite;
+  }
+
+  .marquee-item {
+    @apply flex flex-shrink-0 items-center gap-3 px-8 text-xs font-semibold uppercase tracking-widest text-gray-400;
+  }
+
+  .stagger-item-hidden {
+    @apply translate-y-8 opacity-0;
+  }
+
+  .stagger-item-visible {
+    animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .approach-timeline {
+    @apply relative;
+  }
+
+  @media (min-width: 1024px) {
+    .approach-timeline::before {
+      content: "";
+      @apply absolute left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-transparent via-retim-orange/40 to-transparent;
+      top: 2.5rem;
+    }
+  }
+
+  .form-glow {
+    @apply transition-all duration-500;
+  }
+
+  .form-glow:focus-within {
+    @apply border-retim-orange/40 shadow-glow;
+  }
+}
+
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes text-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

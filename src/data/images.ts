@@ -19,9 +19,15 @@ const serviceImageMap: Record<string, string> = {
   "yapi-guclendirme": projectImages.guclendirme,
   teras: projectImages.teras,
   drenaj: projectImages.site,
+  "su-deposu": projectImages.site,
   "insaat-taahhut": projectImages.insaat,
+  "3d-modelleme": projectImages.diger,
   "diger-uygulamalar": projectImages.diger,
 };
+
+export function getServiceHeroImage(slug: string): string {
+  return serviceImageMap[slug] || projectImages.hero;
+}
 
 export function getServiceSlugFromText(service: string): string {
   const s = service.toUpperCase();

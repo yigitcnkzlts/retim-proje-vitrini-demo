@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import TopBar from "@/components/layout/TopBar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import BackToTop from "@/components/ui/BackToTop";
+import ScrollProgress from "@/components/ui/ScrollProgress";
 import { siteConfig } from "@/data/site";
 import "./globals.css";
 
@@ -31,6 +33,8 @@ export default function RootLayout({
         <Header />
         <main className="min-h-screen">{children}</main>
         <Footer />
+        <BackToTop />
+        <ScrollProgress />
       </body>
     </html>
   );

@@ -6,7 +6,7 @@ interface ReferenceTablePreviewProps {
 
 export default function ReferenceTablePreview({ references }: ReferenceTablePreviewProps) {
   return (
-    <div className="overflow-hidden rounded border border-retim-gray-dark">
+    <div className="overflow-hidden rounded-sm border border-retim-gray-dark shadow-soft transition-shadow duration-300 hover:shadow-lift">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[600px]">
           <thead>
@@ -20,7 +20,7 @@ export default function ReferenceTablePreview({ references }: ReferenceTablePrev
           </thead>
           <tbody>
             {references.map((ref) => (
-              <tr key={ref.refNo} className="hover:bg-retim-gray">
+              <tr key={ref.refNo} className="table-row-interactive">
                 <td className="table-cell font-mono text-xs">{ref.refNo}</td>
                 <td className="table-cell font-medium">{ref.projectName}</td>
                 <td className="table-cell">{ref.service}</td>
