@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" fill="none">
+  <rect width="800" height="500" fill="#e6eef5"/>
+  <rect x="80" y="100" width="640" height="320" fill="#f0f6fb" stroke="#b8c7d9" stroke-width="2"/>
+  <rect x="120" y="140" width="140" height="240" fill="#c5d8ea"/>
+  <rect x="300" y="140" width="140" height="240" fill="#b8cfe3"/>
+  <rect x="480" y="140" width="140" height="240" fill="#c5d8ea"/>
+  <rect x="100" y="120" width="600" height="16" fill="#3b82c4"/>
+  <text x="400" y="60" text-anchor="middle" fill="#1a2332" font-family="Arial,sans-serif" font-size="22" font-weight="700">Boya ve Onar1m</text>
+</svg>
