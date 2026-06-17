@@ -1,6 +1,8 @@
 export const projectImages = {
   hero: "/images/hero-facade.jpg",
   logo: "/images/retim-logo.svg",
+  oncesiCephe: "/images/oncesi-cephe.jpg",
+  sonrasiCephe: "/images/sonrasi-cephe.jpg",
   mantolama: "/images/projects/mantolama.svg",
   boya: "/images/projects/boya.svg",
   cati: "/images/projects/cati.svg",
