@@ -21,8 +21,16 @@
     @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
   }
 
+  .site-logo {
+    @apply h-11 w-auto max-w-[min(210px,46vw)] rounded-sm object-contain object-left shadow-soft ring-1 ring-black/5 sm:h-12 sm:max-w-[220px];
+  }
+
   .btn-primary {
     @apply relative inline-flex items-center justify-center overflow-hidden rounded-sm bg-retim-orange px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-soft transition-all duration-300;
+  }
+
+  .btn-kesif {
+    @apply whitespace-nowrap normal-case tracking-normal;
   }
 
   .btn-primary:hover {
@@ -112,7 +120,55 @@
   }
 
   .nav-link {
-    @apply relative px-3 py-2 text-xs font-semibold uppercase tracking-wide transition-colors duration-200;
+    @apply relative whitespace-nowrap px-2.5 py-2 text-[11px] font-semibold uppercase tracking-wide transition-colors duration-200 xl:px-3 xl:text-xs;
+  }
+
+  .header-brand-badge {
+    @apply flex flex-col justify-center border-l border-retim-gray-dark pl-3;
+  }
+
+  .header-brand-badge span {
+    @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-500 transition-colors duration-200 group-hover:text-retim-orange;
+  }
+
+  .mega-menu {
+    @apply rounded-sm border border-retim-gray-dark bg-white p-3 shadow-lift;
+  }
+
+  .mega-menu-link {
+    @apply flex items-start gap-2.5 rounded-sm px-3 py-2.5 text-sm text-retim-anthracite transition-all duration-200 hover:bg-retim-gray hover:text-retim-orange;
+  }
+
+  .mega-menu-link:hover .mega-menu-dot {
+    @apply scale-125 bg-retim-orange;
+  }
+
+  .mega-menu-dot {
+    @apply mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-retim-orange/50 transition-all duration-200;
+  }
+
+  .header-cta-secondary {
+    @apply btn-secondary whitespace-nowrap px-4 py-2.5 text-xs;
+  }
+
+  .header-cta-primary {
+    @apply btn-primary btn-kesif shrink-0 px-4 py-2.5 text-sm xl:px-5;
+  }
+
+  .mobile-nav-link {
+    @apply flex items-center rounded-sm px-4 py-3.5 text-sm font-medium transition-colors;
+  }
+
+  .mobile-nav-link-active {
+    @apply bg-retim-orange/10 text-retim-orange;
+  }
+
+  .mobile-nav-link-idle {
+    @apply text-retim-anthracite hover:bg-retim-gray;
+  }
+
+  .mobile-service-link {
+    @apply flex items-center gap-2 rounded-sm px-4 py-2.5 text-sm text-gray-600 transition-colors hover:bg-white hover:text-retim-orange;
   }
 
   .nav-link::after {
@@ -161,6 +217,10 @@
 
   .service-tile {
     @apply card-interactive flex items-center justify-between gap-3 p-4;
+  }
+
+  .discovery-process-card:hover .discovery-process-icon {
+    @apply border-retim-orange/40 bg-retim-orange/15 text-white shadow-glow;
   }
 
   .approach-card {
@@ -215,6 +275,62 @@
       linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
     background-size: 48px 48px;
+  }
+
+  .hero-content-panel {
+    @apply max-w-3xl;
+  }
+
+  .hero-legal-name {
+    @apply text-[11px] font-medium uppercase leading-snug tracking-[0.14em] text-white/55 sm:text-xs;
+  }
+
+  .hero-accent-line {
+    @apply mt-4 h-0.5 w-12 bg-retim-orange;
+  }
+
+  .hero-title {
+    @apply mt-5 font-serif text-3xl font-bold leading-[1.1] tracking-tight text-white md:text-4xl lg:text-[2.75rem];
+  }
+
+  .hero-description {
+    @apply mt-5 max-w-xl text-[15px] leading-relaxed text-white/75 md:text-base md:leading-relaxed;
+  }
+
+  .hero-stats {
+    @apply mt-8 grid grid-cols-3 gap-px overflow-hidden rounded-sm border border-white/10 bg-white/5 backdrop-blur-sm;
+  }
+
+  .hero-stat-item {
+    @apply flex flex-col items-center justify-center px-3 py-4 text-center sm:px-4;
+  }
+
+  .hero-stat-value {
+    @apply text-lg font-bold text-retim-orange sm:text-xl;
+  }
+
+  .hero-stat-label {
+    @apply mt-1 text-[10px] font-semibold uppercase tracking-wider text-white/50 sm:text-[11px];
+  }
+
+  .hero-actions {
+    @apply mt-8 flex flex-wrap gap-3 sm:gap-4;
+  }
+
+  .hero-quick-links {
+    @apply mt-6 flex flex-wrap items-center gap-x-1 gap-y-2 text-sm text-white/55;
+  }
+
+  .hero-quick-link {
+    @apply px-2 py-1 transition-colors duration-200 hover:text-retim-orange;
+  }
+
+  .hero-quick-sep {
+    @apply text-white/25;
+  }
+
+  .hero-marquee {
+    @apply border-t border-white/10 bg-black/40 backdrop-blur-md;
   }
 
   .marquee-mask {

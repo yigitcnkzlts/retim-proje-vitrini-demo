@@ -1,5 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import { footerLinks, lastFiveProjects, siteConfig, socialLinks } from "@/data/site";
+import { projectImages } from "@/data/images";
 
 function SocialIcon({ icon }: { icon: string }) {
   if (icon === "linkedin") {
@@ -29,14 +31,18 @@ export default function Footer() {
       <div className="container-main py-12">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
-            <div className="mb-4 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded bg-white/10">
-                <span className="text-lg font-bold text-retim-orange">R</span>
-              </div>
-              <div>
-                <span className="block text-lg font-bold">{siteConfig.name}</span>
-                <span className="block text-[11px] text-gray-400">Proje Vitrini Demo</span>
-              </div>
+            <div className="mb-4 flex flex-wrap items-center gap-3">
+              <Image
+                src={projectImages.logo}
+                alt={siteConfig.name}
+                width={220}
+                height={66}
+                className="site-logo max-w-[200px]"
+                quality={95}
+              />
+              <span className="border-l border-white/20 pl-3 text-[11px] uppercase tracking-wider text-gray-400">
+                Proje Vitrini
+              </span>
             </div>
             <p className="text-sm leading-relaxed text-gray-400">{siteConfig.legalName}</p>
             <p className="mt-3 text-sm text-gray-400">{siteConfig.description}</p>

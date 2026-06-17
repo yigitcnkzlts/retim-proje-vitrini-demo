@@ -21,7 +21,7 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
     <>
       <PageHero
         title="Projeler"
-        description="Retim'in İstanbul genelinde tamamladığı dış cephe, yalıtım, restorasyon ve güçlendirme projelerini hizmet türü ve semte göre filtreleyerek inceleyin."
+        description="Retim'in Türkiye genelinde tamamladığı dış cephe, yalıtım, restorasyon ve güçlendirme projelerini hizmet türü ve semte göre filtreleyerek inceleyin."
         breadcrumb={[{ label: "Ana Sayfa", href: "/" }, { label: "Projeler" }]}
       />
 

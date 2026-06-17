@@ -84,7 +84,7 @@ export default function AboutPage() {
               Dış cephe, yalıtım, restorasyon veya güçlendirme ihtiyaçlarınız için keşif talebi
               oluşturun.
             </p>
-            <Link href="/iletisim#kesif-formu" className="btn-primary mt-6">
+            <Link href="/iletisim#kesif-formu" className="btn-primary btn-kesif mt-6">
               Ücretsiz Keşif Al
             </Link>
           </div>

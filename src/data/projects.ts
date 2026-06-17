@@ -138,8 +138,8 @@ export const serviceCategories = [
     description: "Bina güçlendirme ve zemin-kolon güçlendirme uygulamaları.",
   },
   {
-    slug: "insaat-taahhut",
-    name: "İnşaat Taahhüt",
-    description: "Kapsamlı inşaat ve yenileme projelerinin anahtar teslim uygulaması.",
+    slug: "istinat-duvari",
+    name: "İstinat Duvarı",
+    description: "Bahçe, site ve yapı çevresinde istinat duvarı imalatı ve uygulaması.",
   },
 ];
