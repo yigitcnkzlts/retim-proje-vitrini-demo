@@ -1,5 +1,6 @@
 export const projectImages = {
-  hero: "/images/hero-facade.svg",
+  hero: "/images/hero-facade.jpg",
+  logo: "/images/retim-logo.svg",
   mantolama: "/images/projects/mantolama.svg",
   boya: "/images/projects/boya.svg",
   cati: "/images/projects/cati.svg",
@@ -20,7 +21,7 @@ const serviceImageMap: Record<string, string> = {
   teras: projectImages.teras,
   drenaj: projectImages.site,
   "su-deposu": projectImages.site,
-  "insaat-taahhut": projectImages.insaat,
+  "istinat-duvari": projectImages.insaat,
   "3d-modelleme": projectImages.diger,
   "diger-uygulamalar": projectImages.diger,
 };
@@ -37,7 +38,8 @@ export function getServiceSlugFromText(service: string): string {
   if (s.includes("TERAS")) return "teras";
   if (s.includes("ÇATI")) return "cati-yalitim";
   if (s.includes("DRENaj") || s.includes("DRENAJ")) return "drenaj";
-  if (s.includes("İNŞAATI") || s.includes("TAŞ BİNA")) return "insaat-taahhut";
+  if (s.includes("İSTİNAT") || s.includes("ISTINAT")) return "istinat-duvari";
+  if (s.includes("İNŞAATI") || s.includes("TAŞ BİNA")) return "istinat-duvari";
   if (s.includes("KOMPOZİT")) return "diger-uygulamalar";
   if (s.includes("ZEMİN") || s.includes("BAHÇE")) return "drenaj";
   return "boya-onarim";

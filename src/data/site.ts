@@ -62,18 +62,18 @@ export const lastFiveProjects = [
 ];
 
 export const stats = [
-  { value: "2000+", label: "Tamamlanan Bina" },
+  { value: "Yüzlerce", label: "Onarılan Bina" },
   { value: "35+", label: "Yıllık Deneyim" },
   { value: "1989", label: "Kuruluş Yılı" },
   { value: "100+", label: "Teknik Kadro" },
-  { value: "İstanbul", label: "Geneli Uygulama" },
+  { value: "Türkiye", label: "Geneli Uygulama" },
 ];
 
 export const aboutText = {
   intro:
     "Retim Restorasyon Madencilik Sanayii ve Ticaret Ltd. Şti. 27 Kasım 1989 yılında, binaların dış - iç cephe onarımı, yalıtımı, boyası, sıva kaplama işlemleri, dış cephe temizlik ve restorasyonu ile çatı, teras ve bina zeminlerinin su ve ısı yalıtımları gibi sorunlarına kesin çözümler getirmek amacıyla kurulmuştur.",
   experience:
-    "Sektördeki 32 yıllık deneyimiyle, kuruluşundan bugüne, kalite ve güvenilirliğini, hizmetini sunduğu 2000'i aşkın bina ile kanıtlamış ve sektörün öncü kuruluşu olmuştur.",
+    "Sektördeki 32 yıllık deneyimiyle, kuruluşundan bugüne, kalite ve güvenilirliğini, hizmetini sunduğu yüzlerce onarılan bina ile kanıtlamış ve sektörün öncü kuruluşu olmuştur.",
   team:
     "Bünyesindeki 2 İnşaat Mühendisi, 1 Jeoloji Mühendisi, Mimar ve 100'ü aşkın tecrübeli teknik servis eleman kadrosu ile sahip olduğu malzeme ve makine parkı sayesinde, üstlendiği projeleri en iyi işçilik ve en kaliteli malzemeler ile en kısa sürede tamamlamıştır.",
   closing:
@@ -107,6 +107,54 @@ export const approachSteps = [
   },
 ];
 
+export const discoverySteps = [
+  {
+    step: 1,
+    icon: "drone" as const,
+    title: "Drone ile Keşif",
+    description:
+      "Binanızın dört cephesini ve çatısını havadan yüksek çözünürlüklü kameralarla tarıyoruz. İskele kurmadan, binanıza dokunmadan tüm cepheleri santimetre hassasiyetinde görüntülüyoruz.",
+    highlights: [
+      "Çatlak, dökülme ve beton hasarlarının tespiti",
+      "Çatı ve drenaj sisteminin detaylı incelenmesi",
+      "Sorunların fotoğraflarla belgelenmesi",
+    ],
+  },
+  {
+    step: 2,
+    icon: "thermal" as const,
+    title: "Termal Kamera Analizi",
+    description:
+      "Binanızın dört cephesini termal kamerayla tarayarak ısı kaybı noktalarını tespit ediyoruz. Görünmeyen yalıtım eksikliklerini renkli ısı haritasıyla somut hale getiriyoruz.",
+    highlights: [
+      "4 cepheden termal görüntüleme",
+      "Isı kaybı ve yalıtım analiz raporu",
+      "Mevcut durum ve önerilen aksiyonlar",
+    ],
+  },
+  {
+    step: 3,
+    icon: "structural" as const,
+    title: "Yapısal Dayanım Analizi",
+    description:
+      "Binanızın taşıyıcı elemanlarını hasarsız test yöntemleriyle analiz ediyoruz. Beton kalitesi ve donatı durumunu yerinde inceleyerek deprem güvenliği raporu hazırlıyoruz.",
+    highlights: [
+      "Hasarsız beton dayanımı testi",
+      "Donatı konum ve durum analizi",
+      "Deprem güvenliği ön değerlendirmesi",
+    ],
+  },
+];
+
+export const discoveryReport = {
+  title: "Keşif Raporu",
+  subtitle: "Tüm bulgular tek bir raporda",
+  description:
+    "Drone görüntüleri, termal analiz sonuçları ve yapısal test verileri tek bir raporda birleştirilerek size sunulur. Mevcut sorunlar, önerilen çözümler ve tahmini maliyet bilgisi içerir.",
+  ctaLabel: "Ücretsiz Keşif Talebi",
+  ctaHref: "/iletisim#kesif-formu",
+};
+
 export const homeDistricts = [
   "Nişantaşı",
   "Teşvikiye",
@@ -120,4 +168,5 @@ export const homeDistricts = [
   "Etiler",
   "Beyoğlu",
   "Levent",
+  "Bodrum",
 ];

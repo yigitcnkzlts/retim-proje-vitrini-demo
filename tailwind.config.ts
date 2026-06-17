@@ -20,6 +20,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        serif: ["var(--font-playfair)", "Georgia", "serif"],
       },
       boxShadow: {
         soft: "0 4px 24px -4px rgba(26, 35, 50, 0.08)",

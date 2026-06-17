@@ -63,11 +63,11 @@ export const services: Service[] = [
     projectTypes: ["Apartman", "Ticari Bina", "Tarihi Bina"],
   },
   {
-    slug: "insaat-taahhut",
-    name: "İnşaat Taahhüt",
+    slug: "istinat-duvari",
+    name: "İstinat Duvarı",
     description:
-      "Kapsamlı inşaat ve yenileme projelerinin anahtar teslim uygulaması.",
-    projectTypes: ["Site", "Ticari Bina", "Rezidans"],
+      "Bahçe, site ve yapı çevresinde zemin hareketlerine karşı istinat duvarı imalatı ve uygulaması.",
+    projectTypes: ["Site", "Apartman", "Ticari Bina"],
   },
   {
     slug: "3d-modelleme",

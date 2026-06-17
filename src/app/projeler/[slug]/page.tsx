@@ -143,7 +143,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
                 </dl>
 
                 <div className="mt-6 space-y-3">
-                  <Link href="/iletisim#kesif-formu" className="btn-primary w-full text-center">
+                  <Link href="/iletisim#kesif-formu" className="btn-primary btn-kesif w-full text-center">
                     Ücretsiz Keşif Al
                   </Link>
                   <Link href="/projeler" className="btn-secondary w-full text-center">

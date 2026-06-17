@@ -54,7 +54,7 @@ export default function PartnersPage() {
                 Keşif sürecinde bina tipi, cephe durumu ve bütçe kriterlerine göre en uygun uygulama
                 ve malzeme kombinasyonu belirlenir.
               </p>
-              <Link href="/iletisim#kesif-formu" className="btn-primary mt-6">
+              <Link href="/iletisim#kesif-formu" className="btn-primary btn-kesif mt-6">
                 Ücretsiz Keşif Al
               </Link>
             </div>

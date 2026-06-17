@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ContactForm from "@/components/contact/ContactForm";
+import DiscoveryProcessSection from "@/components/home/DiscoveryProcessSection";
 import StatsSection from "@/components/home/StatsSection";
 import ProjectCard from "@/components/projects/ProjectCard";
 import ReferenceTablePreview from "@/components/references/ReferenceTablePreview";
@@ -11,26 +12,20 @@ import { services } from "@/data/services";
 import { getFeaturedProjects, serviceCategories } from "@/data/projects";
 import { getReferencePreview } from "@/data/references";
 import { approachSteps, homeDistricts, siteConfig } from "@/data/site";
-import { getServiceHeroImage } from "@/data/images";
+import { projectImages } from "@/data/images";
 
 export default function HomePage() {
   const featuredProjects = getFeaturedProjects();
   const referencePreview = getReferencePreview(8);
   const tickerItems = featuredProjects.map((p) => `${p.name} · ${p.district}`);
 
-  const heroSlides = services.map((service) => ({
-    name: service.name,
-    image: getServiceHeroImage(service.slug),
-    href: `/hizmetler#${service.slug}`,
-  }));
-
   return (
     <>
       <HeroBanner
         legalName={siteConfig.legalName}
-        title="İstanbul'un Binlerce Binasında Retim İmzası"
+        title="Yüzlerce Onarılan Binada Retim İmzası"
         description={siteConfig.description}
-        slides={heroSlides}
+        heroImage={projectImages.hero}
         tickerItems={tickerItems}
       />
 
@@ -41,14 +36,17 @@ export default function HomePage() {
       </ScrollReveal>
 
       <ScrollReveal delay={100}>
+        <DiscoveryProcessSection />
+      </ScrollReveal>
+
+      <ScrollReveal delay={100}>
         <section className="border-b border-retim-gray-dark bg-retim-gray py-16 md:py-20">
           <div className="container-main">
             <div className="mb-10">
               <p className="section-label">Hizmetler</p>
               <h2 className="section-title mt-2">Uygulama Alanlarımız</h2>
               <p className="section-subtitle">
-                Mantolama, boya, çatı yalıtımı, drenaj, su deposu, restorasyon, güçlendirme ve
-                inşaat taahhüt alanlarında kapsamlı hizmet.
+                Mantolama, boya, çatı yalıtımı, drenaj ve su deposu alanlarında kapsamlı hizmet.
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -84,7 +82,7 @@ export default function HomePage() {
               <p className="section-label">Projeler</p>
               <h2 className="section-title mt-2">Öne Çıkan Proje Uygulamaları</h2>
               <p className="section-subtitle">
-                İstanbul&apos;un farklı semtlerinde tamamlanan seçilmiş proje uygulamaları.
+                Türkiye genelinde tamamlanan seçilmiş proje uygulamaları.
               </p>
             </div>
             <StaggerChildren className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5" staggerMs={100}>
@@ -132,10 +130,8 @@ export default function HomePage() {
         <section className="py-16 md:py-20">
           <div className="container-main">
             <div className="mb-10">
-              <p className="section-label">Lokasyon</p>
-              <h2 className="section-title mt-2">
-                İstanbul&apos;un Farklı Bölgelerinde Tamamlanan Uygulamalar
-              </h2>
+              <p className="section-label">Bölgeler</p>
+              <h2 className="section-title mt-2">Türkiye Genelinde Tamamlanan Uygulamalar</h2>
             </div>
             <div className="rounded-sm border border-retim-gray-dark bg-retim-gray p-6 shadow-soft md:p-8">
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
@@ -212,7 +208,7 @@ export default function HomePage() {
         </section>
       </ScrollReveal>
 
-      <section className="relative overflow-hidden bg-retim-navy py-16 text-white md:py-24">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#1a1512] via-retim-anthracite to-retim-orange/90 py-16 text-white md:py-24">
         <div className="hero-glow-orb left-1/2 top-0 h-64 w-64 -translate-x-1/2" />
         <div className="container-main relative text-center">
           <h2 className="animate-fade-up text-2xl font-bold md:text-3xl">
@@ -222,7 +218,7 @@ export default function HomePage() {
             Dış cephe, yalıtım, restorasyon veya güçlendirme ihtiyaçlarınız için Retim&apos;in
             proje deneyiminden faydalanın.
           </p>
-          <Link href="/iletisim#kesif-formu" className="btn-primary mt-8">
+          <Link href="/iletisim#kesif-formu" className="btn-primary btn-kesif mt-8">
             Ücretsiz Keşif Al
           </Link>
         </div>
