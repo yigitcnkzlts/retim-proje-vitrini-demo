@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { services } from "@/data/services";
 import { navigation, siteConfig } from "@/data/site";
-import { projectImages } from "@/data/images";
+import { mediaAssets } from "@/data/mediaAssets";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -63,7 +63,7 @@ export default function Header() {
             onClick={closeMobile}
           >
             <Image
-              src={projectImages.logo}
+              src={mediaAssets.logo.primary}
               alt={siteConfig.name}
               width={220}
               height={66}

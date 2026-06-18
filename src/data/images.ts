@@ -1,17 +1,19 @@
+import type { RetimImageSource } from "@/data/mediaAssets";
+import { mediaAssets } from "@/data/mediaAssets";
+
+/** @deprecated Yerine mediaAssets kullanın */
 export const projectImages = {
-  hero: "/images/hero-facade.jpg",
-  logo: "/images/retim-logo.svg",
-  oncesiCephe: "/images/oncesi-cephe.jpg",
-  sonrasiCephe: "/images/sonrasi-cephe.jpg",
-  mantolama: "/images/projects/mantolama.svg",
-  boya: "/images/projects/boya.svg",
-  cati: "/images/projects/cati.svg",
-  restorasyon: "/images/projects/restorasyon.svg",
-  guclendirme: "/images/projects/guclendirme.svg",
-  teras: "/images/projects/teras.svg",
-  site: "/images/projects/site.svg",
-  insaat: "/images/projects/site.svg",
-  diger: "/images/projects/boya.svg",
+  hero: mediaAssets.hero.primary,
+  logo: mediaAssets.logo.primary,
+  mantolama: mediaAssets.services.mantolama.fallback,
+  boya: mediaAssets.services["boya-onarim"].fallback,
+  cati: mediaAssets.services["cati-yalitim"].fallback,
+  restorasyon: mediaAssets.services["tarihi-bina-restorasyonu"].fallback,
+  guclendirme: mediaAssets.services["yapi-guclendirme"].fallback,
+  teras: mediaAssets.services.teras.fallback,
+  site: mediaAssets.services.drenaj.fallback,
+  insaat: mediaAssets.services["istinat-duvari"].fallback,
+  diger: mediaAssets.services["diger-uygulamalar"].fallback,
 } as const;
 
 const serviceImageMap: Record<string, string> = {
@@ -29,7 +31,11 @@ const serviceImageMap: Record<string, string> = {
 };
 
 export function getServiceHeroImage(slug: string): string {
-  return serviceImageMap[slug] || projectImages.hero;
+  return mediaAssets.services[slug]?.primary ?? mediaAssets.hero.primary;
+}
+
+export function getServiceHeroImageSource(slug: string): RetimImageSource {
+  return mediaAssets.services[slug] ?? mediaAssets.services["boya-onarim"];
 }
 
 export function getServiceSlugFromText(service: string): string {
@@ -94,7 +100,6 @@ export const featuredSlugs = new Set([
   "mithat-tekstil-binasi-2281",
 ]);
 
-// Eski slug uyumluluğu için alias
 export const slugAliases: Record<string, string> = {
   "rusen-unsal-binasi": "rusen-unsal-binasi-2282",
   "ocak-apt": "ocak-apt-2283",

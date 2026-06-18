@@ -23,7 +23,7 @@ export default function StatsSection() {
         <div className="grid grid-cols-2 gap-4 md:grid-cols-5 md:gap-6">
           {stats.map((stat, i) => (
             <div key={stat.label} className="stat-card" style={{ animationDelay: `${i * 80}ms` }}>
-              <p className="text-2xl font-bold text-retim-navy transition-colors duration-300 md:text-3xl">
+              <p className="text-2xl font-bold text-retim-navy transition-colors duration-300 md:text-3xl stat-card-value">
                 {/^\d/.test(stat.value) ? (
                   <CountUp key={`${stat.label}-${playKey}`} value={stat.value} />
                 ) : (

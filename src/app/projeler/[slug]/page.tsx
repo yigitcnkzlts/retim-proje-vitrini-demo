@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import PageHero from "@/components/ui/PageHero";
+import RetimImage from "@/components/ui/RetimImage";
 import { projects, getProjectBySlug } from "@/data/projects";
 import { slugAliases } from "@/data/images";
 
@@ -53,9 +53,12 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
           <div className="grid gap-10 lg:grid-cols-3">
             <div className="lg:col-span-2">
               <div className="group relative mb-8 h-64 overflow-hidden rounded-sm md:h-96">
-                <Image
-                  src={project.image}
-                  alt={project.name}
+                <RetimImage
+                  source={{
+                    primary: project.image,
+                    fallback: project.imageFallback,
+                    alt: project.imageAlt,
+                  }}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                   sizes="(max-width: 1024px) 100vw, 66vw"

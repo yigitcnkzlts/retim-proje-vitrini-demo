@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { footerLinks, lastFiveProjects, siteConfig, socialLinks } from "@/data/site";
-import { projectImages } from "@/data/images";
+import { mediaAssets } from "@/data/mediaAssets";
 
 function SocialIcon({ icon }: { icon: string }) {
   if (icon === "linkedin") {
@@ -33,7 +33,7 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <div className="mb-4 flex flex-wrap items-center gap-3">
               <Image
-                src={projectImages.logo}
+                src={mediaAssets.logo.primary}
                 alt={siteConfig.name}
                 width={220}
                 height={66}

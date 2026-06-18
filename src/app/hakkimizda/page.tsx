@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import PageHero from "@/components/ui/PageHero";
+import RetimImage from "@/components/ui/RetimImage";
 import { aboutText, siteConfig, stats } from "@/data/site";
+import { mediaAssets } from "@/data/mediaAssets";
 
 export const metadata: Metadata = {
   title: "Hakkımızda",
@@ -46,12 +48,25 @@ export default function AboutPage() {
 
       <section className="py-12 md:py-16">
         <div className="container-main">
-          <div className="max-w-4xl">
-            <h2 className="text-2xl font-bold text-retim-navy">{siteConfig.legalName}</h2>
-            <p className="mt-6 text-gray-600 leading-relaxed">{aboutText.intro}</p>
-            <p className="mt-4 text-gray-600 leading-relaxed">{aboutText.experience}</p>
-            <p className="mt-4 text-gray-600 leading-relaxed">{aboutText.team}</p>
-            <p className="mt-4 text-gray-600 leading-relaxed">{aboutText.closing}</p>
+          <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
+            <div className="max-w-4xl">
+              <h2 className="text-2xl font-bold text-retim-navy">{siteConfig.legalName}</h2>
+              <p className="mt-6 leading-relaxed text-gray-600">{aboutText.intro}</p>
+              <p className="mt-4 leading-relaxed text-gray-600">{aboutText.experience}</p>
+            </div>
+            <div className="relative aspect-[4/3] overflow-hidden rounded-sm border border-retim-gray-dark shadow-soft">
+              <RetimImage
+                source={mediaAssets.aboutField}
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+              />
+            </div>
+          </div>
+
+          <div className="mt-8 max-w-4xl">
+            <p className="leading-relaxed text-gray-600">{aboutText.team}</p>
+            <p className="mt-4 leading-relaxed text-gray-600">{aboutText.closing}</p>
           </div>
 
           <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-5">

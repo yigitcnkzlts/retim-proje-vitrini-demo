@@ -1,5 +1,8 @@
 import Link from "next/link";
 import ContactForm from "@/components/contact/ContactForm";
+import BeforeAfterSection from "@/components/home/BeforeAfterSection";
+import HomeCatalogCard from "@/components/home/HomeCatalogCard";
+import HomeServiceTile from "@/components/home/HomeServiceTile";
 import DiscoveryProcessSection from "@/components/home/DiscoveryProcessSection";
 import StatsSection from "@/components/home/StatsSection";
 import ProjectCard from "@/components/projects/ProjectCard";
@@ -12,7 +15,6 @@ import { services } from "@/data/services";
 import { getFeaturedProjects, serviceCategories } from "@/data/projects";
 import { getReferencePreview } from "@/data/references";
 import { approachSteps, homeDistricts, siteConfig } from "@/data/site";
-import { projectImages } from "@/data/images";
 
 export default function HomePage() {
   const featuredProjects = getFeaturedProjects();
@@ -25,7 +27,6 @@ export default function HomePage() {
         legalName={siteConfig.legalName}
         title="Yüzlerce Onarılan Binada Retim İmzası"
         description={siteConfig.description}
-        heroImage={projectImages.hero}
         tickerItems={tickerItems}
       />
 
@@ -40,6 +41,10 @@ export default function HomePage() {
       </ScrollReveal>
 
       <ScrollReveal delay={100}>
+        <BeforeAfterSection />
+      </ScrollReveal>
+
+      <ScrollReveal delay={100}>
         <section className="border-b border-retim-gray-dark bg-retim-gray py-16 md:py-20">
           <div className="container-main">
             <div className="mb-10">
@@ -51,19 +56,7 @@ export default function HomePage() {
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {services.map((service) => (
-                <Link key={service.slug} href={`/hizmetler#${service.slug}`} className="service-tile group">
-                  <h3 className="text-sm font-bold text-retim-navy transition-colors duration-200 group-hover:text-retim-orange">
-                    {service.name}
-                  </h3>
-                  <svg
-                    className="h-4 w-4 flex-shrink-0 text-retim-orange opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
+                <HomeServiceTile key={service.slug} service={service} />
               ))}
             </div>
             <div className="mt-8 text-center">
@@ -108,18 +101,12 @@ export default function HomePage() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {serviceCategories.map((cat) => (
-                <div key={cat.slug} className="card-interactive group">
-                  <h3 className="text-base font-bold text-retim-navy transition-colors group-hover:text-retim-orange">
-                    {cat.name}
-                  </h3>
-                  <p className="mt-2 text-sm text-gray-600">{cat.description}</p>
-                  <Link
-                    href={`/projeler?hizmet=${cat.slug}`}
-                    className="btn-secondary mt-4 px-4 py-2 text-xs"
-                  >
-                    Bu Kategorideki Projeleri Gör
-                  </Link>
-                </div>
+                <HomeCatalogCard
+                  key={cat.slug}
+                  slug={cat.slug}
+                  name={cat.name}
+                  description={cat.description}
+                />
               ))}
             </div>
           </div>
@@ -133,7 +120,7 @@ export default function HomePage() {
               <p className="section-label">Bölgeler</p>
               <h2 className="section-title mt-2">Türkiye Genelinde Tamamlanan Uygulamalar</h2>
             </div>
-            <div className="rounded-sm border border-retim-gray-dark bg-retim-gray p-6 shadow-soft md:p-8">
+            <div className="district-grid-panel">
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
                 {homeDistricts.map((district) => (
                   <Link
@@ -208,7 +195,7 @@ export default function HomePage() {
         </section>
       </ScrollReveal>
 
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#1a1512] via-retim-anthracite to-retim-orange/90 py-16 text-white md:py-24">
+      <section className="home-cta-band relative overflow-hidden bg-gradient-to-br from-[#1a1512] via-retim-anthracite to-retim-orange/90 py-16 text-white md:py-24">
         <div className="hero-glow-orb left-1/2 top-0 h-64 w-64 -translate-x-1/2" />
         <div className="container-main relative text-center">
           <h2 className="animate-fade-up text-2xl font-bold md:text-3xl">

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import RetimImage from "@/components/ui/RetimImage";
 import { useRef, type MouseEvent } from "react";
 import type { Project } from "@/data/projects";
 
@@ -39,9 +39,12 @@ export default function ProjectCard({ project, variant = "default" }: ProjectCar
     >
       <Link href={`/projeler/${project.slug}`} className="block">
         <div className={`relative w-full overflow-hidden ${imageHeight}`}>
-          <Image
-            src={project.image}
-            alt={project.name}
+          <RetimImage
+            source={{
+              primary: project.image,
+              fallback: project.imageFallback,
+              alt: project.imageAlt,
+            }}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-110"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
