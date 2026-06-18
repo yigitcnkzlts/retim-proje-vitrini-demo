@@ -3,11 +3,11 @@ import {
   createSlug,
   formatDistrict,
   formatProjectName,
-  getProjectImage,
   getServiceSlugFromText,
   featuredSlugs,
   slugAliases,
 } from "./images";
+import { getProjectImageSource } from "./mediaAssets";
 
 export interface Project {
   slug: string;
@@ -25,6 +25,8 @@ export interface Project {
   scope: string[];
   highlights: string[];
   image: string;
+  imageFallback: string;
+  imageAlt: string;
 }
 
 function buildingTypeFromName(name: string): string {
@@ -41,6 +43,7 @@ function projectFromReference(ref: Reference): Project {
   const district = formatDistrict(ref.district);
   const serviceSlug = getServiceSlugFromText(ref.service);
   const featured = featuredSlugs.has(slug);
+  const imageSource = getProjectImageSource(slug, serviceSlug);
 
   return {
     slug,
@@ -66,7 +69,9 @@ function projectFromReference(ref: Reference): Project {
       `${ref.year} yılı uygulaması`,
       `${district} bölgesi`,
     ],
-    image: getProjectImage(serviceSlug),
+    image: imageSource.primary,
+    imageFallback: imageSource.fallback,
+    imageAlt: imageSource.alt,
   };
 }
 

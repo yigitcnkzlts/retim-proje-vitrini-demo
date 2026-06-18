@@ -155,6 +155,15 @@ export const discoveryReport = {
   ctaHref: "/iletisim#kesif-formu",
 };
 
+export const beforeAfterSection = {
+  label: "Öncesi & Sonrası Uygulama Analizi",
+  title: "Uygulama Öncesi ve Sonrası Net Görünür",
+  description:
+    "Dış cephe, yalıtım ve restorasyon projelerinde keşif, analiz ve uygulama süreçlerinin etkisini görsel olarak takip edin.",
+  beforeLabel: "Öncesi",
+  afterLabel: "Sonrası / Analiz",
+};
+
 export const homeDistricts = [
   "Nişantaşı",
   "Teşvikiye",

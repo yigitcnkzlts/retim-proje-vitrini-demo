@@ -1,15 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import RetimImage from "@/components/ui/RetimImage";
 import { useEffect, useState } from "react";
 import ProjectMarquee from "./ProjectMarquee";
+import { mediaAssets } from "@/data/mediaAssets";
 
 interface HeroBannerProps {
   legalName: string;
   title: string;
   description: string;
-  heroImage: string;
   tickerItems: string[];
 }
 
@@ -29,7 +29,6 @@ export default function HeroBanner({
   legalName,
   title,
   description,
-  heroImage,
   tickerItems,
 }: HeroBannerProps) {
   const [parallax, setParallax] = useState(0);
@@ -46,9 +45,8 @@ export default function HeroBanner({
         className="absolute inset-0 will-change-transform"
         style={{ transform: `translateY(${parallax}px) scale(1.03)` }}
       >
-        <Image
-          src={heroImage}
-          alt="Tarihi bina dış cephe uygulaması — İstanbul Boğazı"
+        <RetimImage
+          source={mediaAssets.hero}
           fill
           className="object-cover object-[72%_center] sm:object-[68%_center] lg:object-[60%_center]"
           priority

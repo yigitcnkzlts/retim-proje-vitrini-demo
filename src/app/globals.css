@@ -29,6 +29,15 @@
     @apply relative inline-flex items-center justify-center overflow-hidden rounded-sm bg-retim-orange px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-soft transition-all duration-300;
   }
 
+  .btn-primary::after {
+    content: "";
+    @apply absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-500;
+  }
+
+  .btn-primary:hover::after {
+    @apply translate-x-full;
+  }
+
   .btn-kesif {
     @apply whitespace-nowrap normal-case tracking-normal;
   }
@@ -224,7 +233,11 @@
   }
 
   .approach-card {
-    @apply card-base relative;
+    @apply card-base relative transition-all duration-300;
+  }
+
+  .approach-card:hover {
+    @apply border-retim-orange/30;
   }
 
   .approach-card:hover .approach-number {
@@ -302,11 +315,19 @@
   }
 
   .hero-stat-item {
-    @apply flex flex-col items-center justify-center px-3 py-4 text-center sm:px-4;
+    @apply flex flex-col items-center justify-center px-3 py-4 text-center transition-colors duration-300 sm:px-4;
+  }
+
+  .hero-stats:hover .hero-stat-item {
+    @apply bg-white/5;
+  }
+
+  .hero-stat-item:hover .hero-stat-value {
+    @apply scale-105;
   }
 
   .hero-stat-value {
-    @apply text-lg font-bold text-retim-orange sm:text-xl;
+    @apply text-lg font-bold text-retim-orange transition-transform duration-300 sm:text-xl;
   }
 
   .hero-stat-label {
@@ -322,7 +343,16 @@
   }
 
   .hero-quick-link {
-    @apply px-2 py-1 transition-colors duration-200 hover:text-retim-orange;
+    @apply relative px-2 py-1 transition-colors duration-200 hover:text-retim-orange;
+  }
+
+  .hero-quick-link::after {
+    content: "";
+    @apply absolute bottom-0 left-2 right-2 h-px scale-x-0 bg-retim-orange transition-transform duration-300 origin-left;
+  }
+
+  .hero-quick-link:hover::after {
+    @apply scale-x-100;
   }
 
   .hero-quick-sep {
@@ -331,6 +361,86 @@
 
   .hero-marquee {
     @apply border-t border-white/10 bg-black/40 backdrop-blur-md;
+  }
+
+  .before-after-panel {
+    @apply transition-shadow duration-300;
+  }
+
+  .before-after-panel:hover {
+    @apply shadow-lift;
+  }
+
+  .before-after-side .retim-image-hover {
+    @apply transition-transform duration-700 ease-out;
+  }
+
+  .before-after-panel:hover .before-after-side .retim-image-hover {
+    @apply scale-[1.04];
+  }
+
+  .before-after-compare {
+    @apply transition-all duration-300;
+  }
+
+  .before-after-panel:hover .before-after-compare {
+    @apply scale-110 shadow-glow;
+  }
+
+  .trust-badge:hover {
+    @apply -translate-y-0.5 shadow-lift;
+  }
+
+  .home-service-tile {
+    @apply rounded-sm border border-retim-gray-dark bg-white shadow-soft transition-all duration-300;
+  }
+
+  .home-service-tile:hover {
+    @apply -translate-y-1 border-retim-orange/35 shadow-lift;
+  }
+
+  .home-service-tile-shine {
+    background: linear-gradient(
+      105deg,
+      transparent 40%,
+      rgba(255, 255, 255, 0.15) 50%,
+      transparent 60%
+    );
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+  }
+
+  .home-service-tile:hover .home-service-tile-shine {
+    transform: translateX(100%);
+  }
+
+  .home-catalog-card {
+    @apply card-interactive relative block p-5;
+  }
+
+  .home-catalog-card-cta::after {
+    content: "";
+    @apply mt-2 block h-px w-0 bg-retim-orange transition-all duration-300;
+  }
+
+  .home-catalog-card:hover .home-catalog-card-cta::after {
+    @apply w-full;
+  }
+
+  .district-grid-panel {
+    @apply rounded-sm border border-retim-gray-dark bg-retim-gray p-6 shadow-soft transition-all duration-300 md:p-8;
+  }
+
+  .district-grid-panel:hover {
+    @apply border-retim-orange/25 shadow-lift;
+  }
+
+  .home-cta-band .btn-primary:hover {
+    @apply shadow-glow;
+  }
+
+  .stat-card:hover .stat-card-value {
+    @apply text-retim-orange;
   }
 
   .marquee-mask {
