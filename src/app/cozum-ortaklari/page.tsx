@@ -33,17 +33,15 @@ export default function PartnersPage() {
               </p>
             </div>
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               {partners.map((partner) => (
-                <div key={partner.name} className="card-interactive group">
-                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-sm bg-retim-navy text-lg font-bold text-white transition-all duration-300 group-hover:bg-retim-orange group-hover:shadow-glow">
-                    {partner.name.charAt(0)}
-                  </div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-retim-orange">
-                    {partner.category}
-                  </p>
-                  <h3 className="mt-2 text-lg font-bold text-retim-navy">{partner.name}</h3>
-                  <p className="mt-2 text-sm text-gray-600">{partner.description}</p>
+                <div
+                  key={partner.name}
+                  className="partner-card group flex min-h-[5.5rem] items-center justify-center rounded-sm border border-retim-gray-dark bg-white px-4 py-5 text-center shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:border-retim-orange/35 hover:shadow-lift"
+                >
+                  <h3 className="text-sm font-bold leading-snug text-retim-navy transition-colors duration-300 group-hover:text-retim-orange md:text-base">
+                    {partner.name}
+                  </h3>
                 </div>
               ))}
             </div>
