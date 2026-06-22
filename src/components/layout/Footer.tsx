@@ -31,7 +31,7 @@ export default function Footer() {
       <div className="container-main py-12">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
-            <div className="mb-4 flex flex-wrap items-center gap-3">
+            <div className="mb-4">
               <Image
                 src={mediaAssets.logo.primary}
                 alt={siteConfig.name}
@@ -40,9 +40,6 @@ export default function Footer() {
                 className="site-logo max-w-[200px]"
                 quality={95}
               />
-              <span className="border-l border-white/20 pl-3 text-[11px] uppercase tracking-wider text-gray-400">
-                Proje Vitrini
-              </span>
             </div>
             <p className="text-sm leading-relaxed text-gray-400">{siteConfig.legalName}</p>
             <p className="mt-3 text-sm text-gray-400">{siteConfig.description}</p>
