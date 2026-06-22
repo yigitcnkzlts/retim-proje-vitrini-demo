@@ -1,41 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import PageHero from "@/components/ui/PageHero";
-import RetimImage from "@/components/ui/RetimImage";
-import { aboutText, siteConfig, stats } from "@/data/site";
-import { mediaAssets } from "@/data/mediaAssets";
+import { aboutText, siteConfig } from "@/data/site";
 
 export const metadata: Metadata = {
   title: "Hakkımızda",
   description: "Retim Restorasyon Madencilik Sanayii ve Ticaret Ltd. Şti. hakkında kurumsal bilgiler.",
 };
-
-const values = [
-  {
-    title: "2 İnşaat Mühendisi",
-    description: "Projelerde mühendislik destekli teknik analiz ve uygulama planlaması.",
-  },
-  {
-    title: "1 Jeoloji Mühendisi",
-    description: "Zemin ve yapı koşullarına uygun teknik değerlendirme.",
-  },
-  {
-    title: "Mimar",
-    description: "Cephe, restorasyon ve estetik uygulama koordinasyonu.",
-  },
-  {
-    title: "100+ Teknik Kadro",
-    description: "Tecrübeli teknik servis elemanları ile kontrollü saha uygulaması.",
-  },
-  {
-    title: "Malzeme ve Makine Parkı",
-    description: "En kaliteli malzemeler ve profesyonel ekipman ile uygulama.",
-  },
-  {
-    title: "Müşteri Memnuniyeti",
-    description: "Kalıcı ve başarılı birliktelik için müşteri memnuniyeti ilkesi.",
-  },
-];
 
 export default function AboutPage() {
   return (
@@ -48,49 +19,12 @@ export default function AboutPage() {
 
       <section className="py-12 md:py-16">
         <div className="container-main">
-          <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
-            <div className="max-w-4xl">
-              <h2 className="text-2xl font-bold text-retim-navy">{siteConfig.legalName}</h2>
-              <p className="mt-6 leading-relaxed text-gray-600">{aboutText.intro}</p>
-              <p className="mt-4 leading-relaxed text-gray-600">{aboutText.experience}</p>
-            </div>
-            <div className="relative aspect-[4/3] overflow-hidden rounded-sm border border-retim-gray-dark shadow-soft">
-              <RetimImage
-                source={mediaAssets.aboutField}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-              />
-            </div>
-          </div>
-
-          <div className="mt-8 max-w-4xl">
-            <p className="leading-relaxed text-gray-600">{aboutText.team}</p>
+          <div className="max-w-4xl">
+            <h2 className="text-2xl font-bold text-retim-navy">{siteConfig.legalName}</h2>
+            <p className="mt-6 leading-relaxed text-gray-600">{aboutText.intro}</p>
+            <p className="mt-4 leading-relaxed text-gray-600">{aboutText.experience}</p>
+            <p className="mt-4 leading-relaxed text-gray-600">{aboutText.team}</p>
             <p className="mt-4 leading-relaxed text-gray-600">{aboutText.closing}</p>
-          </div>
-
-          <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-5">
-            {stats.map((stat) => (
-              <div
-                key={stat.label}
-                className="rounded-sm border border-retim-gray-dark bg-retim-gray p-5 text-center"
-              >
-                <p className="text-2xl font-bold text-retim-navy">{stat.value}</p>
-                <p className="mt-1 text-sm text-gray-600">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-16">
-            <h2 className="section-title">Teknik Kadro ve Uygulama Gücü</h2>
-            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {values.map((value) => (
-                <div key={value.title} className="card-base">
-                  <h3 className="font-bold text-retim-navy">{value.title}</h3>
-                  <p className="mt-2 text-sm text-gray-600">{value.description}</p>
-                </div>
-              ))}
-            </div>
           </div>
 
           <div className="mt-16 rounded-sm border border-retim-gray-dark bg-retim-navy p-8 text-center text-white md:p-12">
