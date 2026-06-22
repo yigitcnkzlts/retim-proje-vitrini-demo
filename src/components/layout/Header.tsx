@@ -66,8 +66,8 @@ export default function Header() {
               <Image
                 src={mediaAssets.logoHeader.primary}
                 alt={mediaAssets.logoHeader.alt}
-                width={188}
-                height={48}
+                width={220}
+                height={52}
                 className="header-logo"
                 quality={95}
                 priority
