@@ -25,6 +25,20 @@
     @apply h-11 w-auto max-w-[min(210px,46vw)] rounded-sm object-contain object-left shadow-soft ring-1 ring-black/5 sm:h-12 sm:max-w-[220px];
   }
 
+  .header-logo-wrap {
+    @apply relative overflow-hidden rounded-[3px] transition-all duration-300;
+    box-shadow: 0 2px 14px -6px rgba(26, 35, 50, 0.18);
+  }
+
+  .group:hover .header-logo-wrap {
+    @apply -translate-y-px;
+    box-shadow: 0 10px 28px -10px rgba(232, 93, 4, 0.35);
+  }
+
+  .header-logo {
+    @apply block h-10 w-auto max-w-[min(172px,40vw)] object-contain object-left sm:h-11 sm:max-w-[188px];
+  }
+
   .btn-primary {
     @apply relative inline-flex items-center justify-center overflow-hidden rounded-sm bg-retim-orange px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-soft transition-all duration-300;
   }
@@ -130,14 +144,6 @@
 
   .nav-link {
     @apply relative whitespace-nowrap px-2.5 py-2 text-[11px] font-semibold uppercase tracking-wide transition-colors duration-200 xl:px-3 xl:text-xs;
-  }
-
-  .header-brand-badge {
-    @apply flex flex-col justify-center border-l border-retim-gray-dark pl-3;
-  }
-
-  .header-brand-badge span {
-    @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-500 transition-colors duration-200 group-hover:text-retim-orange;
   }
 
   .mega-menu {

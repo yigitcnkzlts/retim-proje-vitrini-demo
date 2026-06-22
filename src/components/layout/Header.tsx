@@ -59,20 +59,19 @@ export default function Header() {
         <div className="flex h-[4.25rem] items-center justify-between gap-3 sm:h-[4.5rem] lg:gap-4">
           <Link
             href="/"
-            className="group flex min-w-0 flex-shrink-0 items-center gap-2.5 transition-transform duration-300 hover:scale-[1.01] sm:gap-3"
+            className="group flex min-w-0 flex-shrink-0 items-center gap-2.5 sm:gap-3"
             onClick={closeMobile}
           >
-            <Image
-              src={mediaAssets.logo.primary}
-              alt={siteConfig.name}
-              width={220}
-              height={66}
-              className="site-logo"
-              quality={95}
-              priority
-            />
-            <div className="header-brand-badge hidden md:flex">
-              <span>Proje Vitrini</span>
+            <div className="header-logo-wrap">
+              <Image
+                src={mediaAssets.logoHeader.primary}
+                alt={mediaAssets.logoHeader.alt}
+                width={188}
+                height={48}
+                className="header-logo"
+                quality={95}
+                priority
+              />
             </div>
           </Link>
 
@@ -190,10 +189,7 @@ export default function Header() {
       >
         <div className="flex items-center justify-between border-b border-retim-gray-dark px-4 py-4">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-retim-orange">
-              Proje Vitrini
-            </p>
-            <p className="text-sm font-bold text-retim-navy">{siteConfig.name}</p>
+            <p className="text-sm font-bold text-retim-navy">{siteConfig.legalName}</p>
           </div>
           <button
             type="button"

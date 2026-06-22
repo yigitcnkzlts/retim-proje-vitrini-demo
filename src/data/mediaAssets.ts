@@ -25,6 +25,12 @@ export const mediaAssets = {
     alt: "Retim Restorasyon logo",
   } satisfies RetimImageSource,
 
+  logoHeader: {
+    primary: `${RETIM}/logo/retim-logo-header.svg`,
+    fallback: `${RETIM}/logo/retim-logo-header.svg`,
+    alt: "Retim Restorasyon",
+  } satisfies RetimImageSource,
+
   aboutField: {
     primary: `${RETIM}/dis-cephe-uygulama.jpg`,
     fallback: `${PLACEHOLDER}/mantolama.svg`,
