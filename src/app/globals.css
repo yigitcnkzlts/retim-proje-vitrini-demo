@@ -36,7 +36,7 @@
   }
 
   .header-logo {
-    @apply block h-10 w-auto max-w-[min(172px,40vw)] object-contain object-left sm:h-11 sm:max-w-[188px];
+    @apply block h-10 w-auto max-w-[min(200px,44vw)] object-contain object-left sm:h-11 sm:max-w-[220px];
   }
 
   .btn-primary {
