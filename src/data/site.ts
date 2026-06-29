@@ -71,13 +71,13 @@ export const stats = [
 
 export const aboutText = {
   intro:
-    "Retim Restorasyon Madencilik Sanayii ve Ticaret Ltd. Şti. 27 Kasım 1989 yılında, binaların dış - iç cephe onarımı, yalıtımı, boyası, sıva kaplama işlemleri, dış cephe temizlik ve restorasyonu ile çatı, teras ve bina zeminlerinin su ve ısı yalıtımları gibi sorunlarına kesin çözümler getirmek amacıyla kurulmuştur.",
+    "Retim Restorasyon Madencilik Sanayii ve Ticaret Ltd. Şti. 27 Kasım 1989 tarihinde; binaların iç ve dış cephe onarımı, yalıtımı, mantolaması, boya, sıva ve kaplama uygulamaları ile çatı, teras ve bina zeminlerinde su ve ısı yalıtımı ihtiyaçlarına kalıcı çözümler sunmak amacıyla kurulmuştur.",
   experience:
-    "Sektördeki 32 yıllık deneyimiyle, kuruluşundan bugüne, kalite ve güvenilirliğini, hizmetini sunduğu yüzlerce onarılan bina ile kanıtlamış ve sektörün öncü kuruluşu olmuştur.",
+    "Kuruluşundan bugüne 36 yılı aşkın sektör deneyimiyle Retim Restorasyon, kalite, güvenilirlik ve sürdürülebilir hizmet anlayışını tamamladığı yüzlerce yapı projesiyle kanıtlamış; restorasyon, renovasyon ve yapı güçlendirme alanlarında sektörün öncüleri arasında yerini almıştır.",
   team:
-    "Bünyesindeki 2 İnşaat Mühendisi, 1 Jeoloji Mühendisi, Mimar ve 100'ü aşkın tecrübeli teknik servis eleman kadrosu ile sahip olduğu malzeme ve makine parkı sayesinde, üstlendiği projeleri en iyi işçilik ve en kaliteli malzemeler ile en kısa sürede tamamlamıştır.",
+    "Bünyesinde yer alan inşaat mühendisi, jeoloji mühendisi, mimar ve 100'ü aşkın deneyimli saha ekibiyle Retim; sahip olduğu teknik donanım ve uzman uygulama kadrosu sayesinde üstlendiği projeleri yüksek işçilik kalitesi, doğru malzeme seçimi ve disiplinli proje yönetimiyle hayata geçirmektedir.",
   closing:
-    "Bugün olduğu gibi, gelecekte de müşteri memnuniyetini kendine ilke edinen Retim Ltd. Şti.'ne ait bu tanıtım sayfası, siz değerli dostlarımız ile kalıcı ve başarılı bir birlikteliği tesis etmek amacıyla hazırlanmıştır.",
+    "Retim Restorasyon için her proje yalnızca bir onarım süreci değil; yapının güvenliğini, estetik değerini ve kullanım ömrünü artıran kapsamlı bir yenileme çalışmasıdır. Geçmişten gelen tecrübesini güncel mühendislik yaklaşımıyla birleştirerek her yapıya güven, dayanıklılık ve estetik değer kazandırmayı hedeflemektedir.",
 };
 
 export const approachSteps = [
