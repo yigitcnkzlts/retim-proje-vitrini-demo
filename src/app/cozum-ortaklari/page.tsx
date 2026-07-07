@@ -38,21 +38,15 @@ export default function PartnersPage() {
               {partners.map((partner) => (
                 <div
                   key={partner.name}
-                  className="partner-card group flex min-h-[5.5rem] items-center justify-center rounded-sm border border-retim-gray-dark bg-white px-4 py-5 text-center shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:border-retim-orange/35 hover:shadow-lift"
+                  className="partner-card group flex min-h-[6.5rem] items-center justify-center rounded-sm border border-retim-gray-dark bg-white px-4 py-5 text-center shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:border-retim-orange/35 hover:shadow-lift"
                 >
-                  {partner.logo ? (
-                    <Image
-                      src={partner.logo}
-                      alt={`${partner.name} logo`}
-                      width={180}
-                      height={72}
-                      className="h-12 w-auto max-w-full object-contain transition-transform duration-300 group-hover:scale-105 md:h-14"
-                    />
-                  ) : (
-                    <h3 className="text-sm font-bold leading-snug text-retim-navy transition-colors duration-300 group-hover:text-retim-orange md:text-base">
-                      {partner.name}
-                    </h3>
-                  )}
+                  <Image
+                    src={partner.logo}
+                    alt={`${partner.name} logo`}
+                    width={180}
+                    height={72}
+                    className="h-12 w-auto max-w-full object-contain transition-transform duration-300 group-hover:scale-105 md:h-14"
+                  />
                 </div>
               ))}
             </div>
