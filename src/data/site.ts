@@ -15,8 +15,9 @@ export const siteConfig = {
   workingHours: "Pzt - Cmt 8.00 - 18.00",
   workingHoursClosed: "Pazar Kapalı",
   founded: "27 Kasım 1989",
-  mapsUrl:
-    "https://www.google.com/maps/search/?api=1&query=Aytekin+Kotil+Cad.+No%3A39%2FB+Mecidiyek%C3%B6y+%C4%B0stanbul",
+  mapsUrl: "https://maps.app.goo.gl/ngVpKqqjFkxxsv437?g_st=iw",
+  mapsEmbedUrl:
+    "https://www.google.com/maps?q=Aytekin+Kotil+Cad.+No:39%2FB,+Mecidiyek%C3%B6y,+%C4%B0stanbul&hl=tr&z=16&output=embed",
 };
 
 export const navigation = [
