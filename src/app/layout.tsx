@@ -4,6 +4,7 @@ import TopBar from "@/components/layout/TopBar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import BackToTop from "@/components/ui/BackToTop";
+import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import { siteConfig } from "@/data/site";
 import "./globals.css";
@@ -38,6 +39,7 @@ export default function RootLayout({
         <Header />
         <main className="min-h-screen">{children}</main>
         <Footer />
+        <WhatsAppButton />
         <BackToTop />
         <ScrollProgress />
       </body>

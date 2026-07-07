@@ -5,6 +5,9 @@ export const siteConfig = {
   description:
     "Binaların dış-iç cephe onarımı, yalıtımı, boyası, sıva kaplama, restorasyonu ile çatı ve bina zeminlerinin su ve ısı yalıtımı alanlarında kesin çözümler.",
   phone: "(0212) 212 45 40",
+  whatsapp: "+90 532 681 92 90",
+  whatsappUrl:
+    "https://wa.me/905326819290?text=Merhaba%2C%20Retim%20Restorasyon%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum.",
   email: "retim@retim.com.tr",
   addressLine1: "Aytekin Kotil Cad. No:39/B",
   addressLine2: "Mecidiyeköy / İSTANBUL",
@@ -38,18 +41,13 @@ export const footerLinks = [
 export const socialLinks = [
   {
     name: "LinkedIn",
-    href: "https://www.linkedin.com/company/retim",
+    href: "https://www.linkedin.com/company/retim-restorasyon/?viewAsMember=true",
     icon: "linkedin",
   },
   {
     name: "Instagram",
-    href: "https://www.instagram.com/retim",
+    href: "https://www.instagram.com/retimrestorasyon/",
     icon: "instagram",
-  },
-  {
-    name: "Facebook",
-    href: "https://www.facebook.com/retim",
-    icon: "facebook",
   },
 ];
 
