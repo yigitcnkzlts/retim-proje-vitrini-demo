@@ -54,7 +54,7 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
       <div className="rounded-sm border border-green-200 bg-green-50 p-6">
         <h3 className="font-semibold text-green-800">Talebiniz Alındı</h3>
         <p className="mt-2 text-sm text-green-700">
-          Keşif talebiniz e-posta olarak iletildi. En kısa sürede size dönüş yapılacaktır.
+          Keşif talebiniz retim@retim.com.tr adresine iletildi. En kısa sürede size dönüş yapılacaktır.
         </p>
       </div>
     );
