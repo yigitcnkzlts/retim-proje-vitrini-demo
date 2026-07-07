@@ -1,7 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { footerLinks, lastFiveProjects, siteConfig, socialLinks } from "@/data/site";
-import { mediaAssets } from "@/data/mediaAssets";
+import RetimLogo from "@/components/ui/RetimLogo";
 
 function SocialIcon({ icon }: { icon: string }) {
   if (icon === "linkedin") {
@@ -31,18 +30,11 @@ export default function Footer() {
       <div className="container-main py-12">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
-            <div className="mb-4">
-              <Image
-                src={mediaAssets.logo.primary}
-                alt={siteConfig.name}
-                width={220}
-                height={66}
-                className="site-logo max-w-[200px]"
-                quality={95}
-              />
-            </div>
-            <p className="text-sm leading-relaxed text-gray-400">{siteConfig.legalName}</p>
-            <p className="mt-3 text-sm text-gray-400">{siteConfig.description}</p>
+            <Link href="/" className="footer-logo-link group inline-block">
+              <RetimLogo variant="footer" className="footer-logo" />
+            </Link>
+            <p className="mt-5 text-sm leading-relaxed text-gray-400">{siteConfig.legalName}</p>
+            <p className="mt-3 max-w-md text-sm leading-relaxed text-gray-400">{siteConfig.description}</p>
           </div>
 
           <div>

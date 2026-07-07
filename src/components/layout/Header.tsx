@@ -1,12 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import RetimLogo from "@/components/ui/RetimLogo";
 import { services } from "@/data/services";
-import { navigation, siteConfig } from "@/data/site";
-import { mediaAssets } from "@/data/mediaAssets";
+import { navigation } from "@/data/site";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -63,15 +62,7 @@ export default function Header() {
             onClick={closeMobile}
           >
             <div className="header-logo-wrap">
-              <Image
-                src={mediaAssets.logoHeader.primary}
-                alt={mediaAssets.logoHeader.alt}
-                width={220}
-                height={52}
-                className="header-logo"
-                quality={95}
-                priority
-              />
+              <RetimLogo variant="header" className="header-logo" />
             </div>
           </Link>
 
@@ -188,9 +179,9 @@ export default function Header() {
         }`}
       >
         <div className="flex items-center justify-between border-b border-retim-gray-dark px-4 py-4">
-          <div>
-            <p className="text-sm font-bold text-retim-navy">{siteConfig.legalName}</p>
-          </div>
+          <Link href="/" className="header-logo-wrap" onClick={closeMobile}>
+            <RetimLogo variant="header" className="header-logo max-w-[190px]" />
+          </Link>
           <button
             type="button"
             className="inline-flex h-9 w-9 items-center justify-center rounded-sm text-retim-navy hover:bg-retim-gray"
