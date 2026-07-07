@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import PageHero from "@/components/ui/PageHero";
-import ProjectFilters from "@/components/projects/ProjectFilters";
 import ProjectCard from "@/components/projects/ProjectCard";
 import { getFeaturedProjects, projects } from "@/data/projects";
 
@@ -9,19 +8,14 @@ export const metadata: Metadata = {
   description: "Retim'in tamamladığı dış cephe, yalıtım, restorasyon ve güçlendirme projeleri.",
 };
 
-interface ProjectsPageProps {
-  searchParams: Promise<{ hizmet?: string; semt?: string }>;
-}
-
-export default async function ProjectsPage({ searchParams }: ProjectsPageProps) {
-  const params = await searchParams;
+export default function ProjectsPage() {
   const featured = getFeaturedProjects();
 
   return (
     <>
       <PageHero
         title="Projeler"
-        description="Retim'in Türkiye genelinde tamamladığı dış cephe, yalıtım, restorasyon ve güçlendirme projelerini hizmet türü ve semte göre filtreleyerek inceleyin."
+        description="Retim'in Türkiye genelinde tamamladığı dış cephe, yalıtım, restorasyon ve güçlendirme projelerini inceleyin."
         breadcrumb={[{ label: "Ana Sayfa", href: "/" }, { label: "Projeler" }]}
       />
 
@@ -43,14 +37,11 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
           <div>
             <p className="section-label">Katalog</p>
             <h2 className="section-title mt-2">Tüm Projeler</h2>
-            <p className="section-subtitle">
-              Toplam {projects.length} proje. Arama ve filtrelerle kataloğu daraltın.
-            </p>
-            <div className="mt-6">
-              <ProjectFilters
-                initialCategory={params.hizmet || ""}
-                initialDistrict={params.semt || ""}
-              />
+            <p className="section-subtitle">Toplam {projects.length} proje.</p>
+            <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {projects.map((project) => (
+                <ProjectCard key={project.slug} project={project} />
+              ))}
             </div>
           </div>
         </div>
