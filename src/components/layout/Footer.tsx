@@ -46,9 +46,9 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2">
               {lastFiveProjects.map((project) => (
-                <li key={project.slug}>
+                <li key={project.name}>
                   <Link
-                    href={`/projeler/${project.slug}`}
+                    href={project.href}
                     className="group inline-flex text-sm text-gray-400 transition-all duration-200 hover:translate-x-1 hover:text-retim-orange"
                   >
                     <span className="font-medium text-gray-300">{project.name}</span>

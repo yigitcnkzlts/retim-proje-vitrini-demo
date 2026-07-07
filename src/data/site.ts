@@ -60,11 +60,11 @@ export const socialLinks = [
 ];
 
 export const lastFiveProjects = [
-  { name: "RUŞEN ÜNSAL BİNASI", district: "ZİNCİRLİKUYU", slug: "rusen-unsal-binasi" },
-  { name: "OCAK APT.", district: "OSMANBEY", slug: "ocak-apt" },
-  { name: "KANTARCIOĞLU APT.", district: "BEŞİKTAŞ", slug: "kantarcioglu-apt" },
-  { name: "MODERN APT.", district: "TEŞVİKİYE", slug: "modern-apt" },
-  { name: "MİTHAT TEKSTİL BİNASI", district: "BOMONTİ", slug: "mithat-tekstil-binasi" },
+  { name: "SABANCI VİLLALARI", district: "KANDİLLİ", href: "/referanslar" },
+  { name: "İBB BİNASI", district: "FATİH", href: "/referanslar" },
+  { name: "İSTANBUL ADLİYESİ BİNASI", district: "SULTANAHMET", href: "/referanslar" },
+  { name: "İSTANBUL ÜNİVERSİTESİ GİRİŞ KAPISI", district: "BEYAZIT", href: "/referanslar" },
+  { name: "KADIRGA MEYDAN ÇEŞMESİ", district: "KADIRGA", href: "/referanslar" },
 ];
 
 export const stats = [
