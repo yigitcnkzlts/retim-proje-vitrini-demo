@@ -165,7 +165,7 @@ export const beforeAfterSection = {
   label: "Termal Kamera ile Raporlama Süreci",
   title: "Uygulama Öncesi Isı Kaçağı Analizi",
   description:
-    "Mantolama uygulamamız öncesinde termal kamera ile yapınızın ısı analizini yaparak",
+    "Dış cephe yalıtım ve restorasyon projelerinde keşif, analiz ve uygulama süreçlerinin etkisini görsel olarak takip edin.",
   beforeLabel: "Normal Görünüm",
   afterLabel: "Termal Analiz",
 };
