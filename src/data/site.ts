@@ -1,3 +1,5 @@
+const whatsappMessage = "Merhaba, binamız için keşif ve teklif almak istiyorum.";
+
 export const siteConfig = {
   name: "Retim",
   legalName: "Retim Restorasyon Madencilik Sanayii ve Ticaret Ltd. Şti.",
@@ -6,8 +8,8 @@ export const siteConfig = {
     "Binaların dış-iç cephe onarımı, yalıtımı, boyası, sıva kaplama, restorasyonu ile çatı ve bina zeminlerinin su ve ısı yalıtımı alanlarında kesin çözümler.",
   phone: "+90 532 681 92 90",
   whatsapp: "+90 532 681 92 90",
-  whatsappUrl:
-    "https://wa.me/905326819290?text=Merhaba%2C%20binam%C4%B1z%20i%C3%A7in%20ke%C5%9Fif%20ve%20teklif%20almak%20istiyorum.",
+  whatsappMessage,
+  whatsappUrl: `https://wa.me/905326819290?text=${encodeURIComponent(whatsappMessage)}`,
   email: "retim@retim.com.tr",
   addressLine1: "Aytekin Kotil Cad. No:39/B",
   addressLine2: "Mecidiyeköy / İSTANBUL",
