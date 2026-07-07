@@ -4,7 +4,7 @@ import ReferenceArchive from "@/components/references/ReferenceArchive";
 
 export const metadata: Metadata = {
   title: "Referanslar",
-  description: "Retim'in 1989'dan günümüze tamamladığı proje referans arşivi.",
+  description: "Retim'in 1986-1988 döneminde tamamladığı proje referans arşivi.",
 };
 
 export default function ReferencesPage() {
@@ -12,7 +12,7 @@ export default function ReferencesPage() {
     <>
       <PageHero
         title="Referanslar"
-        description="Bu sayfadaki referans listesi, Retim'in mevcut web sitesinde yayınlanan proje bilgilerinden demo arayüzüne uyarlanmıştır. Lütfen yıl seçerek filtreleyin."
+        description="Retim'in 1986-1988 döneminde tamamladığı seçili restorasyon ve dış cephe referansları."
         breadcrumb={[{ label: "Ana Sayfa", href: "/" }, { label: "Referanslar" }]}
       />
 

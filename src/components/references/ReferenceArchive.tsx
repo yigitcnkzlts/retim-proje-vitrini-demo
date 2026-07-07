@@ -76,11 +76,11 @@ export default function ReferenceArchive() {
               <table className="w-full min-w-[700px]">
                 <thead>
                   <tr>
-                    <th className="table-header">#</th>
-                    <th className="table-header">Proje Adı</th>
-                    <th className="table-header">Hizmet Adı</th>
-                    <th className="table-header">Semt</th>
-                    <th className="table-header">Yıl</th>
+                    <th className="table-header">NO</th>
+                    <th className="table-header">PROJE</th>
+                    <th className="table-header">İŞLEM</th>
+                    <th className="table-header">KONUM</th>
+                    <th className="table-header">YIL</th>
                   </tr>
                 </thead>
                 <tbody>
