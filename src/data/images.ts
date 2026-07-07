@@ -10,7 +10,6 @@ export const projectImages = {
   cati: mediaAssets.services["cati-yalitim"].fallback,
   restorasyon: mediaAssets.services["tarihi-bina-restorasyonu"].fallback,
   guclendirme: mediaAssets.services["yapi-guclendirme"].fallback,
-  teras: mediaAssets.services.teras.fallback,
   site: mediaAssets.services.drenaj.fallback,
   insaat: mediaAssets.services["istinat-duvari"].fallback,
   diger: mediaAssets.services["diger-uygulamalar"].fallback,
@@ -22,11 +21,8 @@ const serviceImageMap: Record<string, string> = {
   "cati-yalitim": projectImages.cati,
   "tarihi-bina-restorasyonu": projectImages.restorasyon,
   "yapi-guclendirme": projectImages.guclendirme,
-  teras: projectImages.teras,
   drenaj: projectImages.site,
-  "su-deposu": projectImages.site,
   "istinat-duvari": projectImages.insaat,
-  "3d-modelleme": projectImages.diger,
   "diger-uygulamalar": projectImages.diger,
 };
 
@@ -43,7 +39,7 @@ export function getServiceSlugFromText(service: string): string {
   if (s.includes("MANTOLAMA")) return "mantolama";
   if (s.includes("GÜÇLENDİRME") || s.includes("GÜÇLENDİRME")) return "yapi-guclendirme";
   if (s.includes("RESTORASYON") || s.includes("AHŞAP")) return "tarihi-bina-restorasyonu";
-  if (s.includes("TERAS")) return "teras";
+  if (s.includes("TERAS")) return "cati-yalitim";
   if (s.includes("ÇATI")) return "cati-yalitim";
   if (s.includes("DRENaj") || s.includes("DRENAJ")) return "drenaj";
   if (s.includes("İSTİNAT") || s.includes("ISTINAT")) return "istinat-duvari";

@@ -28,25 +28,11 @@ export const services: Service[] = [
     projectTypes: ["Apartman", "Site", "Ticari Bina"],
   },
   {
-    slug: "teras",
-    name: "Teras işlemleri",
-    description:
-      "Teras söküm, onarım ve yalıtım uygulamaları ile teras alanlarında su ve ısı yalıtımı sağlanır.",
-    projectTypes: ["Apartman", "Rezidans", "Site"],
-  },
-  {
     slug: "drenaj",
     name: "Drenaj işlemleri",
     description:
       "Bina çevresi ve temel drenaj sistemleri ile su birikintisi ve nem sorunlarına kalıcı çözümler getirilir.",
     projectTypes: ["Site", "Apartman", "Ticari Bina"],
-  },
-  {
-    slug: "su-deposu",
-    name: "Su Deposu işlemleri",
-    description:
-      "Su deposu yalıtım ve onarım uygulamaları ile depo alanlarında su sızıntısı ve korozyon sorunları giderilir.",
-    projectTypes: ["Apartman", "Site", "Ticari Bina"],
   },
   {
     slug: "tarihi-bina-restorasyonu",
@@ -68,13 +54,6 @@ export const services: Service[] = [
     description:
       "Bahçe, site ve yapı çevresinde zemin hareketlerine karşı istinat duvarı imalatı ve uygulaması.",
     projectTypes: ["Site", "Apartman", "Ticari Bina"],
-  },
-  {
-    slug: "3d-modelleme",
-    name: "3D Modelleme",
-    description:
-      "Proje öncesi 3D görselleştirme ile uygulama sonucu önceden görülebilir.",
-    projectTypes: ["Apartman", "Site", "Ticari Bina"],
   },
   {
     slug: "diger-uygulamalar",

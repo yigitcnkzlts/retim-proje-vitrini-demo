@@ -51,7 +51,7 @@ export default function HomePage() {
               <p className="section-label">Hizmetler</p>
               <h2 className="section-title mt-2">Uygulama Alanlarımız</h2>
               <p className="section-subtitle">
-                Mantolama, boya, çatı yalıtımı, drenaj ve su deposu alanlarında kapsamlı hizmet.
+                Mantolama, boya, çatı yalıtımı ve drenaj alanlarında kapsamlı hizmet.
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

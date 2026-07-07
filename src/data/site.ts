@@ -1,9 +1,9 @@
 export const siteConfig = {
   name: "Retim",
   legalName: "Retim Restorasyon Madencilik Sanayii ve Ticaret Ltd. Şti.",
-  title: "Mantolama, Dış Cephe Boya, Drenaj, Su Deposu Yalıtımı",
+  title: "Mantolama, Dış Cephe Boya, Drenaj, Çatı Yalıtımı",
   description:
-    "Binaların dış-iç cephe onarımı, yalıtımı, boyası, sıva kaplama, restorasyonu ile çatı, teras ve bina zeminlerinin su ve ısı yalıtımı alanlarında kesin çözümler.",
+    "Binaların dış-iç cephe onarımı, yalıtımı, boyası, sıva kaplama, restorasyonu ile çatı ve bina zeminlerinin su ve ısı yalıtımı alanlarında kesin çözümler.",
   phone: "(0212) 212 45 40",
   email: "retim@retim.com.tr",
   addressLine1: "Aytekin Kotil Cad. No:39/B",
@@ -71,7 +71,7 @@ export const stats = [
 
 export const aboutText = {
   intro:
-    "Retim Restorasyon Madencilik Sanayii ve Ticaret Ltd. Şti. 27 Kasım 1989 tarihinde; binaların iç ve dış cephe onarımı, yalıtımı, mantolaması, boya, sıva ve kaplama uygulamaları ile çatı, teras ve bina zeminlerinde su ve ısı yalıtımı ihtiyaçlarına kalıcı çözümler sunmak amacıyla kurulmuştur.",
+    "Retim Restorasyon Madencilik Sanayii ve Ticaret Ltd. Şti. 27 Kasım 1989 tarihinde; binaların iç ve dış cephe onarımı, yalıtımı, mantolaması, boya, sıva ve kaplama uygulamaları ile çatı ve bina zeminlerinde su ve ısı yalıtımı ihtiyaçlarına kalıcı çözümler sunmak amacıyla kurulmuştur.",
   experience:
     "Kuruluşundan bugüne 36 yılı aşkın sektör deneyimiyle Retim Restorasyon, kalite, güvenilirlik ve sürdürülebilir hizmet anlayışını tamamladığı yüzlerce yapı projesiyle kanıtlamış; restorasyon, renovasyon ve yapı güçlendirme alanlarında sektörün öncüleri arasında yerini almıştır.",
   team:

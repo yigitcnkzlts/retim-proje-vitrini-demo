@@ -123,11 +123,6 @@ export const serviceCategories = [
     description: "Çatı onarım ve yalıtım uygulamaları ile su sızıntısı ve ısı kaybına çözüm.",
   },
   {
-    slug: "teras",
-    name: "Teras işlemleri",
-    description: "Teras söküm, onarım ve yalıtım uygulamaları.",
-  },
-  {
     slug: "drenaj",
     name: "Drenaj işlemleri",
     description: "Bina çevresi ve temel drenaj sistemleri ile kalıcı çözümler.",

@@ -66,20 +66,10 @@ export const mediaAssets = {
       fallback: `${PLACEHOLDER}/cati.svg`,
       alt: "Çatı yalıtım uygulama görseli",
     },
-    teras: {
-      primary: `${RETIM}/services/teras.jpg`,
-      fallback: `${PLACEHOLDER}/teras.svg`,
-      alt: "Teras uygulama görseli",
-    },
     drenaj: {
       primary: `${RETIM}/services/drenaj.jpg`,
       fallback: `${PLACEHOLDER}/site.svg`,
       alt: "Drenaj uygulama görseli",
-    },
-    "su-deposu": {
-      primary: `${RETIM}/services/su-deposu.jpg`,
-      fallback: `${PLACEHOLDER}/site.svg`,
-      alt: "Su deposu yalıtım görseli",
     },
     "tarihi-bina-restorasyonu": {
       primary: `${RETIM}/services/tarihi-bina-restorasyonu.jpg`,
@@ -95,11 +85,6 @@ export const mediaAssets = {
       primary: `${RETIM}/services/istinat-duvari.jpg`,
       fallback: `${PLACEHOLDER}/site.svg`,
       alt: "İstinat duvarı uygulama görseli",
-    },
-    "3d-modelleme": {
-      primary: `${RETIM}/services/3d-modelleme.jpg`,
-      fallback: `${PLACEHOLDER}/boya.svg`,
-      alt: "3D modelleme görseli",
     },
     "diger-uygulamalar": {
       primary: `${RETIM}/services/diger-uygulamalar.jpg`,
