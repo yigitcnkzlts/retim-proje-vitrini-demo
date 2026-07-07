@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import RetimImage from "@/components/ui/RetimImage";
+import RetimLogo from "@/components/ui/RetimLogo";
 import { useEffect, useState } from "react";
 import ProjectMarquee from "./ProjectMarquee";
 import { mediaAssets } from "@/data/mediaAssets";
 
 interface HeroBannerProps {
-  legalName: string;
   title: string;
   description: string;
   tickerItems: string[];
@@ -26,7 +26,6 @@ const quickLinks = [
 ];
 
 export default function HeroBanner({
-  legalName,
   title,
   description,
   tickerItems,
@@ -66,7 +65,7 @@ export default function HeroBanner({
 
       <div className="container-main relative flex min-h-[min(90vh,900px)] flex-col justify-center py-20 md:py-28">
         <div className="hero-content-panel animate-fade-up">
-          <p className="hero-legal-name">{legalName}</p>
+          <RetimLogo variant="hero" className="hero-logo" priority />
           <div className="hero-accent-line" aria-hidden />
           <h1 className="hero-title">{title}</h1>
           <p className="hero-description">{description}</p>

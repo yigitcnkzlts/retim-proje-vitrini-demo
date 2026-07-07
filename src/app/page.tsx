@@ -24,7 +24,6 @@ export default function HomePage() {
   return (
     <>
       <HeroBanner
-        legalName={siteConfig.legalName}
         title="Yüzlerce Onarılan Binada Retim İmzası"
         description={siteConfig.description}
         tickerItems={tickerItems}

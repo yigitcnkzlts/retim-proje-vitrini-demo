@@ -23,7 +23,7 @@
 
   .site-logo,
   .footer-logo {
-    @apply h-12 w-auto max-w-[min(230px,52vw)] object-contain object-left sm:h-14 sm:max-w-[250px];
+    @apply h-12 w-auto max-w-[min(250px,56vw)] rounded-sm object-contain object-left sm:h-14 sm:max-w-[280px];
   }
 
   .footer-logo-link {
@@ -45,7 +45,11 @@
   }
 
   .header-logo {
-    @apply block h-10 w-auto max-w-[min(210px,46vw)] object-contain object-left sm:h-11 sm:max-w-[230px];
+    @apply block h-10 w-auto max-w-[min(220px,48vw)] rounded-sm object-contain object-left sm:h-11 sm:max-w-[240px];
+  }
+
+  .hero-logo {
+    @apply mb-6 h-14 w-auto max-w-[min(280px,78vw)] rounded-sm object-contain object-left shadow-soft sm:h-16;
   }
 
   .btn-primary {

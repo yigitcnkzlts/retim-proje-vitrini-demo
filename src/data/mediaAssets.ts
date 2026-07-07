@@ -20,14 +20,14 @@ export const mediaAssets = {
   } satisfies RetimImageSource,
 
   logo: {
-    primary: `${RETIM}/logo/retim-logo.svg`,
-    fallback: `${RETIM}/logo/retim-logo.svg`,
+    primary: `${RETIM}/logo/retim-logo.jpg`,
+    fallback: `${RETIM}/logo/retim-logo.jpg`,
     alt: "Retim Restorasyon logo",
   } satisfies RetimImageSource,
 
   logoHeader: {
-    primary: `${RETIM}/logo/retim-logo-header.svg`,
-    fallback: `${RETIM}/logo/retim-logo-header.svg`,
+    primary: `${RETIM}/logo/retim-logo.jpg`,
+    fallback: `${RETIM}/logo/retim-logo.jpg`,
     alt: "Retim Restorasyon",
   } satisfies RetimImageSource,
 
