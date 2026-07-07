@@ -390,20 +390,16 @@
     @apply shadow-lift;
   }
 
-  .before-after-side .retim-image-hover {
-    @apply transition-transform duration-700 ease-out;
+  .image-compare-handle {
+    @apply pointer-events-none absolute inset-y-0 z-20 -translate-x-1/2;
   }
 
-  .before-after-panel:hover .before-after-side .retim-image-hover {
-    @apply scale-[1.04];
+  .image-compare-line {
+    @apply absolute inset-y-0 left-1/2 w-0.5 -translate-x-1/2 bg-white shadow-[0_0_12px_rgba(0,0,0,0.35)];
   }
 
-  .before-after-compare {
-    @apply transition-all duration-300;
-  }
-
-  .before-after-panel:hover .before-after-compare {
-    @apply scale-110 shadow-glow;
+  .image-compare-knob {
+    @apply absolute left-1/2 top-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white bg-retim-orange text-white shadow-lift;
   }
 
   .trust-badge:hover {

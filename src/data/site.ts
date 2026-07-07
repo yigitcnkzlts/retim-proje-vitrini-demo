@@ -162,12 +162,12 @@ export const discoveryReport = {
 };
 
 export const beforeAfterSection = {
-  label: "Öncesi & Sonrası Uygulama Analizi",
-  title: "Uygulama Öncesi ve Sonrası Net Görünür",
+  label: "Termal Kamera ile Raporlama Süreci",
+  title: "Uygulama Öncesi Isı Kaçağı Analizi",
   description:
-    "Dış cephe, yalıtım ve restorasyon projelerinde keşif, analiz ve uygulama süreçlerinin etkisini görsel olarak takip edin.",
-  beforeLabel: "Öncesi",
-  afterLabel: "Sonrası / Analiz",
+    "Mantolama uygulamamız öncesinde termal kamera ile yapınızın ısı analizini yaparak",
+  beforeLabel: "Normal Görünüm",
+  afterLabel: "Termal Analiz",
 };
 
 export const homeDistricts = [

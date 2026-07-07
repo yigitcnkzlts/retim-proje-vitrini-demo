@@ -40,13 +40,13 @@ export const mediaAssets = {
   beforeAfter: {
     before: {
       primary: `${RETIM}/before-after/oncesi-cephe.jpg`,
-      fallback: `${PLACEHOLDER}/boya.svg`,
-      alt: "Dış cephe uygulama öncesi görünüm",
+      fallback: `${RETIM}/before-after/oncesi-cephe.jpg`,
+      alt: "Bina normal görünüm — termal analiz öncesi",
     } satisfies RetimImageSource,
     after: {
       primary: `${RETIM}/before-after/sonrasi-cephe.jpg`,
-      fallback: `${PLACEHOLDER}/restorasyon.svg`,
-      alt: "Dış cephe uygulama sonrası analiz görünümü",
+      fallback: `${RETIM}/before-after/sonrasi-cephe.jpg`,
+      alt: "Termal kamera ile ısı kaçağı analizi görüntüsü",
     } satisfies RetimImageSource,
   },
 
