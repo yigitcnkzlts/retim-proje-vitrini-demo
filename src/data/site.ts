@@ -7,7 +7,7 @@ export const siteConfig = {
   phone: "+90 532 681 92 90",
   whatsapp: "+90 532 681 92 90",
   whatsappUrl:
-    "https://wa.me/905326819290?text=Merhaba%2C%20Retim%20Restorasyon%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum.",
+    "https://wa.me/905326819290?text=Merhaba%2C%20binam%C4%B1z%20i%C3%A7in%20ke%C5%9Fif%20ve%20teklif%20almak%20istiyorum.",
   email: "retim@retim.com.tr",
   addressLine1: "Aytekin Kotil Cad. No:39/B",
   addressLine2: "Mecidiyeköy / İSTANBUL",
