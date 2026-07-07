@@ -1,10 +1,11 @@
 export interface Partner {
   name: string;
+  logo?: string;
 }
 
 /** https://www.retim.com.tr/cozum-ortaklari.asp */
 export const partners: Partner[] = [
-  { name: "Weber" },
+  { name: "Weber", logo: "/images/partners/weber.png" },
   { name: "STO" },
   { name: "Ytong" },
   { name: "Yalteks" },
