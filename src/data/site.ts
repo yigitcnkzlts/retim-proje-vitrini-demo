@@ -63,7 +63,7 @@ export const lastFiveProjects = [
 
 export const stats = [
   { value: "Yüzlerce", label: "Onarılan Bina" },
-  { value: "35+", label: "Yıllık Deneyim" },
+  { value: "37", label: "Yıllık Deneyim" },
   { value: "1989", label: "Kuruluş Yılı" },
   { value: "100+", label: "Teknik Kadro" },
   { value: "Türkiye", label: "Geneli Uygulama" },
