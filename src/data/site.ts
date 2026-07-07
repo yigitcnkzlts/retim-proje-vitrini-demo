@@ -4,7 +4,7 @@ export const siteConfig = {
   title: "Mantolama, Dış Cephe Boya, Drenaj, Çatı Yalıtımı",
   description:
     "Binaların dış-iç cephe onarımı, yalıtımı, boyası, sıva kaplama, restorasyonu ile çatı ve bina zeminlerinin su ve ısı yalıtımı alanlarında kesin çözümler.",
-  phone: "(0212) 212 45 40",
+  phone: "+90 532 681 92 90",
   whatsapp: "+90 532 681 92 90",
   whatsappUrl:
     "https://wa.me/905326819290?text=Merhaba%2C%20Retim%20Restorasyon%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum.",
@@ -48,6 +48,11 @@ export const socialLinks = [
     name: "Instagram",
     href: "https://www.instagram.com/retimrestorasyon/",
     icon: "instagram",
+  },
+  {
+    name: "Facebook",
+    href: "https://www.facebook.com/share/1ERyrDESb8/?mibextid=wwXIfr",
+    icon: "facebook",
   },
 ];
 
