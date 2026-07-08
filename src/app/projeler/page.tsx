@@ -5,7 +5,8 @@ import { getFeaturedProjects, getProjects } from "@/lib/cms/projects";
 
 export const metadata: Metadata = {
   title: "Projeler",
-  description: "Retim'in tamamladığı dış cephe, yalıtım, restorasyon ve güçlendirme projeleri.",
+  description:
+    "Farklı il ve ilçelerde tamamladığımız dış cephe, çatı, yalıtım ve restorasyon projelerini inceleyin.",
 };
 
 export const revalidate = 60;
@@ -17,7 +18,7 @@ export default async function ProjectsPage() {
     <>
       <PageHero
         title="Projeler"
-        description="Retim'in Türkiye genelinde tamamladığı dış cephe, yalıtım, restorasyon ve güçlendirme projelerini inceleyin."
+        description="Farklı il ve ilçelerde tamamladığımız dış cephe, çatı, yalıtım ve restorasyon projelerini inceleyerek Retim'in uygulama yaklaşımını yakından görebilirsiniz."
         breadcrumb={[{ label: "Ana Sayfa", href: "/" }, { label: "Projeler" }]}
       />
 

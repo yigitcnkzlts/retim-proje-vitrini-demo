@@ -5,7 +5,8 @@ import { getArchiveReferences } from "@/lib/cms/references";
 
 export const metadata: Metadata = {
   title: "Referanslar",
-  description: "Retim'in 1986-1988 döneminde tamamladığı proje referans arşivi.",
+  description:
+    "İstanbul merkezli Retim Restorasyon referansları — dış cephe, çatı, yalıtım ve güçlendirme uygulamaları.",
 };
 
 export const revalidate = 60;
@@ -17,7 +18,7 @@ export default async function ReferencesPage() {
     <>
       <PageHero
         title="Referanslar"
-        description="Retim'in 1986-1988 döneminde tamamladığı seçili restorasyon ve dış cephe referansları."
+        description="İstanbul merkezli Retim Restorasyon, apartman, site ve özel yapılarda dış cephe, çatı, yalıtım ve güçlendirme ihtiyaçlarına uzun yıllara dayanan uygulama deneyimiyle çözüm sunar. Referanslarımız ise en güçlü güvencemizdir."
         breadcrumb={[{ label: "Ana Sayfa", href: "/" }, { label: "Referanslar" }]}
       />
 

@@ -5,7 +5,7 @@ export const siteConfig = {
   legalName: "Retim Restorasyon Madencilik Sanayii ve Ticaret Ltd. Şti.",
   title: "Mantolama, Dış Cephe Boya, Drenaj, Çatı Yalıtımı",
   description:
-    "Binaların dış-iç cephe onarımı, yalıtımı, boyası, sıva kaplama, restorasyonu ile çatı ve bina zeminlerinin su ve ısı yalıtımı alanlarında kesin çözümler.",
+    "İstanbul odaklı apartman, site ve özel yapılarda dış cephe, çatı, yalıtım ve güçlendirme ihtiyaçlarını teknoloji destekli keşif süreciyle analiz edip kesin çözümler sunuyoruz.",
   phone: "+90 532 681 92 90",
   officePhone: "+90 (212) 212 45 40",
   whatsapp: "+90 532 681 92 90",
