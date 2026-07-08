@@ -13,7 +13,7 @@ export default function ServicesPage() {
     <>
       <PageHero
         title="Hizmetler"
-        description="Retim'in 35 yılı aşkın deneyimiyle sunduğu yapı uygulama hizmetleri. Her hizmet, tamamlanan proje referanslarıyla desteklenmektedir."
+        description="Retim Restorasyon, İstanbul merkezli operasyon yapısıyla başta İstanbul olmak üzere seçili bölgelerde dış cephe renovasyonu, çatı ve teras yalıtımı, drenaj, tarihi bina restorasyonu ve güçlendirme uygulamaları gerçekleştirmektedir."
         breadcrumb={[{ label: "Ana Sayfa", href: "/" }, { label: "Hizmetler" }]}
       />
 
