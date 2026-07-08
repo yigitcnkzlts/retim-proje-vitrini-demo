@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import DiscoveryStepIcon from "@/components/home/DiscoveryStepIcon";
 import { discoveryReport, discoverySteps } from "@/data/site";
@@ -36,6 +37,18 @@ export default function DiscoveryProcessSection() {
             Drone, termal kamera ve yapısal test yöntemleriyle binanızı iskele kurmadan analiz
             ediyoruz.
           </p>
+        </div>
+
+        <div className="discovery-process-visual mx-auto mb-10 max-w-5xl overflow-hidden rounded-2xl border border-white/10 shadow-lift md:mb-14">
+          <Image
+            src="/images/retim/discovery-building-problems.jpg"
+            alt="Binanızda gözden kaçmaması gereken dış cephe, yalıtım ve onarım sorunları"
+            width={1600}
+            height={900}
+            className="h-auto w-full object-cover"
+            sizes="(max-width: 768px) 100vw, 1024px"
+            priority={false}
+          />
         </div>
 
         <div className="discovery-step-indicator mx-auto mb-10 flex max-w-lg items-center justify-center md:mb-14">
