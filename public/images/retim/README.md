@@ -1,13 +1,15 @@
-# Retim görsel klasörü
+# Retim görselleri
 
-Drive'dan gelen görselleri bu yapıya yerleştirin. Dosya adlarında Türkçe karakter ve boşluk kullanmayın.
+Drive'dan gelen görselleri buraya yerleştirin. Dosya adlarında Türkçe karakter ve boşluk kullanmayın.
 
-| Alt klasör | Kullanım |
-|------------|----------|
-| `/` (kök) | Ana sayfa hero (`hero-facade.jpg`) |
-| `logo/` | Navbar ve footer logo |
-| `projects/` | Proje kartları ve detay (`rusen-unsal-binasi.jpg` vb.) |
-| `services/` | Hizmet vitrin kartları |
-| `before-after/` | Öncesi & sonrası bölümü |
+| Dosya / klasör | Kullanım |
+|----------------|----------|
+| `hero-facade.jpg` | Ana sayfa hero arka planı |
+| `discovery-building-problems.jpg` | Keşif süreci infografik |
+| `logo/retim-logo.jpg` | Navbar ve footer logosu |
+| `before-after/oncesi-cephe.jpg` | Termal analiz — öncesi |
+| `before-after/sonrasi-cephe.jpg` | Termal analiz — sonrası |
+| `services/*.jpg` | Hizmet kartları |
+| `projects/*.jpg` | Proje kartları ve detay |
 
-Gerçek dosya yoksa site otomatik placeholder SVG kullanır.
+Gerçek dosya yoksa site `public/images/projects/` altındaki SVG placeholder'ları kullanır.
