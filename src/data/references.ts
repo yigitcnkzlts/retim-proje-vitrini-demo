@@ -1,3 +1,5 @@
+import archiveData from "./references-archive.json";
+
 export interface Reference {
   refNo: string;
   projectName: string;
@@ -63,26 +65,7 @@ export const references2023: Reference[] = [
   { refNo: "2284", projectName: "MODERN APT.", service: "ÇATI YALITIM İŞLEMİ", district: "TEŞVİKİYE", year: 2023 },
 ];
 
-export const referencesArchive: Reference[] = [
-  { refNo: "1", projectName: "İHRACATI GELİŞTİRME MERKEZİ BİNASI", service: "DIŞ CEPHE TEMİZLİK VE RESTORASYON İŞLEMİ", district: "ANKARA", year: 1986 },
-  { refNo: "2", projectName: "İSTANBUL MÜFTÜLÜĞÜ CÜMLE KAPISI", service: "DIŞ CEPHE TEMİZLİK VE RESTORASYON İŞLEMİ", district: "FATİH", year: 1986 },
-  { refNo: "3", projectName: "VAKIF GUREBA HASTANESİ KAPISI", service: "DIŞ CEPHE TEMİZLİK VE RESTORASYON İŞLEMİ", district: "AKSARAY", year: 1986 },
-  { refNo: "4", projectName: "VAKIF GUREBA HASTANESİ BİNASI", service: "DIŞ CEPHE TEMİZLİK VE RESTORASYON İŞLEMİ", district: "AKSARAY", year: 1986 },
-  { refNo: "5", projectName: "İBB AÇIK HAVA TİYATROSU", service: "DIŞ CEPHE TEMİZLİK VE RESTORASYON İŞLEMİ", district: "HARBİYE", year: 1986 },
-  { refNo: "6", projectName: "GÜMÜŞSUYU VAKIF İŞ HANI", service: "DIŞ CEPHE ONARIM VE BOYA İŞLEMİ", district: "TAKSİM", year: 1986 },
-  { refNo: "7", projectName: "FIDIKLIYAN HAN", service: "DIŞ CEPHE TEMİZLİK VE RESTORASYON İŞLEMİ", district: "EMİNÖNÜ", year: 1986 },
-  { refNo: "8", projectName: "İBB GAZANFERAĞA KÜLLİYESİ", service: "DIŞ CEPHE TEMİZLİK VE RESTORASYON İŞLEMİ", district: "FATİH", year: 1986 },
-  { refNo: "9", projectName: "DESTEK REASÜRANS BİNASI", service: "DIŞ CEPHE TEMİZLİK VE RESTORASYON İŞLEMİ", district: "MAÇKA", year: 1986 },
-  { refNo: "10", projectName: "SÜMERBANK MERKEZ ŞUBE BİNASI", service: "DIŞ CEPHE TEMİZLİK VE RESTORASYON İŞLEMİ", district: "KARAKÖY", year: 1987 },
-  { refNo: "11", projectName: "VAKIF GUREBA HASTANESİ BİNASI", service: "DIŞ CEPHE ONARIM VE BOYA İŞLEMİ", district: "AKSARAY", year: 1987 },
-  { refNo: "12", projectName: "YAPI KREDİ VE HALK BANKASI BİNASI", service: "DIŞ CEPHE TEMİZLİK VE RESTORASYON İŞLEMİ", district: "KARAKÖY", year: 1987 },
-  { refNo: "13", projectName: "YASEMİN APT.", service: "DIŞ CEPHE ONARIM VE BOYA İŞLEMİ", district: "BEBEK", year: 1987 },
-  { refNo: "14", projectName: "SABANCI VİLLALARI", service: "DIŞ CEPHE TEMİZLİK VE RESTORASYON İŞLEMİ", district: "KANDİLLİ", year: 1987 },
-  { refNo: "15", projectName: "İBB BİNASI", service: "DIŞ CEPHE TEMİZLİK VE RESTORASYON İŞLEMİ", district: "FATİH", year: 1988 },
-  { refNo: "16", projectName: "İSTANBUL ADLİYESİ BİNASI", service: "DIŞ CEPHE TEMİZLİK VE RESTORASYON İŞLEMİ", district: "SULTANAHMET", year: 1988 },
-  { refNo: "17", projectName: "İSTANBUL ÜNİVERSİTESİ GİRİŞ KAPISI", service: "DIŞ CEPHE TEMİZLİK VE RESTORASYON İŞLEMİ", district: "BEYAZIT", year: 1988 },
-  { refNo: "18", projectName: "KADIRGA MEYDAN ÇEŞMESİ", service: "DIŞ CEPHE TEMİZLİK VE RESTORASYON İŞLEMİ", district: "KADIRGA", year: 1988 },
-];
+export const referencesArchive: Reference[] = archiveData as Reference[];
 
 export const references: Reference[] = referencesArchive;
 

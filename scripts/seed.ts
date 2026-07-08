@@ -39,6 +39,19 @@ const supabase = createClient(url, key, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
+async function upsertInBatches(
+  table: "project_refs",
+  rows: Array<Record<string, string | number>>,
+  onConflict: string,
+  batchSize = 200
+) {
+  for (let i = 0; i < rows.length; i += batchSize) {
+    const batch = rows.slice(i, i + batchSize);
+    const { error } = await supabase.from(table).upsert(batch, { onConflict });
+    if (error) throw new Error(error.message);
+  }
+}
+
 async function seedRefs() {
   const catalog = [...references2024, ...references2023].map((r) => ({
     ref_no: r.refNo,
@@ -58,15 +71,8 @@ async function seedRefs() {
     ref_type: "archive",
   }));
 
-  const { error: catError } = await supabase
-    .from("project_refs")
-    .upsert(catalog, { onConflict: "ref_no,ref_type" });
-  if (catError) throw new Error(catError.message);
-
-  const { error: arcError } = await supabase
-    .from("project_refs")
-    .upsert(archive, { onConflict: "ref_no,ref_type" });
-  if (arcError) throw new Error(arcError.message);
+  await upsertInBatches("project_refs", catalog, "ref_no,ref_type");
+  await upsertInBatches("project_refs", archive, "ref_no,ref_type");
 
   console.log(`✓ Referanslar: ${catalog.length} katalog + ${archive.length} arşiv`);
 }

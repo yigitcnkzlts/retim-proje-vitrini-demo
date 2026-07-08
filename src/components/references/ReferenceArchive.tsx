@@ -89,7 +89,7 @@ export default function ReferenceArchive({ items = staticReferences }: Reference
                 </thead>
                 <tbody>
                   {filtered.map((ref) => (
-                    <ReferenceRow key={ref.refNo} ref={ref} />
+                    <ReferenceRow key={`${ref.refNo}-${ref.projectName}`} ref={ref} />
                   ))}
                 </tbody>
               </table>
@@ -98,7 +98,7 @@ export default function ReferenceArchive({ items = staticReferences }: Reference
 
           <div className="space-y-3 md:hidden">
             {filtered.map((ref) => (
-              <ReferenceMobileCard key={ref.refNo} ref={ref} />
+              <ReferenceMobileCard key={`${ref.refNo}-${ref.projectName}`} ref={ref} />
             ))}
           </div>
         </>
