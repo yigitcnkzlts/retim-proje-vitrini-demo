@@ -36,6 +36,26 @@ export default function HomePage() {
       </ScrollReveal>
 
       <ScrollReveal delay={100}>
+        <section className="py-16 md:py-20">
+          <div className="container-main">
+            <div className="mb-10">
+              <p className="section-label">Süreç</p>
+              <h2 className="section-title mt-2">Her Projede Aynı Disiplin</h2>
+            </div>
+            <div className="approach-timeline grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {approachSteps.map((step) => (
+                <div key={step.step} className="approach-card">
+                  <div className="approach-number">{step.step}</div>
+                  <h3 className="text-base font-bold text-retim-navy">{step.title}</h3>
+                  <p className="mt-2 text-sm text-gray-600">{step.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </ScrollReveal>
+
+      <ScrollReveal delay={100}>
         <section className="border-b border-retim-gray-dark bg-retim-gray py-16 md:py-20">
           <div className="container-main">
             <div className="mb-10">
@@ -54,26 +74,6 @@ export default function HomePage() {
               <Link href="/hizmetler" className="btn-secondary">
                 Tüm Hizmetler
               </Link>
-            </div>
-          </div>
-        </section>
-      </ScrollReveal>
-
-      <ScrollReveal delay={100}>
-        <section className="py-16 md:py-20">
-          <div className="container-main">
-            <div className="mb-10">
-              <p className="section-label">Süreç</p>
-              <h2 className="section-title mt-2">Her Projede Aynı Disiplin</h2>
-            </div>
-            <div className="approach-timeline grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {approachSteps.map((step) => (
-                <div key={step.step} className="approach-card">
-                  <div className="approach-number">{step.step}</div>
-                  <h3 className="text-base font-bold text-retim-navy">{step.title}</h3>
-                  <p className="mt-2 text-sm text-gray-600">{step.description}</p>
-                </div>
-              ))}
             </div>
           </div>
         </section>
