@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import BuildingProblemsDiagram from "@/components/home/BuildingProblemsDiagram";
 import DiscoveryStepIcon from "@/components/home/DiscoveryStepIcon";
 import { discoveryReport, discoverySteps } from "@/data/site";
 
@@ -13,7 +13,14 @@ function CheckIcon() {
 
 export default function DiscoveryProcessSection() {
   return (
-    <section className="discovery-process relative overflow-hidden border-b border-white/5 py-16 md:py-24">
+    <>
+      <section className="building-problems-section border-b border-[#e8dfd0] bg-[#f7f3ec] py-14 md:py-20">
+        <div className="container-main">
+          <BuildingProblemsDiagram />
+        </div>
+      </section>
+
+      <section className="discovery-process relative overflow-hidden border-b border-white/5 py-16 md:py-24">
       <div className="pointer-events-none absolute inset-0 bg-[#121a26]" aria-hidden />
       <div
         className="pointer-events-none absolute inset-0 opacity-40"
@@ -26,18 +33,6 @@ export default function DiscoveryProcessSection() {
       <div className="hero-grid pointer-events-none absolute inset-0 opacity-[0.07]" aria-hidden />
 
       <div className="container-main relative">
-        <div className="discovery-process-visual mx-auto mb-10 max-w-5xl overflow-hidden rounded-2xl border border-white/10 shadow-lift md:mb-14">
-          <Image
-            src="/images/retim/discovery-building-problems.jpg"
-            alt="Binanızda gözden kaçmaması gereken dış cephe, yalıtım ve onarım sorunları"
-            width={1600}
-            height={900}
-            className="h-auto w-full object-cover"
-            sizes="(max-width: 768px) 100vw, 1024px"
-            priority={false}
-          />
-        </div>
-
         <div className="mb-10 text-center md:mb-14">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-retim-orange">
             Keşif Süreci
@@ -129,5 +124,6 @@ export default function DiscoveryProcessSection() {
         </div>
       </div>
     </section>
+    </>
   );
 }

@@ -162,6 +162,75 @@ export const discoveryReport = {
   ctaHref: "/iletisim#kesif-formu",
 };
 
+export const buildingProblemCards = [
+  {
+    id: "mantolama",
+    side: "left" as const,
+    icon: "mantolama" as const,
+    title: "Mantolama Problemleri",
+    description:
+      "Eski veya hatalı mantolama sistemleri ısı kaybına ve cephe deformasyonuna yol açar.",
+    hotspot: { x: 38, y: 52 },
+    path: "M 248 138 Q 310 155 382 292",
+    arrowPoints: "382,292 374,286 388,286",
+  },
+  {
+    id: "drenaj",
+    side: "left" as const,
+    icon: "drenaj" as const,
+    title: "Drenaj Problemleri",
+    description:
+      "Yetersiz drenaj ve su yalıtımı bodrum katlarda su alma, nem ve rutubete neden olur.",
+    hotspot: { x: 48, y: 82 },
+    path: "M 248 281 Q 360 330 478 462",
+    arrowPoints: "478,462 470,454 482,454",
+  },
+  {
+    id: "cati",
+    side: "left" as const,
+    icon: "cati" as const,
+    title: "Çatı ve Teras Problemleri",
+    description:
+      "Su yalıtımı zayıflayan çatı ve teraslarda rutubet, tavan lekeleri ve betonarme hasarları oluşabilir.",
+    hotspot: { x: 50, y: 22 },
+    path: "M 248 424 Q 390 300 500 126",
+    arrowPoints: "500,126 494,134 506,134",
+  },
+  {
+    id: "yagmur",
+    side: "right" as const,
+    icon: "yagmur" as const,
+    title: "Yağmur İnişleri",
+    description:
+      "Tıkalı veya hasarlı yağmur inişleri cephede su taşmalarına ve lekelenmeye sebep olur.",
+    hotspot: { x: 62, y: 49 },
+    path: "M 752 138 Q 690 200 622 276",
+    arrowPoints: "622,276 630,270 618,270",
+  },
+  {
+    id: "boya",
+    side: "right" as const,
+    icon: "boya" as const,
+    title: "Onarım ve Boya",
+    description:
+      "Dökülen sıva, çatlaklar ve bozulan boya tabakaları estetik görünümü olumsuz etkiler.",
+    hotspot: { x: 52, y: 38 },
+    path: "M 752 281 Q 640 240 522 214",
+    arrowPoints: "522,214 530,208 518,208",
+  },
+  {
+    id: "balkon",
+    side: "right" as const,
+    icon: "balkon" as const,
+    title: "Balkon ve Korkuluklar",
+    description:
+      "Korozyon, beton dökülmeleri ve derz boşlukları güvenlik açısından risk oluşturur.",
+    hotspot: { x: 58, y: 62 },
+    path: "M 752 424 Q 680 390 580 348",
+    arrowPoints: "580,348 588,342 576,342",
+  },
+];
+
 export const beforeAfterSection = {
   label: "Termal Kamera ile Raporlama Süreci",
   title: "Uygulama Öncesi Isı Kaçağı Analizi",
