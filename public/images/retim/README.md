@@ -5,7 +5,7 @@ Drive'dan gelen görselleri buraya yerleştirin. Dosya adlarında Türkçe karak
 | Dosya / klasör | Kullanım |
 |----------------|----------|
 | `hero-facade.jpg` | Ana sayfa hero arka planı |
-| `discovery-building-problems.jpg` | Keşif süreci infografik |
+| `building-problems-diagram.jpg` | Bina sorunları keşif diyagramı |
 | `logo/retim-logo.jpg` | Navbar ve footer logosu |
 | `before-after/oncesi-cephe.jpg` | Termal analiz — öncesi |
 | `before-after/sonrasi-cephe.jpg` | Termal analiz — sonrası |
