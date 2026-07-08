@@ -1,25 +1,17 @@
 import Link from "next/link";
 import ContactForm from "@/components/contact/ContactForm";
 import BeforeAfterSection from "@/components/home/BeforeAfterSection";
-import HomeCatalogCard from "@/components/home/HomeCatalogCard";
 import HomeServiceTile from "@/components/home/HomeServiceTile";
 import DiscoveryProcessSection from "@/components/home/DiscoveryProcessSection";
 import StatsSection from "@/components/home/StatsSection";
-import ProjectCard from "@/components/projects/ProjectCard";
-import ReferenceTablePreview from "@/components/references/ReferenceTablePreview";
 import HeroBanner from "@/components/ui/HeroBanner";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import StaggerChildren from "@/components/ui/StaggerChildren";
 import TrustStrip from "@/components/ui/TrustStrip";
 import { services } from "@/data/services";
-import { getFeaturedProjects, serviceCategories } from "@/data/projects";
-import { getReferencePreview } from "@/data/references";
 import { approachSteps, homeDistricts, siteConfig } from "@/data/site";
 
 export default function HomePage() {
-  const featuredProjects = getFeaturedProjects();
-  const referencePreview = getReferencePreview(8);
-  const tickerItems = featuredProjects.map((p) => `${p.name} · ${p.district}`);
+  const tickerItems = homeDistricts;
 
   return (
     <>
@@ -61,96 +53,6 @@ export default function HomePage() {
             <div className="mt-8 text-center">
               <Link href="/hizmetler" className="btn-secondary">
                 Tüm Hizmetler
-              </Link>
-            </div>
-          </div>
-        </section>
-      </ScrollReveal>
-
-      <ScrollReveal delay={100}>
-        <section className="py-16 md:py-20">
-          <div className="container-main">
-            <div className="mb-10">
-              <p className="section-label">Projeler</p>
-              <h2 className="section-title mt-2">Öne Çıkan Proje Uygulamaları</h2>
-              <p className="section-subtitle">
-                Türkiye genelinde tamamlanan seçilmiş proje uygulamaları.
-              </p>
-            </div>
-            <StaggerChildren className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5" staggerMs={100}>
-              {featuredProjects.map((project) => (
-                <ProjectCard key={project.slug} project={project} variant="compact" />
-              ))}
-            </StaggerChildren>
-            <div className="mt-10 text-center">
-              <Link href="/projeler" className="btn-secondary">
-                Tüm Projeleri Gör
-              </Link>
-            </div>
-          </div>
-        </section>
-      </ScrollReveal>
-
-      <ScrollReveal delay={100}>
-        <section className="border-y border-retim-gray-dark bg-retim-gray py-16 md:py-20">
-          <div className="container-main">
-            <div className="mb-10">
-              <p className="section-label">Katalog</p>
-              <h2 className="section-title mt-2">Hizmet Türüne Göre Projeler</h2>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {serviceCategories.map((cat) => (
-                <HomeCatalogCard
-                  key={cat.slug}
-                  slug={cat.slug}
-                  name={cat.name}
-                  description={cat.description}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-      </ScrollReveal>
-
-      <ScrollReveal delay={100}>
-        <section className="py-16 md:py-20">
-          <div className="container-main">
-            <div className="mb-10">
-              <p className="section-label">Bölgeler</p>
-              <h2 className="section-title mt-2">Türkiye Genelinde Tamamlanan Uygulamalar</h2>
-            </div>
-            <div className="district-grid-panel">
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-                {homeDistricts.map((district) => (
-                  <Link
-                    key={district}
-                    href={`/projeler?semt=${encodeURIComponent(district)}`}
-                    className="district-pill"
-                  >
-                    {district}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-      </ScrollReveal>
-
-      <ScrollReveal delay={100}>
-        <section className="border-y border-retim-gray-dark bg-retim-gray py-16 md:py-20">
-          <div className="container-main">
-            <div className="mb-10">
-              <p className="section-label">Arşiv</p>
-              <h2 className="section-title mt-2">Yıllara Göre Referans Geçmişi</h2>
-              <p className="section-subtitle">
-                Retim&apos;in tamamladığı projeler yıl, semt, hizmet türü ve proje adına göre
-                incelenebilir.
-              </p>
-            </div>
-            <ReferenceTablePreview references={referencePreview} />
-            <div className="mt-8 text-center">
-              <Link href="/referanslar" className="btn-primary">
-                Tam Referans Listesini Gör
               </Link>
             </div>
           </div>
