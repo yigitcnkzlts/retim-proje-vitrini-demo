@@ -7,6 +7,7 @@ export const siteConfig = {
   description:
     "Binaların dış-iç cephe onarımı, yalıtımı, boyası, sıva kaplama, restorasyonu ile çatı ve bina zeminlerinin su ve ısı yalıtımı alanlarında kesin çözümler.",
   phone: "+90 532 681 92 90",
+  officePhone: "+90 (212) 212 45 40",
   whatsapp: "+90 532 681 92 90",
   whatsappMessage,
   whatsappUrl: `https://wa.me/905326819290?text=${encodeURIComponent(whatsappMessage)}`,

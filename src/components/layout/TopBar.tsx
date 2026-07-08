@@ -7,8 +7,11 @@ export default function TopBar() {
         <div className="flex items-center justify-between py-2 text-xs">
           <p className="font-medium text-gray-300">{siteConfig.legalName}</p>
           <div className="flex items-center gap-6 text-gray-300">
-            <a href={`tel:${siteConfig.phone.replace(/[^\d+]/g, "")}`} className="transition-colors duration-200 hover:text-retim-orange">
-              {siteConfig.phone}
+            <a
+              href={`tel:${siteConfig.officePhone.replace(/[^\d+]/g, "")}`}
+              className="transition-colors duration-200 hover:text-retim-orange"
+            >
+              {siteConfig.officePhone}
             </a>
             <a href={`mailto:${siteConfig.email}`} className="transition-colors duration-200 hover:text-retim-orange">
               {siteConfig.email}
