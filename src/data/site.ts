@@ -61,6 +61,11 @@ export const socialLinks = [
 ];
 
 export const lastFiveProjects = [
+  { name: "DESTEK REASÜRANS BİNASI", district: "MAÇKA", href: "/referanslar" },
+  { name: "SÜMERBANK MERKEZ ŞUBE BİNASI", district: "KARAKÖY", href: "/referanslar" },
+  { name: "VAKIF GUREBA HASTANESİ BİNASI", district: "AKSARAY", href: "/referanslar" },
+  { name: "YAPI KREDİ VE HALK BANKASI BİNASI", district: "KARAKÖY", href: "/referanslar" },
+  { name: "YASEMİN APT.", district: "BEBEK", href: "/referanslar" },
   { name: "SABANCI VİLLALARI", district: "KANDİLLİ", href: "/referanslar" },
   { name: "İBB BİNASI", district: "FATİH", href: "/referanslar" },
   { name: "İSTANBUL ADLİYESİ BİNASI", district: "SULTANAHMET", href: "/referanslar" },

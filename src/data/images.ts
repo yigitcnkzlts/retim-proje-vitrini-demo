@@ -94,6 +94,11 @@ export const featuredSlugs = new Set([
   "kantarcioglu-apt-2280",
   "modern-apt-2284",
   "mithat-tekstil-binasi-2281",
+  "kaya-alp-apt-2335",
+  "pirelli-apt-2340",
+  "iletisim-sark-han-2353",
+  "defne-apt-2376",
+  "asmalimescit-no-28-2359",
 ]);
 
 export const slugAliases: Record<string, string> = {

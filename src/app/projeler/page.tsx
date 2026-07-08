@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import PageHero from "@/components/ui/PageHero";
 import ProjectCard from "@/components/projects/ProjectCard";
-import { getFeaturedProjects, getProjects } from "@/lib/cms/projects";
+import { getFeaturedProjects } from "@/lib/cms/projects";
 
 export const metadata: Metadata = {
   title: "Projeler",
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 export default async function ProjectsPage() {
-  const [featured, projects] = await Promise.all([getFeaturedProjects(), getProjects()]);
+  const featured = await getFeaturedProjects();
 
   return (
     <>
@@ -33,17 +33,6 @@ export default async function ProjectsPage() {
             <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
               {featured.map((project) => (
                 <ProjectCard key={project.slug} project={project} variant="compact" />
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p className="section-label">Katalog</p>
-            <h2 className="section-title mt-2">Tüm Projeler</h2>
-            <p className="section-subtitle">Toplam {projects.length} proje.</p>
-            <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {projects.map((project) => (
-                <ProjectCard key={project.slug} project={project} />
               ))}
             </div>
           </div>

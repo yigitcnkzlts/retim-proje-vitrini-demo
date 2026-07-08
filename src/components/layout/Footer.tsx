@@ -42,7 +42,7 @@ export default function Footer() {
 
           <div>
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-300">
-              Son 5 Proje
+              Son Projeler
             </h3>
             <ul className="space-y-2">
               {lastFiveProjects.map((project) => (
