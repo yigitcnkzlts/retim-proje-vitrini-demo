@@ -86,7 +86,7 @@ const referencesArchive: Reference[] = [
 
 export const references: Reference[] = referencesArchive;
 
-export const years = [1988, 1987, 1986];
+export const years = Array.from({ length: 2030 - 1986 + 1 }, (_, i) => 2030 - i);
 
 export function getReferencePreview(count = 8): Reference[] {
   return references.slice(0, count);
