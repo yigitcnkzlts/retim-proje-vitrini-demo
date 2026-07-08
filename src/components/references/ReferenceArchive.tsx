@@ -1,11 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ClipboardEvent, type DragEvent, type MouseEvent } from "react";
 import type { Reference } from "@/data/references";
 import { references as staticReferences, years } from "@/data/references";
 
 interface ReferenceArchiveProps {
   items?: Reference[];
+}
+
+function blockCopyInteraction(event: ClipboardEvent | MouseEvent | DragEvent) {
+  event.preventDefault();
 }
 
 export default function ReferenceArchive({ items = staticReferences }: ReferenceArchiveProps) {
@@ -70,11 +74,23 @@ export default function ReferenceArchive({ items = staticReferences }: Reference
       </div>
 
       {filtered.length === 0 ? (
-        <div className="rounded border border-retim-gray-dark bg-retim-gray py-12 text-center">
+        <div
+          className="select-none rounded border border-retim-gray-dark bg-retim-gray py-12 text-center [webkit-touch-callout:none]"
+          onCopy={blockCopyInteraction}
+          onCut={blockCopyInteraction}
+          onContextMenu={blockCopyInteraction}
+          onDragStart={blockCopyInteraction}
+        >
           <p className="text-gray-600">Arama kriterlerinize uygun referans bulunamadı.</p>
         </div>
       ) : (
-        <>
+        <div
+          className="select-none [webkit-touch-callout:none]"
+          onCopy={blockCopyInteraction}
+          onCut={blockCopyInteraction}
+          onContextMenu={blockCopyInteraction}
+          onDragStart={blockCopyInteraction}
+        >
           <div className="hidden overflow-hidden rounded border border-retim-gray-dark md:block">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[700px]">
@@ -101,7 +117,7 @@ export default function ReferenceArchive({ items = staticReferences }: Reference
               <ReferenceMobileCard key={`${ref.refNo}-${ref.projectName}`} ref={ref} />
             ))}
           </div>
-        </>
+        </div>
       )}
     </div>
   );
