@@ -35,13 +35,17 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body className={`${inter.variable} ${playfair.variable} font-sans`}>
-        <TopBar />
-        <Header />
+        <div className="site-chrome">
+          <TopBar />
+          <Header />
+        </div>
         <main className="min-h-screen">{children}</main>
-        <Footer />
-        <WhatsAppButton />
-        <BackToTop />
-        <ScrollProgress />
+        <div className="site-chrome">
+          <Footer />
+          <WhatsAppButton />
+          <BackToTop />
+          <ScrollProgress />
+        </div>
       </body>
     </html>
   );

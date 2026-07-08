@@ -63,7 +63,7 @@ export const references2023: Reference[] = [
   { refNo: "2284", projectName: "MODERN APT.", service: "ÇATI YALITIM İŞLEMİ", district: "TEŞVİKİYE", year: 2023 },
 ];
 
-const referencesArchive: Reference[] = [
+export const referencesArchive: Reference[] = [
   { refNo: "1", projectName: "İHRACATI GELİŞTİRME MERKEZİ BİNASI", service: "DIŞ CEPHE TEMİZLİK VE RESTORASYON İŞLEMİ", district: "ANKARA", year: 1986 },
   { refNo: "2", projectName: "İSTANBUL MÜFTÜLÜĞÜ CÜMLE KAPISI", service: "DIŞ CEPHE TEMİZLİK VE RESTORASYON İŞLEMİ", district: "FATİH", year: 1986 },
   { refNo: "3", projectName: "VAKIF GUREBA HASTANESİ KAPISI", service: "DIŞ CEPHE TEMİZLİK VE RESTORASYON İŞLEMİ", district: "AKSARAY", year: 1986 },

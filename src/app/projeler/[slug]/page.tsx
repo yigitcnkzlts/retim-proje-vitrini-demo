@@ -3,23 +3,26 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageHero from "@/components/ui/PageHero";
 import RetimImage from "@/components/ui/RetimImage";
-import { projects, getProjectBySlug } from "@/data/projects";
 import { slugAliases } from "@/data/images";
+import { getProjectBySlug, getProjectSlugs } from "@/lib/cms/projects";
+
+export const revalidate = 60;
 
 interface ProjectDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
+  const slugs = await getProjectSlugs();
   return [
-    ...projects.map((project) => ({ slug: project.slug })),
+    ...slugs.map((slug) => ({ slug })),
     ...Object.keys(slugAliases).map((slug) => ({ slug })),
   ];
 }
 
 export async function generateMetadata({ params }: ProjectDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await getProjectBySlug(slug);
   if (!project) return { title: "Proje Bulunamadı" };
 
   return {
@@ -30,7 +33,7 @@ export async function generateMetadata({ params }: ProjectDetailPageProps): Prom
 
 export default async function ProjectDetailPage({ params }: ProjectDetailPageProps) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await getProjectBySlug(slug);
 
   if (!project) {
     notFound();
@@ -68,7 +71,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
               </div>
 
               <h2 className="text-xl font-semibold text-retim-navy">Proje Açıklaması</h2>
-              <p className="mt-4 text-gray-600 leading-relaxed">{project.description}</p>
+              <p className="mt-4 leading-relaxed text-gray-600">{project.description}</p>
 
               <h2 className="mt-10 text-xl font-semibold text-retim-navy">Uygulama Kapsamı</h2>
               <ul className="mt-4 space-y-2">

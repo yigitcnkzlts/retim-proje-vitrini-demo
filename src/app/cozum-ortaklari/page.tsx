@@ -3,14 +3,18 @@ import Image from "next/image";
 import Link from "next/link";
 import PageHero from "@/components/ui/PageHero";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import { partners } from "@/data/partners";
+import { getPartners } from "@/lib/cms/partners";
 
 export const metadata: Metadata = {
   title: "Çözüm Ortakları",
   description: "Retim'in malzeme ve uygulama alanında iş birliği yaptığı çözüm ortakları.",
 };
 
-export default function PartnersPage() {
+export const revalidate = 60;
+
+export default async function PartnersPage() {
+  const partners = await getPartners();
+
   return (
     <>
       <PageHero

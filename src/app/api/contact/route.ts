@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { siteConfig } from "@/data/site";
+import { saveContactSubmission } from "@/lib/cms/submissions";
 
 const CONTACT_EMAIL = process.env.CONTACT_EMAIL || siteConfig.email;
 
@@ -162,6 +163,15 @@ export async function POST(request: Request) {
     if (!sent) {
       return NextResponse.json({ error: "E-posta gönderilemedi." }, { status: 500 });
     }
+
+    await saveContactSubmission({
+      name,
+      email,
+      phone,
+      building,
+      service: serviceLabel,
+      message,
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

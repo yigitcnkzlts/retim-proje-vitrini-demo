@@ -2,14 +2,18 @@
 
 import { useMemo, useState } from "react";
 import type { Reference } from "@/data/references";
-import { references, years } from "@/data/references";
+import { references as staticReferences, years } from "@/data/references";
 
-export default function ReferenceArchive() {
+interface ReferenceArchiveProps {
+  items?: Reference[];
+}
+
+export default function ReferenceArchive({ items = staticReferences }: ReferenceArchiveProps) {
   const [search, setSearch] = useState("");
   const [year, setYear] = useState<number | "">("");
 
   const filtered = useMemo(() => {
-    return references.filter((ref) => {
+    return items.filter((ref) => {
       const matchesSearch =
         search === "" ||
         ref.projectName.toLowerCase().includes(search.toLowerCase()) ||
@@ -21,7 +25,7 @@ export default function ReferenceArchive() {
 
       return matchesSearch && matchesYear;
     });
-  }, [search, year]);
+  }, [search, year, items]);
 
   return (
     <div>

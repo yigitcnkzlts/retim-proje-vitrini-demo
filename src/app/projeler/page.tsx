@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
 import PageHero from "@/components/ui/PageHero";
 import ProjectCard from "@/components/projects/ProjectCard";
-import { getFeaturedProjects, projects } from "@/data/projects";
+import { getFeaturedProjects, getProjects } from "@/lib/cms/projects";
 
 export const metadata: Metadata = {
   title: "Projeler",
   description: "Retim'in tamamladığı dış cephe, yalıtım, restorasyon ve güçlendirme projeleri.",
 };
 
-export default function ProjectsPage() {
-  const featured = getFeaturedProjects();
+export const revalidate = 60;
+
+export default async function ProjectsPage() {
+  const [featured, projects] = await Promise.all([getFeaturedProjects(), getProjects()]);
 
   return (
     <>
