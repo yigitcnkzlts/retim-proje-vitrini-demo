@@ -15,7 +15,7 @@ export default function BuildingProblemsDiagram() {
     <div className="building-problems-diagram">
       <div className="mb-8 max-w-2xl md:mb-10">
         <p className="text-xs font-bold uppercase tracking-[0.22em] text-retim-orange">
-          Sorunlu Bir Bina
+          Binanızın Sorun Haritası
         </p>
         <h2 className="mt-3 font-serif text-3xl font-bold leading-tight tracking-tight text-retim-navy md:text-4xl">
           Binanızda Bu Sorunlar Gözden Kaçmasın
