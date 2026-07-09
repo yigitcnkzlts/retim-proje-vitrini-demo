@@ -45,19 +45,22 @@ export async function POST(request: Request) {
 
     const serviceLabel = getServiceLabel(service);
 
-    await saveContactSubmission({
-      name,
-      email,
-      phone,
-      building,
-      service: serviceLabel,
-      message,
-    });
+    try {
+      await saveContactSubmission({
+        name,
+        email,
+        phone,
+        building,
+        service: serviceLabel,
+        message,
+      });
+    } catch (saveError) {
+      console.error("Contact log error:", saveError);
+    }
 
     return jsonResponse({ success: true });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Beklenmeyen bir hata oluştu.";
-    console.error("Contact log error:", error);
-    return jsonResponse({ error: message }, 500);
+    console.error("Contact API error:", error);
+    return jsonResponse({ error: "İstek işlenemedi." }, 500);
   }
 }

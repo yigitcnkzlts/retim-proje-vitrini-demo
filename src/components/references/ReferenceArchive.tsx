@@ -62,10 +62,12 @@ export default function ReferenceArchive({ items = staticReferences }: Reference
             </label>
             <input
               id="ref-search"
-              type="text"
+              type="search"
+              name="reference-search"
               placeholder="Ref no, proje adı, hizmet veya semt ara..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              autoComplete="off"
               className="w-full rounded border border-retim-gray-dark bg-white px-4 py-2.5 text-sm focus:border-retim-orange focus:outline-none focus:ring-1 focus:ring-retim-orange"
             />
           </div>

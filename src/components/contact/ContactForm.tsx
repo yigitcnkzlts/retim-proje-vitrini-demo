@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
-import { logContactSubmission, submitContactToWeb3Forms } from "@/lib/contact/web3forms";
+import { submitContactToWeb3Forms } from "@/lib/contact/web3forms";
 
 interface ContactFormProps {
   compact?: boolean;
@@ -31,7 +31,6 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
 
     try {
       await submitContactToWeb3Forms(payload);
-      await logContactSubmission(payload);
       setSubmitted(true);
       form.reset();
     } catch (err) {
@@ -57,8 +56,16 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <input type="checkbox" name="botcheck" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
+    <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+      <input
+        id="botcheck"
+        type="checkbox"
+        name="botcheck"
+        tabIndex={-1}
+        autoComplete="off"
+        className="hidden"
+        aria-hidden="true"
+      />
 
       <div className={`grid gap-4 ${compact ? "" : "sm:grid-cols-2"}`}>
         <div>
@@ -71,6 +78,7 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
             type="text"
             required
             disabled={loading}
+            autoComplete="name"
             className="input-field"
           />
         </div>
@@ -84,6 +92,7 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
             type="tel"
             required
             disabled={loading}
+            autoComplete="tel"
             className="input-field"
           />
         </div>
@@ -99,6 +108,7 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
               name="email"
               type="email"
               disabled={loading}
+              autoComplete="email"
               className="input-field"
             />
           </div>
@@ -111,6 +121,7 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
               name="building"
               type="text"
               disabled={loading}
+              autoComplete="organization"
               className="input-field"
             />
           </div>
@@ -118,7 +129,13 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
             <label htmlFor="service" className="mb-1 block text-sm font-medium text-retim-navy">
               Hizmet Türü
             </label>
-            <select id="service" name="service" disabled={loading} className="input-field">
+            <select
+              id="service"
+              name="service"
+              disabled={loading}
+              autoComplete="off"
+              className="input-field"
+            >
               <option value="">Seçiniz</option>
               <option value="mantolama">Mantolama işlemleri</option>
               <option value="boya">Onarım ve boya işlemleri</option>
@@ -140,6 +157,7 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
           name="message"
           rows={compact ? 3 : 4}
           disabled={loading}
+          autoComplete="off"
           className="input-field"
           placeholder="Projeniz hakkında kısa bilgi verin..."
         />
