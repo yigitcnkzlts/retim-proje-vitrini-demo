@@ -73,7 +73,7 @@ export const stats = [
   { value: "37", label: "Yıllık Deneyim" },
   { value: "1989", label: "Kuruluş Yılı" },
   { value: "100+", label: "Teknik Kadro" },
-  { value: "Türkiye", label: "Geneli Uygulama" },
+  { value: "2000+", label: "Referans" },
 ];
 
 export const aboutText = {

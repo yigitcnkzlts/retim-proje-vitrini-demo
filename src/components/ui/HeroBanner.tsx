@@ -16,7 +16,7 @@ interface HeroBannerProps {
 const heroHighlights = [
   { value: "1989", label: "Kuruluş" },
   { value: "37", label: "Yıllık Deneyim" },
-  { value: "Türkiye", label: "Geneli Uygulama" },
+  { value: "2000+", label: "Referans" },
 ];
 
 const quickLinks = [
