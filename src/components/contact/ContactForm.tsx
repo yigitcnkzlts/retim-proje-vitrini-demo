@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import { logContactSubmission, submitContactToWeb3Forms } from "@/lib/contact/web3forms";
 
 interface ContactFormProps {
   compact?: boolean;
@@ -19,39 +20,18 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
+    const payload = {
+      name: String(formData.get("name") ?? "").trim(),
+      phone: String(formData.get("phone") ?? "").trim(),
+      email: String(formData.get("email") ?? "").trim(),
+      building: String(formData.get("building") ?? "").trim(),
+      service: String(formData.get("service") ?? "").trim(),
+      message: String(formData.get("message") ?? "").trim(),
+    };
+
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          name: formData.get("name"),
-          phone: formData.get("phone"),
-          email: formData.get("email"),
-          building: formData.get("building"),
-          service: formData.get("service"),
-          message: formData.get("message"),
-        }),
-      });
-
-      const contentType = response.headers.get("content-type") || "";
-      let data: { success?: boolean; error?: string; message?: string } = {};
-
-      if (contentType.includes("application/json")) {
-        data = await response.json();
-      } else {
-        const text = await response.text();
-        throw new Error(
-          text.includes("<!DOCTYPE")
-            ? `Sunucu hatası (${response.status}). Lütfen daha sonra tekrar deneyin.`
-            : text.slice(0, 200) || `Sunucu hatası (${response.status}).`
-        );
-      }
-
-      if (!response.ok) {
-        setError(data.error || data.message || "Form gönderilemedi. Lütfen tekrar deneyin.");
-        return;
-      }
-
+      await submitContactToWeb3Forms(payload);
+      await logContactSubmission(payload);
       setSubmitted(true);
       form.reset();
     } catch (err) {
@@ -78,6 +58,8 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <input type="checkbox" name="botcheck" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
+
       <div className={`grid gap-4 ${compact ? "" : "sm:grid-cols-2"}`}>
         <div>
           <label htmlFor="name" className="mb-1 block text-sm font-medium text-retim-navy">
