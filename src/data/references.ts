@@ -71,6 +71,31 @@ export const references: Reference[] = referencesArchive;
 
 export const years = Array.from({ length: 2030 - 1986 + 1 }, (_, i) => 2030 - i);
 
+export const REFERENCES_PAGE_SIZE = 50;
+
+function parseRefNo(refNo: string): [number, number] {
+  const match = refNo.match(/^(\d+)(?:-(\d+))?$/);
+  if (!match) return [0, 0];
+  return [parseInt(match[1], 10), match[2] ? parseInt(match[2], 10) : 0];
+}
+
+export function compareReferencesNewestFirst(a: Reference, b: Reference): number {
+  if (b.year !== a.year) return b.year - a.year;
+  const [aBase, aSuffix] = parseRefNo(a.refNo);
+  const [bBase, bSuffix] = parseRefNo(b.refNo);
+  if (bBase !== aBase) return bBase - aBase;
+  return bSuffix - aSuffix;
+}
+
+export function sortReferencesNewestFirst(items: Reference[]): Reference[] {
+  return [...items].sort(compareReferencesNewestFirst);
+}
+
+export function getLatestReference(items: Reference[]): Reference | null {
+  if (items.length === 0) return null;
+  return sortReferencesNewestFirst(items)[0];
+}
+
 export function getReferencePreview(count = 8): Reference[] {
   return references.slice(0, count);
 }

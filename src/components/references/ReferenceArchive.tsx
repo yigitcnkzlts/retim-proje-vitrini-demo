@@ -1,8 +1,14 @@
 "use client";
 
-import { useMemo, useState, type ClipboardEvent, type DragEvent, type MouseEvent } from "react";
+import { useEffect, useMemo, useState, type ClipboardEvent, type DragEvent, type MouseEvent } from "react";
 import type { Reference } from "@/data/references";
-import { references as staticReferences, years } from "@/data/references";
+import {
+  REFERENCES_PAGE_SIZE,
+  getLatestReference,
+  references as staticReferences,
+  sortReferencesNewestFirst,
+  years,
+} from "@/data/references";
 
 interface ReferenceArchiveProps {
   items?: Reference[];
@@ -12,12 +18,22 @@ function blockCopyInteraction(event: ClipboardEvent | MouseEvent | DragEvent) {
   event.preventDefault();
 }
 
+function isSameReference(a: Reference, b: Reference) {
+  return a.refNo === b.refNo && a.projectName === b.projectName;
+}
+
 export default function ReferenceArchive({ items = staticReferences }: ReferenceArchiveProps) {
   const [search, setSearch] = useState("");
   const [year, setYear] = useState<number | "">("");
+  const [page, setPage] = useState(1);
+
+  const latestReference = useMemo(() => getLatestReference(items), [items]);
+  const hasActiveFilters = search !== "" || year !== "";
 
   const filtered = useMemo(() => {
-    return items.filter((ref) => {
+    const sorted = sortReferencesNewestFirst(items);
+
+    return sorted.filter((ref) => {
       const matchesSearch =
         search === "" ||
         ref.projectName.toLowerCase().includes(search.toLowerCase()) ||
@@ -30,6 +46,30 @@ export default function ReferenceArchive({ items = staticReferences }: Reference
       return matchesSearch && matchesYear;
     });
   }, [search, year, items]);
+
+  const listItems = useMemo(() => {
+    if (hasActiveFilters || !latestReference) return filtered;
+
+    return filtered.filter((ref) => !isSameReference(ref, latestReference));
+  }, [filtered, hasActiveFilters, latestReference]);
+
+  const totalPages = Math.max(1, Math.ceil(listItems.length / REFERENCES_PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+
+  const pageItems = useMemo(() => {
+    const start = (currentPage - 1) * REFERENCES_PAGE_SIZE;
+    return listItems.slice(start, start + REFERENCES_PAGE_SIZE);
+  }, [currentPage, listItems]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, year]);
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
+
+  const showLatestHighlight = !hasActiveFilters && latestReference !== null;
 
   return (
     <div>
@@ -70,8 +110,21 @@ export default function ReferenceArchive({ items = staticReferences }: Reference
         <p className="mt-4 text-sm text-gray-600">
           <span className="font-medium text-retim-navy">{filtered.length}</span> referans kaydı
           listeleniyor
+          {totalPages > 1 && (
+            <>
+              {" "}
+              · Sayfa <span className="font-medium text-retim-navy">{currentPage}</span> / {totalPages}
+            </>
+          )}
         </p>
       </div>
+
+      {showLatestHighlight && latestReference && (
+        <div className="mb-6">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-retim-orange">Son Referans</p>
+          <LatestReferenceCard ref={latestReference} />
+        </div>
+      )}
 
       {filtered.length === 0 ? (
         <div
@@ -104,7 +157,7 @@ export default function ReferenceArchive({ items = staticReferences }: Reference
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.map((ref) => (
+                  {pageItems.map((ref) => (
                     <ReferenceRow key={`${ref.refNo}-${ref.projectName}`} ref={ref} />
                   ))}
                 </tbody>
@@ -113,19 +166,134 @@ export default function ReferenceArchive({ items = staticReferences }: Reference
           </div>
 
           <div className="space-y-3 md:hidden">
-            {filtered.map((ref) => (
+            {pageItems.map((ref) => (
               <ReferenceMobileCard key={`${ref.refNo}-${ref.projectName}`} ref={ref} />
             ))}
           </div>
+
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
+          )}
         </div>
       )}
     </div>
   );
 }
 
-function ReferenceRow({ ref }: { ref: Reference }) {
+function LatestReferenceCard({ ref }: { ref: Reference }) {
   return (
-    <tr className="table-row-interactive">
+    <div className="overflow-hidden rounded border-2 border-retim-orange bg-white shadow-soft">
+      <div className="hidden md:block">
+        <table className="w-full min-w-[700px]">
+          <thead>
+            <tr>
+              <th className="table-header">NO</th>
+              <th className="table-header">PROJE</th>
+              <th className="table-header">İŞLEM</th>
+              <th className="table-header">KONUM</th>
+              <th className="table-header">YIL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ReferenceRow ref={ref} highlighted />
+          </tbody>
+        </table>
+      </div>
+      <div className="p-4 md:hidden">
+        <ReferenceMobileCard ref={ref} highlighted />
+      </div>
+    </div>
+  );
+}
+
+function Pagination({
+  currentPage,
+  totalPages,
+  onPageChange,
+}: {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}) {
+  const pages = getPaginationRange(currentPage, totalPages);
+
+  return (
+    <nav
+      className="mt-8 flex flex-wrap items-center justify-center gap-2"
+      aria-label="Referans sayfaları"
+    >
+      <button
+        type="button"
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="btn-secondary px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        Önceki
+      </button>
+
+      {pages.map((item, index) =>
+        item === "..." ? (
+          <span key={`ellipsis-${index}`} className="px-2 text-gray-400">
+            …
+          </span>
+        ) : (
+          <button
+            key={item}
+            type="button"
+            onClick={() => onPageChange(item)}
+            aria-current={item === currentPage ? "page" : undefined}
+            className={`min-w-10 rounded border px-3 py-2 text-sm transition-colors ${
+              item === currentPage
+                ? "border-retim-orange bg-retim-orange text-white"
+                : "border-retim-gray-dark bg-white text-retim-navy hover:border-retim-orange"
+            }`}
+          >
+            {item}
+          </button>
+        )
+      )}
+
+      <button
+        type="button"
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="btn-secondary px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        Sonraki
+      </button>
+    </nav>
+  );
+}
+
+function getPaginationRange(current: number, total: number): Array<number | "..."> {
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+
+  const pages: Array<number | "..."> = [1];
+
+  if (current > 3) pages.push("...");
+
+  const start = Math.max(2, current - 1);
+  const end = Math.min(total - 1, current + 1);
+
+  for (let i = start; i <= end; i += 1) {
+    pages.push(i);
+  }
+
+  if (current < total - 2) pages.push("...");
+
+  pages.push(total);
+  return pages;
+}
+
+function ReferenceRow({ ref, highlighted = false }: { ref: Reference; highlighted?: boolean }) {
+  return (
+    <tr className={highlighted ? "bg-orange-50" : "table-row-interactive"}>
       <td className="table-cell font-mono text-xs">{ref.refNo}</td>
       <td className="table-cell font-medium">{ref.projectName}</td>
       <td className="table-cell">{ref.service}</td>
@@ -135,9 +303,9 @@ function ReferenceRow({ ref }: { ref: Reference }) {
   );
 }
 
-function ReferenceMobileCard({ ref }: { ref: Reference }) {
+function ReferenceMobileCard({ ref, highlighted = false }: { ref: Reference; highlighted?: boolean }) {
   return (
-    <div className="card-base">
+    <div className={highlighted ? "rounded border border-retim-orange bg-orange-50 p-4" : "card-base"}>
       <div className="mb-2 flex items-center justify-between">
         <span className="font-mono text-xs text-gray-500">{ref.refNo}</span>
         <span className="tag">{ref.year}</span>
