@@ -144,7 +144,7 @@ export const discoverySteps = [
     icon: "structural" as const,
     title: "Yapısal Dayanım Analizi",
     description:
-      "Binanızın taşıyıcı elemanlarını hasarsız test yöntemleriyle analiz ediyoruz. Beton kalitesi ve donatı durumunu yerinde inceleyerek deprem güvenliği raporu hazırlıyoruz.",
+      "Beton kalitesi ve donatı durumunu yerinde inceleyerek yapısal risklere yönelik ön değerlendirme raporu hazırlıyoruz.",
     highlights: [
       "Hasarsız beton dayanımı testi",
       "Donatı konum ve durum analizi",
