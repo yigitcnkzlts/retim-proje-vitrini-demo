@@ -88,10 +88,10 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href={`tel:${siteConfig.phone.replace(/[^\d+]/g, "")}`}
+                  href={`tel:${siteConfig.officePhone.replace(/[^\d+]/g, "")}`}
                   className="transition-colors hover:text-retim-orange"
                 >
-                  {siteConfig.phone}
+                  {siteConfig.officePhone}
                 </a>
               </li>
               <li>
