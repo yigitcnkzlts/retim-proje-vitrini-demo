@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ClipboardEvent, type DragEvent, type MouseEvent } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Reference } from "@/data/references";
 import {
   REFERENCES_PAGE_SIZE,
@@ -9,15 +9,11 @@ import {
   sortReferencesNewestFirst,
   years,
 } from "@/data/references";
+import NoCopyZone from "@/components/references/NoCopyZone";
 
 interface ReferenceArchiveProps {
   items?: Reference[];
 }
-
-function blockCopyInteraction(event: ClipboardEvent | MouseEvent | DragEvent) {
-  event.preventDefault();
-}
-
 function isSameReference(a: Reference, b: Reference) {
   return a.refNo === b.refNo && a.projectName === b.projectName;
 }
@@ -119,67 +115,57 @@ export default function ReferenceArchive({ items = staticReferences }: Reference
         </p>
       </div>
 
-      {showLatestHighlight && latestReference && (
-        <div className="mb-6">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-retim-orange">Son Referans</p>
-          <LatestReferenceCard ref={latestReference} />
-        </div>
-      )}
+      <NoCopyZone>
+        {showLatestHighlight && latestReference && (
+          <div className="mb-6">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-retim-orange">Son Referans</p>
+            <LatestReferenceCard ref={latestReference} />
+          </div>
+        )}
 
-      {filtered.length === 0 ? (
-        <div
-          className="select-none rounded border border-retim-gray-dark bg-retim-gray py-12 text-center [webkit-touch-callout:none]"
-          onCopy={blockCopyInteraction}
-          onCut={blockCopyInteraction}
-          onContextMenu={blockCopyInteraction}
-          onDragStart={blockCopyInteraction}
-        >
-          <p className="text-gray-600">Arama kriterlerinize uygun referans bulunamadı.</p>
-        </div>
-      ) : (
-        <div
-          className="select-none [webkit-touch-callout:none]"
-          onCopy={blockCopyInteraction}
-          onCut={blockCopyInteraction}
-          onContextMenu={blockCopyInteraction}
-          onDragStart={blockCopyInteraction}
-        >
-          <div className="hidden overflow-hidden rounded border border-retim-gray-dark md:block">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[700px]">
-                <thead>
-                  <tr>
-                    <th className="table-header">NO</th>
-                    <th className="table-header">PROJE</th>
-                    <th className="table-header">İŞLEM</th>
-                    <th className="table-header">KONUM</th>
-                    <th className="table-header">YIL</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {pageItems.map((ref) => (
-                    <ReferenceRow key={`${ref.refNo}-${ref.projectName}`} ref={ref} />
-                  ))}
-                </tbody>
-              </table>
+        {filtered.length === 0 ? (
+          <div className="rounded border border-retim-gray-dark bg-retim-gray py-12 text-center">
+            <p className="text-gray-600">Arama kriterlerinize uygun referans bulunamadı.</p>
+          </div>
+        ) : (
+          <>
+            <div className="hidden overflow-hidden rounded border border-retim-gray-dark md:block">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[700px]">
+                  <thead>
+                    <tr>
+                      <th className="table-header">NO</th>
+                      <th className="table-header">PROJE</th>
+                      <th className="table-header">İŞLEM</th>
+                      <th className="table-header">KONUM</th>
+                      <th className="table-header">YIL</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pageItems.map((ref) => (
+                      <ReferenceRow key={`${ref.refNo}-${ref.projectName}`} ref={ref} />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
 
-          <div className="space-y-3 md:hidden">
-            {pageItems.map((ref) => (
-              <ReferenceMobileCard key={`${ref.refNo}-${ref.projectName}`} ref={ref} />
-            ))}
-          </div>
+            <div className="space-y-3 md:hidden">
+              {pageItems.map((ref) => (
+                <ReferenceMobileCard key={`${ref.refNo}-${ref.projectName}`} ref={ref} />
+              ))}
+            </div>
 
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setPage}
-            />
-          )}
-        </div>
-      )}
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setPage}
+              />
+            )}
+          </>
+        )}
+      </NoCopyZone>
     </div>
   );
 }

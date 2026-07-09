@@ -1,4 +1,5 @@
 import type { Reference } from "@/data/references";
+import NoCopyZone from "@/components/references/NoCopyZone";
 
 interface ReferenceTablePreviewProps {
   references: Reference[];
@@ -6,7 +7,7 @@ interface ReferenceTablePreviewProps {
 
 export default function ReferenceTablePreview({ references }: ReferenceTablePreviewProps) {
   return (
-    <div className="overflow-hidden rounded-sm border border-retim-gray-dark shadow-soft transition-shadow duration-300 hover:shadow-lift">
+    <NoCopyZone className="overflow-hidden rounded-sm border border-retim-gray-dark shadow-soft transition-shadow duration-300 hover:shadow-lift">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[600px]">
           <thead>
@@ -31,6 +32,6 @@ export default function ReferenceTablePreview({ references }: ReferenceTablePrev
           </tbody>
         </table>
       </div>
-    </div>
+    </NoCopyZone>
   );
 }
