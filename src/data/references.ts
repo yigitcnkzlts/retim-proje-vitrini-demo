@@ -55,6 +55,7 @@ export const references2024: Reference[] = [
   { refNo: "2374", projectName: "KEMER COUNTRY 13-15-17 BL.", service: "DIŞ CEPHE ONARIM - BOYA-ÇATI YALITIM İŞL.", district: "GÖKTÜRK", year: 2024 },
   { refNo: "2375", projectName: "FARUK TAN İNŞ.AŞ.", service: "DIŞ CEPHE MANTOLAMA İŞLEMİ", district: "ETİLER", year: 2024 },
   { refNo: "2376", projectName: "DEFNE APT.", service: "KOMPLE BİNA GÜÇLENDİRME İŞLEMLERİ", district: "BEBEK", year: 2024 },
+  { refNo: "2413", projectName: "HALİÇ APT.", service: "TARİHİ BİNA RESTORASYON VE BOYA İŞLEMİ", district: "ŞİŞHANE", year: 2026 },
 ];
 
 export const references2023: Reference[] = [

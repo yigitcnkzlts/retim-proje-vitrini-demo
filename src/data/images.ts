@@ -96,9 +96,9 @@ export const featuredSlugs = new Set([
   "mithat-tekstil-binasi-2281",
   "kaya-alp-apt-2335",
   "pirelli-apt-2340",
-  "iletisim-sark-han-2353",
   "defne-apt-2376",
   "asmalimescit-no-28-2359",
+  "halic-apt-2413",
 ]);
 
 export const slugAliases: Record<string, string> = {
@@ -108,10 +108,12 @@ export const slugAliases: Record<string, string> = {
   "modern-apt": "modern-apt-2284",
   "mithat-tekstil-binasi": "mithat-tekstil-binasi-2281",
   "kaya-alp-apt": "kaya-alp-apt-2335",
-  "iletisim-sark-han": "iletisim-sark-han-2353",
+  "iletisim-sark-han": "iletim-sark-han-2353",
+  "iletim-sark-han": "iletim-sark-han-2353",
   "mesa-kemerburgaz-sitesi": "mesa-kemerburgaz-sitesi-2366",
   "defne-apt": "defne-apt-2376",
   "pirelli-apt": "pirelli-apt-2340",
   "asmalimescit-no-28": "asmalimescit-no-28-2359",
+  "halic-apt": "halic-apt-2413",
   "istanbloom": "istanbloom-2369",
 };
