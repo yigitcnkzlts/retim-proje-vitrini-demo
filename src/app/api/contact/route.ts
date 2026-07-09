@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
 import { siteConfig } from "@/data/site";
 import { saveContactSubmission } from "@/lib/cms/submissions";
 
-const CONTACT_EMAIL = process.env.CONTACT_EMAIL || siteConfig.email;
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+const CONTACT_EMAIL = (process.env.CONTACT_EMAIL || siteConfig.email).trim();
 
 const serviceLabels: Record<string, string> = {
   mantolama: "Mantolama işlemleri",
@@ -14,6 +16,13 @@ const serviceLabels: Record<string, string> = {
   guclendirme: "Yapı Güçlendirme İşlemleri",
   diger: "Diğer Uygulamalar",
 };
+
+function jsonResponse(body: Record<string, unknown>, status = 200) {
+  return NextResponse.json(body, {
+    status,
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+  });
+}
 
 function escapeHtml(value: string): string {
   return value
@@ -45,6 +54,19 @@ function buildPlainMessage(
   ].join("\n");
 }
 
+async function parseExternalJson(response: Response): Promise<Record<string, unknown>> {
+  const text = await response.text();
+
+  try {
+    return JSON.parse(text) as Record<string, unknown>;
+  } catch {
+    const snippet = text.replace(/\s+/g, " ").trim().slice(0, 160);
+    throw new Error(
+      `E-posta servisi beklenmeyen yanıt döndürdü (HTTP ${response.status}). ${snippet}`
+    );
+  }
+}
+
 async function sendViaWeb3Forms(payload: {
   name: string;
   phone: string;
@@ -52,8 +74,8 @@ async function sendViaWeb3Forms(payload: {
   building: string;
   serviceLabel: string;
   message: string;
-}) {
-  const accessKey = process.env.WEB3FORMS_ACCESS_KEY;
+}): Promise<boolean | null> {
+  const accessKey = process.env.WEB3FORMS_ACCESS_KEY?.trim();
   if (!accessKey) return null;
 
   const response = await fetch("https://api.web3forms.com/submit", {
@@ -65,12 +87,14 @@ async function sendViaWeb3Forms(payload: {
     body: JSON.stringify({
       access_key: accessKey,
       subject: `Yeni Keşif Talebi — ${payload.name}`,
-      from_name: payload.name,
+      from_name: "Retim Web Sitesi",
       name: payload.name,
-      email: payload.email || CONTACT_EMAIL,
+      email: payload.email || undefined,
+      replyto: payload.email || undefined,
       phone: payload.phone,
       building: payload.building || "Belirtilmedi",
       service: payload.serviceLabel,
+      botcheck: false,
       message: buildPlainMessage(
         payload.name,
         payload.phone,
@@ -82,9 +106,15 @@ async function sendViaWeb3Forms(payload: {
     }),
   });
 
-  const data = (await response.json()) as { success?: boolean; message?: string };
-  if (!response.ok || !data.success) {
-    throw new Error(data.message || "Web3Forms gönderimi başarısız.");
+  const data = await parseExternalJson(response);
+  const success = data.success === true;
+
+  if (!response.ok || !success) {
+    const message =
+      (typeof data.message === "string" && data.message) ||
+      (typeof data.body === "string" && data.body) ||
+      "Web3Forms gönderimi başarısız.";
+    throw new Error(message);
   }
 
   return true;
@@ -97,10 +127,11 @@ async function sendViaResend(payload: {
   building: string;
   serviceLabel: string;
   message: string;
-}) {
-  const apiKey = process.env.RESEND_API_KEY;
+}): Promise<boolean | null> {
+  const apiKey = process.env.RESEND_API_KEY?.trim();
   if (!apiKey) return null;
 
+  const { Resend } = await import("resend");
   const resend = new Resend(apiKey);
   const from = process.env.CONTACT_FROM || "Retim İletişim <onboarding@resend.dev>";
 
@@ -132,7 +163,13 @@ async function sendViaResend(payload: {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    let body: Record<string, unknown>;
+    try {
+      body = (await request.json()) as Record<string, unknown>;
+    } catch {
+      return jsonResponse({ error: "Geçersiz form verisi." }, 400);
+    }
+
     const name = String(body.name ?? "").trim();
     const phone = String(body.phone ?? "").trim();
     const email = String(body.email ?? "").trim();
@@ -141,41 +178,56 @@ export async function POST(request: Request) {
     const message = String(body.message ?? "").trim();
 
     if (!name || !phone) {
-      return NextResponse.json({ error: "Ad soyad ve telefon zorunludur." }, { status: 400 });
+      return jsonResponse({ error: "Ad soyad ve telefon zorunludur." }, 400);
     }
 
-    if (!process.env.WEB3FORMS_ACCESS_KEY && !process.env.RESEND_API_KEY) {
-      return NextResponse.json(
+    const hasWeb3Forms = Boolean(process.env.WEB3FORMS_ACCESS_KEY?.trim());
+    const hasResend = Boolean(process.env.RESEND_API_KEY?.trim());
+
+    if (!hasWeb3Forms && !hasResend) {
+      return jsonResponse(
         {
           error:
             "E-posta servisi yapılandırılmamış. Vercel ortam değişkenlerine WEB3FORMS_ACCESS_KEY ekleyin.",
         },
-        { status: 503 }
+        503
       );
     }
 
     const serviceLabel = service ? serviceLabels[service] || service : "Belirtilmedi";
     const payload = { name, phone, email, building, serviceLabel, message };
 
-    const sent =
-      (await sendViaWeb3Forms(payload)) ?? (await sendViaResend(payload));
+    let sent = false;
 
-    if (!sent) {
-      return NextResponse.json({ error: "E-posta gönderilemedi." }, { status: 500 });
+    if (hasWeb3Forms) {
+      sent = (await sendViaWeb3Forms(payload)) === true;
     }
 
-    await saveContactSubmission({
-      name,
-      email,
-      phone,
-      building,
-      service: serviceLabel,
-      message,
-    });
+    if (!sent && hasResend) {
+      sent = (await sendViaResend(payload)) === true;
+    }
 
-    return NextResponse.json({ success: true });
+    if (!sent) {
+      return jsonResponse({ error: "E-posta gönderilemedi." }, 500);
+    }
+
+    try {
+      await saveContactSubmission({
+        name,
+        email,
+        phone,
+        building,
+        service: serviceLabel,
+        message,
+      });
+    } catch (saveError) {
+      console.error("Contact submission saved to email but CMS save failed:", saveError);
+    }
+
+    return jsonResponse({ success: true, message: "Keşif talebiniz alındı." });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Beklenmeyen bir hata oluştu.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("Contact form error:", error);
+    return jsonResponse({ error: message }, 500);
   }
 }

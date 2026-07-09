@@ -9,17 +9,25 @@ export async function saveContactSubmission(input: {
   service?: string;
   message?: string;
 }): Promise<void> {
-  const client = getSupabaseAdmin();
-  if (!client) return;
+  try {
+    const client = getSupabaseAdmin();
+    if (!client) return;
 
-  await client.from("contact_submissions").insert({
-    name: input.name,
-    email: input.email || null,
-    phone: input.phone,
-    building: input.building || null,
-    service: input.service || null,
-    message: input.message || null,
-  });
+    const { error } = await client.from("contact_submissions").insert({
+      name: input.name,
+      email: input.email || null,
+      phone: input.phone,
+      building: input.building || null,
+      service: input.service || null,
+      message: input.message || null,
+    });
+
+    if (error) {
+      console.error("Supabase submission save failed:", error.message);
+    }
+  } catch (error) {
+    console.error("Supabase submission save failed:", error);
+  }
 }
 
 export async function getSubmissionsAdmin(): Promise<DbContactSubmission[]> {

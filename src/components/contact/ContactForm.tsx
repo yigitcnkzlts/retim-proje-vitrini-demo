@@ -22,7 +22,7 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
           name: formData.get("name"),
           phone: formData.get("phone"),
@@ -33,17 +33,33 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
         }),
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get("content-type") || "";
+      let data: { success?: boolean; error?: string; message?: string } = {};
+
+      if (contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        throw new Error(
+          text.includes("<!DOCTYPE")
+            ? `Sunucu hatası (${response.status}). Lütfen daha sonra tekrar deneyin.`
+            : text.slice(0, 200) || `Sunucu hatası (${response.status}).`
+        );
+      }
 
       if (!response.ok) {
-        setError(data.error || "Form gönderilemedi. Lütfen tekrar deneyin.");
+        setError(data.error || data.message || "Form gönderilemedi. Lütfen tekrar deneyin.");
         return;
       }
 
       setSubmitted(true);
       form.reset();
-    } catch {
-      setError("Bağlantı hatası. Lütfen tekrar deneyin veya WhatsApp üzerinden yazın.");
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Bağlantı hatası. Lütfen tekrar deneyin veya WhatsApp üzerinden yazın."
+      );
     } finally {
       setLoading(false);
     }
