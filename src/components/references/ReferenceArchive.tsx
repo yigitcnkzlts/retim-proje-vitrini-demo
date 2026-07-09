@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import type { Reference } from "@/data/references";
 import {
   REFERENCES_PAGE_SIZE,
-  getLatestReference,
   references as staticReferences,
   sortReferencesNewestFirst,
   years,
@@ -14,17 +13,11 @@ import NoCopyZone from "@/components/references/NoCopyZone";
 interface ReferenceArchiveProps {
   items?: Reference[];
 }
-function isSameReference(a: Reference, b: Reference) {
-  return a.refNo === b.refNo && a.projectName === b.projectName;
-}
 
 export default function ReferenceArchive({ items = staticReferences }: ReferenceArchiveProps) {
   const [search, setSearch] = useState("");
   const [year, setYear] = useState<number | "">("");
   const [page, setPage] = useState(1);
-
-  const latestReference = useMemo(() => getLatestReference(items), [items]);
-  const hasActiveFilters = search !== "" || year !== "";
 
   const filtered = useMemo(() => {
     const sorted = sortReferencesNewestFirst(items);
@@ -43,19 +36,13 @@ export default function ReferenceArchive({ items = staticReferences }: Reference
     });
   }, [search, year, items]);
 
-  const listItems = useMemo(() => {
-    if (hasActiveFilters || !latestReference) return filtered;
-
-    return filtered.filter((ref) => !isSameReference(ref, latestReference));
-  }, [filtered, hasActiveFilters, latestReference]);
-
-  const totalPages = Math.max(1, Math.ceil(listItems.length / REFERENCES_PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / REFERENCES_PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
 
   const pageItems = useMemo(() => {
     const start = (currentPage - 1) * REFERENCES_PAGE_SIZE;
-    return listItems.slice(start, start + REFERENCES_PAGE_SIZE);
-  }, [currentPage, listItems]);
+    return filtered.slice(start, start + REFERENCES_PAGE_SIZE);
+  }, [currentPage, filtered]);
 
   useEffect(() => {
     setPage(1);
@@ -64,8 +51,6 @@ export default function ReferenceArchive({ items = staticReferences }: Reference
   useEffect(() => {
     if (page > totalPages) setPage(totalPages);
   }, [page, totalPages]);
-
-  const showLatestHighlight = !hasActiveFilters && latestReference !== null;
 
   return (
     <div>
@@ -116,13 +101,6 @@ export default function ReferenceArchive({ items = staticReferences }: Reference
       </div>
 
       <NoCopyZone>
-        {showLatestHighlight && latestReference && (
-          <div className="mb-6">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-retim-orange">Son Referans</p>
-            <LatestReferenceCard ref={latestReference} />
-          </div>
-        )}
-
         {filtered.length === 0 ? (
           <div className="rounded border border-retim-gray-dark bg-retim-gray py-12 text-center">
             <p className="text-gray-600">Arama kriterlerinize uygun referans bulunamadı.</p>
@@ -166,32 +144,6 @@ export default function ReferenceArchive({ items = staticReferences }: Reference
           </>
         )}
       </NoCopyZone>
-    </div>
-  );
-}
-
-function LatestReferenceCard({ ref }: { ref: Reference }) {
-  return (
-    <div className="overflow-hidden rounded border-2 border-retim-orange bg-white shadow-soft">
-      <div className="hidden md:block">
-        <table className="w-full min-w-[700px]">
-          <thead>
-            <tr>
-              <th className="table-header">NO</th>
-              <th className="table-header">PROJE</th>
-              <th className="table-header">İŞLEM</th>
-              <th className="table-header">KONUM</th>
-              <th className="table-header">YIL</th>
-            </tr>
-          </thead>
-          <tbody>
-            <ReferenceRow ref={ref} highlighted />
-          </tbody>
-        </table>
-      </div>
-      <div className="p-4 md:hidden">
-        <ReferenceMobileCard ref={ref} highlighted />
-      </div>
     </div>
   );
 }
@@ -277,9 +229,9 @@ function getPaginationRange(current: number, total: number): Array<number | "...
   return pages;
 }
 
-function ReferenceRow({ ref, highlighted = false }: { ref: Reference; highlighted?: boolean }) {
+function ReferenceRow({ ref }: { ref: Reference }) {
   return (
-    <tr className={highlighted ? "bg-orange-50" : "table-row-interactive"}>
+    <tr className="table-row-interactive">
       <td className="table-cell font-mono text-xs">{ref.refNo}</td>
       <td className="table-cell font-medium">{ref.projectName}</td>
       <td className="table-cell">{ref.service}</td>
@@ -289,9 +241,9 @@ function ReferenceRow({ ref, highlighted = false }: { ref: Reference; highlighte
   );
 }
 
-function ReferenceMobileCard({ ref, highlighted = false }: { ref: Reference; highlighted?: boolean }) {
+function ReferenceMobileCard({ ref }: { ref: Reference }) {
   return (
-    <div className={highlighted ? "rounded border border-retim-orange bg-orange-50 p-4" : "card-base"}>
+    <div className="card-base">
       <div className="mb-2 flex items-center justify-between">
         <span className="font-mono text-xs text-gray-500">{ref.refNo}</span>
         <span className="tag">{ref.year}</span>
