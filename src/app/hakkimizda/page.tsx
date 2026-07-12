@@ -30,17 +30,16 @@ export default function AboutPage() {
             </div>
 
             <div className="w-full justify-self-end">
-              <div className="relative mx-auto w-full max-w-xl overflow-hidden rounded-sm border border-retim-gray-dark bg-[#0b0b0b] shadow-soft lg:mx-0 lg:max-w-none">
-                <div className="relative aspect-square w-full">
-                  <Image
-                    src="/images/retim/hakkimizda/kurumsal.jpeg"
-                    alt="Retim Restorasyon kurumsal — İyiler her zaman kazanır"
-                    fill
-                    className="object-contain object-center"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 55vw"
-                    priority
-                  />
-                </div>
+              <div className="mx-auto w-full max-w-xl overflow-hidden rounded-sm border border-retim-gray-dark shadow-soft lg:mx-0 lg:max-w-none">
+                <Image
+                  src="/images/retim/hakkimizda/kurumsal.jpeg"
+                  alt="Retim Restorasyon kurumsal — İyiler her zaman kazanır"
+                  width={828}
+                  height={820}
+                  className="h-auto w-full"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 55vw"
+                  priority
+                />
               </div>
             </div>
           </div>
