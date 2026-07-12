@@ -21,7 +21,7 @@ export default function BuildingProblemsDiagram() {
           Binanızda Bu Sorunlar Gözden Kaçmasın
         </h2>
         <p className="mt-4 text-base leading-relaxed text-gray-600 md:text-lg">
-          Yapınızın ömrünü kısaltan ve maliyetleri artıran problemleri yerinde tespit ediyoruz.
+          Cephe çatlakları, çatı akıntıları, drenaj sorunları ve yalıtım problemleri zamanla daha büyük maliyetlere yol açabilir. Retim, bu sorunları yerinde ve teknoloji destekli keşif süreciyle tespit eder.
         </p>
       </div>
 
