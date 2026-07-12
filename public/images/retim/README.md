@@ -9,6 +9,7 @@ Drive'dan gelen görselleri buraya yerleştirin. Dosya adlarında Türkçe karak
 | `logo/retim-logo.jpg` | Navbar ve footer logosu |
 | `before-after/oncesi-cephe.jpg` | Termal analiz — öncesi |
 | `before-after/sonrasi-cephe.jpg` | Termal analiz — sonrası |
+| `hakkimizda/kurumsal.jpeg` | Hakkımızda sayfası kurumsal fotoğraf |
 | `services/*.jpg` | Hizmet kartları |
 | `projects/*.jpg` | Proje kartları ve detay |
 

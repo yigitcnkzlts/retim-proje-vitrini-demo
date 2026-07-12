@@ -33,7 +33,7 @@ export default function AboutPage() {
               <div className="relative mx-auto w-full max-w-xl overflow-hidden rounded-sm border border-retim-gray-dark bg-[#0b0b0b] shadow-soft lg:mx-0 lg:max-w-none">
                 <div className="relative aspect-square w-full">
                   <Image
-                    src="/images/retim/hakkimizda-kurumsal.jpeg"
+                    src="/images/retim/hakkimizda/kurumsal.jpeg"
                     alt="Retim Restorasyon kurumsal — İyiler her zaman kazanır"
                     fill
                     className="object-contain object-center"
