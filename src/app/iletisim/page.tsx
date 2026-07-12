@@ -42,10 +42,10 @@ export default function ContactPage() {
                     Telefon
                   </h3>
                   <a
-                    href={`tel:${siteConfig.phone.replace(/[^\d+]/g, "")}`}
+                    href={`tel:${siteConfig.officePhone.replace(/[^\d+]/g, "")}`}
                     className="mt-2 block text-lg font-bold text-retim-navy hover:text-retim-orange"
                   >
-                    {siteConfig.phone}
+                    {siteConfig.officePhone}
                   </a>
                 </div>
 
