@@ -20,8 +20,8 @@ export default function AboutPage() {
 
       <section className="py-12 md:py-16">
         <div className="container-main">
-          <div className="grid items-start gap-10 lg:grid-cols-2 lg:gap-14">
-            <div>
+          <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:gap-12 xl:gap-16">
+            <div className="max-w-xl">
               <h2 className="text-2xl font-bold text-retim-navy">{siteConfig.legalName}</h2>
               <p className="mt-6 leading-relaxed text-gray-600">{aboutText.intro}</p>
               <p className="mt-4 leading-relaxed text-gray-600">{aboutText.experience}</p>
@@ -29,16 +29,18 @@ export default function AboutPage() {
               <p className="mt-4 leading-relaxed text-gray-600">{aboutText.closing}</p>
             </div>
 
-            <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-sm border border-retim-gray-dark bg-retim-gray shadow-soft lg:mx-0 lg:max-w-none">
-              <div className="relative aspect-[4/5] w-full">
-                <Image
-                  src="/images/retim/hakkimizda-kurumsal.jpeg"
-                  alt="Retim Restorasyon kurumsal"
-                  fill
-                  className="object-cover object-top"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  priority
-                />
+            <div className="w-full justify-self-end">
+              <div className="relative mx-auto w-full max-w-xl overflow-hidden rounded-sm border border-retim-gray-dark bg-[#0b0b0b] shadow-soft lg:mx-0 lg:max-w-none">
+                <div className="relative aspect-square w-full">
+                  <Image
+                    src="/images/retim/hakkimizda-kurumsal.jpeg"
+                    alt="Retim Restorasyon kurumsal — İyiler her zaman kazanır"
+                    fill
+                    className="object-contain object-center"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 55vw"
+                    priority
+                  />
+                </div>
               </div>
             </div>
           </div>
