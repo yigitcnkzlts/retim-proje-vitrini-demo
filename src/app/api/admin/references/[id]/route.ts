@@ -18,6 +18,7 @@ export async function PUT(request: Request, context: RouteContext) {
     const reference = await updateReference(id, body);
     revalidatePath("/referanslar");
     revalidatePath("/projeler");
+    revalidatePath("/", "layout");
     return NextResponse.json({ reference });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Güncelleme başarısız.";
@@ -34,6 +35,7 @@ export async function DELETE(_request: Request, context: RouteContext) {
     await deleteReference(id);
     revalidatePath("/referanslar");
     revalidatePath("/projeler");
+    revalidatePath("/", "layout");
     return NextResponse.json({ success: true });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Silme başarısız.";

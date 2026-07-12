@@ -34,7 +34,7 @@ export async function PUT(request: Request, context: RouteContext) {
     const project = await updateProject(slug, body);
     revalidatePath("/projeler");
     revalidatePath(`/projeler/${slug}`);
-    revalidatePath("/");
+    revalidatePath("/", "layout");
     return NextResponse.json({ project });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Güncelleme başarısız.";
@@ -50,7 +50,7 @@ export async function DELETE(_request: Request, context: RouteContext) {
     const { slug } = await context.params;
     await deleteProject(slug);
     revalidatePath("/projeler");
-    revalidatePath("/");
+    revalidatePath("/", "layout");
     return NextResponse.json({ success: true });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Silme başarısız.";

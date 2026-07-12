@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { footerLinks, lastFiveProjects, siteConfig, socialLinks } from "@/data/site";
+import { footerLinks, siteConfig, socialLinks } from "@/data/site";
+import { getFooterLatestProjects } from "@/lib/cms/references";
 import RetimLogo from "@/components/ui/RetimLogo";
 
 function SocialIcon({ icon }: { icon: string }) {
@@ -27,7 +28,9 @@ function SocialIcon({ icon }: { icon: string }) {
   return null;
 }
 
-export default function Footer() {
+export default async function Footer() {
+  const latestProjects = await getFooterLatestProjects(5);
+
   return (
     <footer className="border-t border-retim-gray-dark bg-retim-navy text-white">
       <div className="container-main py-12">
@@ -45,8 +48,8 @@ export default function Footer() {
               Son Projeler
             </h3>
             <ul className="space-y-2">
-              {lastFiveProjects.map((project) => (
-                <li key={project.name}>
+              {latestProjects.map((project) => (
+                <li key={`${project.name}-${project.district}`}>
                   <Link
                     href={project.href}
                     className="group inline-flex text-sm text-gray-400 transition-all duration-200 hover:translate-x-1 hover:text-retim-orange"
@@ -130,7 +133,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 border-t border-white/10 pt-6 text-center text-xs text-gray-500">
-          Copyright © {new Date().getFullYear()} Retim. Tüm Hakları Saklıdır. Demo arayüzü.
+          Copyright © {new Date().getFullYear()} Retim. Tüm Hakları Saklıdır.
         </div>
       </div>
     </footer>

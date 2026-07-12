@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { requireAdminApi } from "@/lib/auth/require-admin";
 import { createReference, getAllRefsAdmin } from "@/lib/cms/references";
 import { isCmsConfigured } from "@/lib/cms/supabase";
@@ -26,6 +27,9 @@ export async function POST(request: Request) {
   try {
     const body = (await request.json()) as ProjectRefInput & { create_project?: boolean };
     const ref = await createReference(body, body.create_project !== false);
+    revalidatePath("/referanslar");
+    revalidatePath("/projeler");
+    revalidatePath("/", "layout");
     return NextResponse.json({ reference: ref });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Referans eklenemedi.";
