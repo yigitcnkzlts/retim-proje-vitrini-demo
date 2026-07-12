@@ -85,7 +85,7 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
         aria-hidden="true"
       />
 
-      <div className={`grid gap-4 ${compact ? "" : "sm:grid-cols-2"}`}>
+      <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="name" className="mb-1 block text-sm font-medium text-retim-navy">
             Ad Soyad <span className="text-red-500">*</span>
@@ -131,72 +131,76 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
           )}
         </div>
       </div>
+
       {!compact && (
-        <>
-          <div>
-            <label htmlFor="email" className="mb-1 block text-sm font-medium text-retim-navy">
-              E-posta
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              disabled={loading}
-              autoComplete="email"
-              aria-invalid={Boolean(fieldErrors.email)}
-              aria-describedby={fieldErrors.email ? "email-error" : undefined}
-              className={fieldClass(Boolean(fieldErrors.email))}
-            />
-            {fieldErrors.email && (
-              <p id="email-error" className="mt-1 text-xs text-red-600">
-                {fieldErrors.email}
-              </p>
-            )}
-          </div>
-          <div>
-            <label htmlFor="building" className="mb-1 block text-sm font-medium text-retim-navy">
-              Bina / Proje Adı
-            </label>
-            <input
-              id="building"
-              name="building"
-              type="text"
-              disabled={loading}
-              autoComplete="organization"
-              className="input-field"
-            />
-          </div>
-          <div>
-            <label htmlFor="service" className="mb-1 block text-sm font-medium text-retim-navy">
-              Hizmet Türü <span className="text-red-500">*</span>
-            </label>
-            <select
-              id="service"
-              name="service"
-              required
-              disabled={loading}
-              autoComplete="off"
-              aria-invalid={Boolean(fieldErrors.service)}
-              aria-describedby={fieldErrors.service ? "service-error" : undefined}
-              className={fieldClass(Boolean(fieldErrors.service))}
-            >
-              <option value="">Seçiniz</option>
-              <option value="mantolama">Mantolama işlemleri</option>
-              <option value="boya">Onarım ve boya işlemleri</option>
-              <option value="cati">Çatı Yalıtım İşlemleri</option>
-              <option value="drenaj">Drenaj işlemleri</option>
-              <option value="restorasyon">Tarihi Bina Restorasyonu</option>
-              <option value="guclendirme">Yapı Güçlendirme İşlemleri</option>
-              <option value="diger">Diğer Uygulamalar</option>
-            </select>
-            {fieldErrors.service && (
-              <p id="service-error" className="mt-1 text-xs text-red-600">
-                {fieldErrors.service}
-              </p>
-            )}
-          </div>
-        </>
+        <div>
+          <label htmlFor="email" className="mb-1 block text-sm font-medium text-retim-navy">
+            E-posta
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            disabled={loading}
+            autoComplete="email"
+            aria-invalid={Boolean(fieldErrors.email)}
+            aria-describedby={fieldErrors.email ? "email-error" : undefined}
+            className={fieldClass(Boolean(fieldErrors.email))}
+          />
+          {fieldErrors.email && (
+            <p id="email-error" className="mt-1 text-xs text-red-600">
+              {fieldErrors.email}
+            </p>
+          )}
+        </div>
       )}
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label htmlFor="building" className="mb-1 block text-sm font-medium text-retim-navy">
+            Bina / Proje Adı
+          </label>
+          <input
+            id="building"
+            name="building"
+            type="text"
+            disabled={loading}
+            autoComplete="organization"
+            placeholder="Örn. Beşiktaş"
+            className="input-field"
+          />
+        </div>
+        <div>
+          <label htmlFor="service" className="mb-1 block text-sm font-medium text-retim-navy">
+            Hizmet Türü <span className="text-red-500">*</span>
+          </label>
+          <select
+            id="service"
+            name="service"
+            required
+            disabled={loading}
+            autoComplete="off"
+            aria-invalid={Boolean(fieldErrors.service)}
+            aria-describedby={fieldErrors.service ? "service-error" : undefined}
+            className={fieldClass(Boolean(fieldErrors.service))}
+          >
+            <option value="">Seçiniz</option>
+            <option value="mantolama">Mantolama işlemleri</option>
+            <option value="boya">Onarım ve boya işlemleri</option>
+            <option value="cati">Çatı Yalıtım İşlemleri</option>
+            <option value="drenaj">Drenaj işlemleri</option>
+            <option value="restorasyon">Tarihi Bina Restorasyonu</option>
+            <option value="guclendirme">Yapı Güçlendirme İşlemleri</option>
+            <option value="diger">Diğer Uygulamalar</option>
+          </select>
+          {fieldErrors.service && (
+            <p id="service-error" className="mt-1 text-xs text-red-600">
+              {fieldErrors.service}
+            </p>
+          )}
+        </div>
+      </div>
+
       <div>
         <label htmlFor="message" className="mb-1 block text-sm font-medium text-retim-navy">
           Mesajınız

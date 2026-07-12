@@ -30,7 +30,7 @@ export function validateContactForm(
     }
   }
 
-  if (!options.compact && !payload.service.trim()) {
+  if (!payload.service.trim()) {
     errors.service = "Lütfen bir hizmet türü seçin.";
   }
 
