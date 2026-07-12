@@ -30,16 +30,24 @@ export default function AboutPage() {
             </div>
 
             <div className="w-full justify-self-end">
-              <div className="mx-auto w-full max-w-xl overflow-hidden rounded-sm border border-retim-gray-dark shadow-soft lg:mx-0 lg:max-w-none">
-                <Image
-                  src="/images/retim/hakkimizda/kurumsal.jpeg"
-                  alt="Retim Restorasyon kurumsal — İyiler her zaman kazanır"
-                  width={828}
-                  height={820}
-                  className="h-auto w-full"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 55vw"
-                  priority
-                />
+              <div className="mx-auto w-full max-w-xl lg:mx-0 lg:max-w-none">
+                <div className="overflow-hidden rounded-sm border border-retim-gray-dark shadow-soft">
+                  <Image
+                    src="/images/retim/hakkimizda/kurumsal.jpeg"
+                    alt="Osman Babucci — Retim Restorasyon Kurucu"
+                    width={828}
+                    height={820}
+                    className="h-auto w-full"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 55vw"
+                    priority
+                  />
+                </div>
+                <p className="mt-3 text-center text-sm font-semibold text-retim-navy lg:text-left">
+                  Osman Babucci
+                  <span className="mt-0.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Kurucu
+                  </span>
+                </p>
               </div>
             </div>
           </div>
