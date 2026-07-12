@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import PageHero from "@/components/ui/PageHero";
 import { aboutText, siteConfig } from "@/data/site";
@@ -19,12 +20,27 @@ export default function AboutPage() {
 
       <section className="py-12 md:py-16">
         <div className="container-main">
-          <div className="max-w-4xl">
-            <h2 className="text-2xl font-bold text-retim-navy">{siteConfig.legalName}</h2>
-            <p className="mt-6 leading-relaxed text-gray-600">{aboutText.intro}</p>
-            <p className="mt-4 leading-relaxed text-gray-600">{aboutText.experience}</p>
-            <p className="mt-4 leading-relaxed text-gray-600">{aboutText.team}</p>
-            <p className="mt-4 leading-relaxed text-gray-600">{aboutText.closing}</p>
+          <div className="grid items-start gap-10 lg:grid-cols-2 lg:gap-14">
+            <div>
+              <h2 className="text-2xl font-bold text-retim-navy">{siteConfig.legalName}</h2>
+              <p className="mt-6 leading-relaxed text-gray-600">{aboutText.intro}</p>
+              <p className="mt-4 leading-relaxed text-gray-600">{aboutText.experience}</p>
+              <p className="mt-4 leading-relaxed text-gray-600">{aboutText.team}</p>
+              <p className="mt-4 leading-relaxed text-gray-600">{aboutText.closing}</p>
+            </div>
+
+            <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-sm border border-retim-gray-dark bg-retim-gray shadow-soft lg:mx-0 lg:max-w-none">
+              <div className="relative aspect-[4/5] w-full">
+                <Image
+                  src="/images/retim/hakkimizda-kurumsal.jpeg"
+                  alt="Retim Restorasyon kurumsal"
+                  fill
+                  className="object-cover object-top"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  priority
+                />
+              </div>
+            </div>
           </div>
 
           <div className="mt-16 rounded-sm border border-retim-gray-dark bg-retim-navy p-8 text-center text-white md:p-12">
