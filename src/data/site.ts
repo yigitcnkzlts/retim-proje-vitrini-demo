@@ -6,9 +6,9 @@ export const siteConfig = {
   title: "Mantolama, Dış Cephe Boya, Drenaj, Çatı Yalıtımı",
   description:
     "İstanbul odaklı apartman, site ve özel yapılarda dış cephe, çatı, yalıtım ve güçlendirme ihtiyaçlarını teknoloji destekli keşif süreciyle analiz edip kesin çözümler sunuyoruz.",
-  phone: "+90 532 681 92 90",
-  officePhone: "+90 (212) 212 45 40",
-  whatsapp: "+90 532 681 92 90",
+  phone: "0532 681 92 90",
+  officePhone: "0 (212) 212 45 40",
+  whatsapp: "0532 681 92 90",
   whatsappMessage,
   whatsappUrl: `https://wa.me/905326819290?text=${encodeURIComponent(whatsappMessage)}`,
   email: "retim@retim.com.tr",
@@ -30,6 +30,7 @@ export const navigation = [
   { name: "Projeler", href: "/projeler" },
   { name: "Referanslar", href: "/referanslar" },
   { name: "Çözüm Ortakları", href: "/cozum-ortaklari" },
+  { name: "Bilgi Merkezi", href: "/bilgi-merkezi" },
   { name: "İletişim", href: "/iletisim" },
 ];
 
@@ -38,6 +39,7 @@ export const footerLinks = [
   { name: "Hakkımızda", href: "/hakkimizda" },
   { name: "Projeler", href: "/projeler" },
   { name: "Referanslar", href: "/referanslar" },
+  { name: "Sık Sorulan Sorular", href: "/bilgi-merkezi" },
   { name: "Çözüm Ortakları", href: "/cozum-ortaklari" },
   { name: "İletişim", href: "/iletisim" },
 ];

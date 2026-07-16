@@ -42,7 +42,7 @@ export default function AboutPage() {
                     priority
                   />
                 </div>
-                <p className="mt-3 text-center text-sm font-semibold text-retim-navy lg:text-left">
+                <p className="mt-3 text-center text-sm font-semibold text-retim-navy">
                   Osman Babucci
                   <span className="mt-0.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
                     Kurucu
