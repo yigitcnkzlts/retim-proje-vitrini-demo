@@ -119,7 +119,7 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
             required
             disabled={loading}
             autoComplete="tel"
-            placeholder="0539 333 35 95"
+            placeholder="Telefon numaranız"
             aria-invalid={Boolean(fieldErrors.phone)}
             aria-describedby={fieldErrors.phone ? "phone-error" : undefined}
             className={fieldClass(Boolean(fieldErrors.phone))}
