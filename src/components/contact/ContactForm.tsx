@@ -49,6 +49,12 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
 
     try {
       await submitContactToWeb3Forms(payload);
+      // Admin inbox — mail başarısından sonra, başarısızlık kullanıcıyı etkilemez
+      void fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...payload, logOnly: true }),
+      }).catch(() => undefined);
       setSubmitted(true);
       form.reset();
     } catch (err) {

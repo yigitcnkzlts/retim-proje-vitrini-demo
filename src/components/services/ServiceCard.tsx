@@ -8,7 +8,10 @@ interface ServiceCardProps {
 }
 
 export default function ServiceCard({ service }: ServiceCardProps) {
-  const imageSource = getServiceImageSource(service.slug);
+  const fallbackSource = getServiceImageSource(service.slug);
+  const imageSource = service.imageUrl
+    ? { primary: service.imageUrl, fallback: fallbackSource.fallback, alt: service.imageAlt || service.name }
+    : fallbackSource;
 
   return (
     <div id={service.slug} className="card-interactive group flex scroll-mt-28 flex-col overflow-hidden p-0">

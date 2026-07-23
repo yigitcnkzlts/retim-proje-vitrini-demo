@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdminApi } from "@/lib/auth/require-admin";
-import {
-  deleteSubmission,
-  getSubmissionsAdmin,
-  markSubmissionRead,
-} from "@/lib/cms/submissions";
+import { getSubmissionsAdmin } from "@/lib/cms/submissions";
 
 export async function GET() {
   const denied = await requireAdminApi();

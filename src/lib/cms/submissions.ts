@@ -1,5 +1,5 @@
 import { getSupabaseAdmin } from "@/lib/cms/supabase";
-import type { DbContactSubmission } from "@/lib/cms/types";
+import type { DbContactSubmission, SubmissionStatus } from "@/lib/cms/types";
 
 export async function saveContactSubmission(input: {
   name: string;
@@ -44,6 +44,16 @@ export async function markSubmissionRead(id: string, isRead: boolean): Promise<v
   const client = getSupabaseAdmin();
   if (!client) throw new Error("CMS yapılandırılmamış");
   const { error } = await client.from("contact_submissions").update({ is_read: isRead }).eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+export async function updateSubmissionStatus(
+  id: string,
+  input: Partial<{ status: SubmissionStatus; admin_note: string; is_read: boolean }>
+): Promise<void> {
+  const client = getSupabaseAdmin();
+  if (!client) throw new Error("CMS yapılandırılmamış");
+  const { error } = await client.from("contact_submissions").update(input).eq("id", id);
   if (error) throw new Error(error.message);
 }
 

@@ -2,14 +2,17 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import PageHero from "@/components/ui/PageHero";
-import { aboutText, siteConfig } from "@/data/site";
+import { siteConfig } from "@/data/site";
+import { getAboutContent } from "@/lib/cms/about-content";
 
 export const metadata: Metadata = {
   title: "Hakkımızda",
   description: "Retim Restorasyon Madencilik Sanayii ve Ticaret Ltd. Şti. hakkında kurumsal bilgiler.",
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const about = await getAboutContent();
+
   return (
     <>
       <PageHero
@@ -23,18 +26,18 @@ export default function AboutPage() {
           <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:gap-12 xl:gap-16">
             <div className="max-w-xl">
               <h2 className="text-2xl font-bold text-retim-navy">{siteConfig.legalName}</h2>
-              <p className="mt-6 leading-relaxed text-gray-600">{aboutText.intro}</p>
-              <p className="mt-4 leading-relaxed text-gray-600">{aboutText.experience}</p>
-              <p className="mt-4 leading-relaxed text-gray-600">{aboutText.team}</p>
-              <p className="mt-4 leading-relaxed text-gray-600">{aboutText.closing}</p>
+              <p className="mt-6 leading-relaxed text-gray-600">{about.intro}</p>
+              <p className="mt-4 leading-relaxed text-gray-600">{about.experience}</p>
+              <p className="mt-4 leading-relaxed text-gray-600">{about.team}</p>
+              <p className="mt-4 leading-relaxed text-gray-600">{about.closing}</p>
             </div>
 
             <div className="w-full justify-self-end">
               <div className="mx-auto w-full max-w-xl lg:mx-0 lg:max-w-none">
                 <div className="overflow-hidden rounded-sm border border-retim-gray-dark shadow-soft">
                   <Image
-                    src="/images/retim/hakkimizda/kurumsal.jpeg"
-                    alt="Osman Babucci — Retim Restorasyon Kurucu"
+                    src={about.founderImage}
+                    alt={`${about.founderName} — Retim Restorasyon ${about.founderTitle}`}
                     width={828}
                     height={820}
                     className="h-auto w-full"
@@ -43,9 +46,9 @@ export default function AboutPage() {
                   />
                 </div>
                 <p className="mt-3 text-center text-sm font-semibold text-retim-navy">
-                  Osman Babucci
+                  {about.founderName}
                   <span className="mt-0.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
-                    Kurucu
+                    {about.founderTitle}
                   </span>
                 </p>
               </div>

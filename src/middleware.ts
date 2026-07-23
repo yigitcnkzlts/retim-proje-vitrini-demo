@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import {
-  getAdminSessionCookieName,
-  verifyAdminSessionToken,
-} from "@/lib/auth/admin-session";
+import { verifyAdminSessionToken } from "@/lib/auth/session-token";
 
-export function middleware(request: NextRequest) {
+const ADMIN_COOKIE_NAME = "retim_admin_session";
+
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (!pathname.startsWith("/admin")) return NextResponse.next();
   if (pathname === "/admin/login") return NextResponse.next();
 
-  const token = request.cookies.get(getAdminSessionCookieName())?.value;
-  if (!verifyAdminSessionToken(token)) {
+  const token = request.cookies.get(ADMIN_COOKIE_NAME)?.value;
+  const valid = await verifyAdminSessionToken(token);
+  if (!valid) {
     const loginUrl = new URL("/admin/login", request.url);
     loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);

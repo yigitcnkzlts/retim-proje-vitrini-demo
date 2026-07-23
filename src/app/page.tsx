@@ -7,24 +7,25 @@ import StatsSection from "@/components/home/StatsSection";
 import HeroBanner from "@/components/ui/HeroBanner";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import TrustStrip from "@/components/ui/TrustStrip";
-import { services } from "@/data/services";
-import { approachSteps, homeDistricts, siteConfig } from "@/data/site";
+import { getServices } from "@/lib/cms/services";
+import { getHomeContent } from "@/lib/cms/home-content";
 
-export default function HomePage() {
-  const tickerItems = homeDistricts;
+export default async function HomePage() {
+  const [services, homeContent] = await Promise.all([getServices(), getHomeContent()]);
+  const tickerItems = homeContent.homeDistricts;
 
   return (
     <>
       <HeroBanner
-        title="Yüzlerce Onarılan Binada Retim İmzası"
-        description={siteConfig.description}
+        title={homeContent.heroTitle}
+        description={homeContent.heroDescription}
         tickerItems={tickerItems}
       />
 
       <TrustStrip />
 
       <ScrollReveal>
-        <StatsSection />
+        <StatsSection stats={homeContent.stats} />
       </ScrollReveal>
 
       <ScrollReveal delay={100}>
@@ -43,9 +44,9 @@ export default function HomePage() {
               <h2 className="section-title mt-2">Her Projede Aynı Disiplin</h2>
             </div>
             <div className="approach-timeline grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {approachSteps.map((step) => (
-                <div key={step.step} className="approach-card">
-                  <div className="approach-number">{step.step}</div>
+              {homeContent.approachSteps.map((step, i) => (
+                <div key={`${step.title}-${i}`} className="approach-card">
+                  <div className="approach-number">{i + 1}</div>
                   <h3 className="text-base font-bold text-retim-navy">{step.title}</h3>
                   <p className="mt-2 text-sm text-gray-600">{step.description}</p>
                 </div>
@@ -86,7 +87,7 @@ export default function HomePage() {
               <p className="section-label text-center">Keşif Talebi</p>
               <h2 className="section-title mt-2 text-center">Ücretsiz Keşif Formu</h2>
               <p className="section-subtitle mx-auto text-center">
-                Projeniz hakkında bilgi verin, en kısa sürede size dönüş yapalım.
+                {homeContent.discoveryLead}
               </p>
               <div className="form-glow mt-8 rounded-sm border border-retim-gray-dark bg-white p-6 shadow-lift md:p-8">
                 <ContactForm compact />

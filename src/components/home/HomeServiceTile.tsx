@@ -8,7 +8,10 @@ interface HomeServiceTileProps {
 }
 
 export default function HomeServiceTile({ service }: HomeServiceTileProps) {
-  const imageSource = getServiceImageSource(service.slug);
+  const fallbackSource = getServiceImageSource(service.slug);
+  const imageSource = service.imageUrl
+    ? { primary: service.imageUrl, fallback: fallbackSource.fallback, alt: service.imageAlt || service.name }
+    : fallbackSource;
 
   return (
     <Link

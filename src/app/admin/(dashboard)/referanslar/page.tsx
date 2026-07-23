@@ -3,12 +3,22 @@
 import { FormEvent, useEffect, useState } from "react";
 import type { DbProjectRef } from "@/lib/cms/types";
 
+type RefFormState = {
+  ref_no: string;
+  project_name: string;
+  service: string;
+  district: string;
+  year: number;
+};
+
 export default function AdminReferencesPage() {
   const [catalog, setCatalog] = useState<DbProjectRef[]>([]);
   const [archive, setArchive] = useState<DbProjectRef[]>([]);
   const [tab, setTab] = useState<"catalog" | "archive">("catalog");
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<RefFormState | null>(null);
   const [form, setForm] = useState({
     ref_no: "",
     project_name: "",
@@ -59,6 +69,33 @@ export default function AdminReferencesPage() {
     await load();
   }
 
+  function startEdit(r: DbProjectRef) {
+    setEditingId(r.id);
+    setEditForm({
+      ref_no: r.ref_no,
+      project_name: r.project_name,
+      service: r.service,
+      district: r.district,
+      year: r.year,
+    });
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditForm(null);
+  }
+
+  async function saveEdit(id: string) {
+    if (!editForm) return;
+    await fetch(`/api/admin/references/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(editForm),
+    });
+    cancelEdit();
+    await load();
+  }
+
   const list = tab === "catalog" ? catalog : archive;
 
   return (
@@ -106,22 +143,81 @@ export default function AdminReferencesPage() {
               </tr>
             </thead>
             <tbody>
-              {list.map((r) => (
-                <tr key={r.id}>
-                  <td>{r.ref_no}</td>
-                  <td className="font-medium">{r.project_name}</td>
-                  <td className="max-w-xs truncate">{r.service}</td>
-                  <td>{r.district}</td>
-                  <td>{r.year}</td>
-                  <td className="text-right">
-                    <button type="button" onClick={() => void handleDelete(r.id)} className="text-sm text-red-600 hover:underline">
-                      Sil
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {list.map((r) =>
+                editingId === r.id && editForm ? (
+                  <tr key={r.id} className="bg-retim-orange/5">
+                    <td>
+                      <input
+                        className="input-field"
+                        value={editForm.ref_no}
+                        onChange={(e) => setEditForm({ ...editForm, ref_no: e.target.value })}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="input-field"
+                        value={editForm.project_name}
+                        onChange={(e) => setEditForm({ ...editForm, project_name: e.target.value })}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="input-field"
+                        value={editForm.service}
+                        onChange={(e) => setEditForm({ ...editForm, service: e.target.value })}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="input-field"
+                        value={editForm.district}
+                        onChange={(e) => setEditForm({ ...editForm, district: e.target.value })}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="input-field"
+                        type="number"
+                        value={editForm.year}
+                        onChange={(e) => setEditForm({ ...editForm, year: Number(e.target.value) })}
+                      />
+                    </td>
+                    <td className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <button type="button" onClick={() => void saveEdit(r.id)} className="text-sm font-semibold text-green-700 hover:underline">
+                          Kaydet
+                        </button>
+                        <button type="button" onClick={cancelEdit} className="text-sm text-gray-500 hover:underline">
+                          Vazgeç
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  <tr key={r.id}>
+                    <td>{r.ref_no}</td>
+                    <td className="font-medium">{r.project_name}</td>
+                    <td className="max-w-xs truncate">{r.service}</td>
+                    <td>{r.district}</td>
+                    <td>{r.year}</td>
+                    <td className="text-right">
+                      <div className="flex justify-end gap-3">
+                        <button type="button" onClick={() => startEdit(r)} className="text-sm font-semibold text-retim-navy hover:underline">
+                          Düzenle
+                        </button>
+                        <button type="button" onClick={() => void handleDelete(r.id)} className="text-sm text-red-600 hover:underline">
+                          Sil
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              )}
             </tbody>
           </table>
+        )}
+        {!loading && list.length === 0 && (
+          <p className="p-8 text-center text-sm text-gray-500">Kayıt bulunamadı.</p>
         )}
       </div>
     </div>

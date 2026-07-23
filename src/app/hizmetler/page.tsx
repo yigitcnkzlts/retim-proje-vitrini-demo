@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import PageHero from "@/components/ui/PageHero";
 import ServiceCard from "@/components/services/ServiceCard";
-import { services } from "@/data/services";
+import { getServices } from "@/lib/cms/services";
 
 export const metadata: Metadata = {
   title: "Hizmetler",
   description: "Retim'in dış cephe, yalıtım, restorasyon ve güçlendirme hizmetleri.",
 };
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const services = await getServices();
+
   return (
     <>
       <PageHero

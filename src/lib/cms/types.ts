@@ -47,6 +47,8 @@ export interface DbPartner {
   updated_at: string;
 }
 
+export type SubmissionStatus = "new" | "contacted" | "in_progress" | "closed";
+
 export interface DbContactSubmission {
   id: string;
   name: string;
@@ -56,7 +58,50 @@ export interface DbContactSubmission {
   service: string | null;
   message: string | null;
   is_read: boolean;
+  status: SubmissionStatus;
+  admin_note: string;
   created_at: string;
+}
+
+export interface DbService {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  detail: string;
+  image_url: string | null;
+  image_alt: string;
+  project_types: string[];
+  sort_order: number;
+  active: boolean;
+  featured: boolean;
+  seo_title: string;
+  seo_description: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DbHomeContent {
+  id: number;
+  hero_title: string;
+  hero_description: string;
+  stats: Array<{ value: string; label: string }>;
+  discovery_lead: string;
+  approach_steps: Array<{ title: string; description: string }>;
+  home_districts: string[];
+  updated_at: string;
+}
+
+export interface DbAboutContent {
+  id: number;
+  intro: string;
+  experience: string;
+  team: string;
+  closing: string;
+  founder_name: string;
+  founder_title: string;
+  founder_image: string;
+  updated_at: string;
 }
 
 export interface ProjectInput {

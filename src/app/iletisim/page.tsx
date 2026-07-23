@@ -2,14 +2,16 @@ import type { Metadata } from "next";
 import PageHero from "@/components/ui/PageHero";
 import ContactForm from "@/components/contact/ContactForm";
 import MapCard from "@/components/contact/MapCard";
-import { siteConfig } from "@/data/site";
+import { getSiteSettings } from "@/lib/cms/site-settings";
 
 export const metadata: Metadata = {
   title: "İletişim",
   description: "Retim ile iletişime geçin. Ücretsiz keşif talebi için formu doldurun.",
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const settings = await getSiteSettings();
+
   return (
     <>
       <PageHero
@@ -42,10 +44,10 @@ export default function ContactPage() {
                     Telefon
                   </h3>
                   <a
-                    href={`tel:${siteConfig.officePhone.replace(/[^\d+]/g, "")}`}
+                    href={`tel:${settings.officePhone.replace(/[^\d+]/g, "")}`}
                     className="mt-2 block text-lg font-bold text-retim-navy hover:text-retim-orange"
                   >
-                    {siteConfig.officePhone}
+                    {settings.officePhone}
                   </a>
                 </div>
 
@@ -54,10 +56,10 @@ export default function ContactPage() {
                     E-posta
                   </h3>
                   <a
-                    href={`mailto:${siteConfig.email}`}
+                    href={`mailto:${settings.email}`}
                     className="mt-2 block text-lg font-bold text-retim-navy hover:text-retim-orange"
                   >
-                    {siteConfig.email}
+                    {settings.email}
                   </a>
                 </div>
 
@@ -65,21 +67,25 @@ export default function ContactPage() {
                   <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500">
                     Adres
                   </h3>
-                  <p className="mt-2 font-medium text-retim-navy">{siteConfig.addressLine1}</p>
-                  <p className="text-sm uppercase text-gray-600">{siteConfig.addressLine2}</p>
+                  <p className="mt-2 font-medium text-retim-navy">{settings.addressLine1}</p>
+                  <p className="text-sm uppercase text-gray-600">{settings.addressLine2}</p>
                 </div>
 
                 <div className="card-base">
                   <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500">
                     Çalışma Saatleri
                   </h3>
-                  <p className="mt-2 font-medium text-retim-navy">{siteConfig.workingHours}</p>
-                  <p className="text-sm text-gray-600">{siteConfig.workingHoursClosed}</p>
+                  <p className="mt-2 font-medium text-retim-navy">{settings.workingHours}</p>
+                  <p className="text-sm text-gray-600">{settings.workingHoursClosed}</p>
                 </div>
               </div>
 
               <div className="mt-8">
-                <MapCard />
+                <MapCard
+                  address={settings.address}
+                  mapsUrl={settings.mapsUrl}
+                  mapsEmbedUrl={settings.mapsEmbedUrl}
+                />
               </div>
             </div>
           </div>

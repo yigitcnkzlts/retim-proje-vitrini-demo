@@ -2,21 +2,23 @@ import Link from "next/link";
 import { getAllProjectsAdmin } from "@/lib/cms/projects";
 import { getAllRefsAdmin } from "@/lib/cms/references";
 import { getAllPartnersAdmin } from "@/lib/cms/partners";
+import { getAllServicesAdmin } from "@/lib/cms/services";
 import { getSubmissionsAdmin, getUnreadSubmissionCount } from "@/lib/cms/submissions";
 import { isCmsConfigured } from "@/lib/cms/supabase";
 
 export default async function AdminDashboardPage() {
   const configured = isCmsConfigured();
-  const [projects, catalogRefs, archiveRefs, partners, submissions, unread] = configured
+  const [projects, catalogRefs, archiveRefs, partners, services, submissions, unread] = configured
     ? await Promise.all([
         getAllProjectsAdmin(),
         getAllRefsAdmin("catalog"),
         getAllRefsAdmin("archive"),
         getAllPartnersAdmin(),
+        getAllServicesAdmin(),
         getSubmissionsAdmin(),
         getUnreadSubmissionCount(),
       ])
-    : [[], [], [], [], [], 0];
+    : [[], [], [], [], [], [], 0];
 
   return (
     <div className="p-6 md:p-8">
@@ -35,6 +37,7 @@ export default async function AdminDashboardPage() {
       )}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard label="Hizmetler" value={services.length} href="/admin/hizmetler" />
         <StatCard label="Projeler" value={projects.length} href="/admin/projeler" />
         <StatCard label="Katalog Referans" value={catalogRefs.length} href="/admin/referanslar" />
         <StatCard label="Çözüm Ortağı" value={partners.length} href="/admin/ortaklar" />
@@ -50,6 +53,9 @@ export default async function AdminDashboardPage() {
         <section className="admin-card">
           <h2 className="admin-card-title">Hızlı İşlemler</h2>
           <div className="mt-4 space-y-2">
+            <QuickLink href="/admin/ana-sayfa" label="Ana sayfa hero ve istatistikler" />
+            <QuickLink href="/admin/hizmetler" label="Hizmetleri düzenle" />
+            <QuickLink href="/admin/hakkimizda" label="Hakkımızda metinleri" />
             <QuickLink href="/admin/projeler" label="Proje detaylarını düzenle" />
             <QuickLink href="/admin/referanslar" label="Yeni referans ekle" />
             <QuickLink href="/admin/ortaklar" label="Çözüm ortağı yönet" />

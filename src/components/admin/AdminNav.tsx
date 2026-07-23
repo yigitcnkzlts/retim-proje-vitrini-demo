@@ -5,6 +5,9 @@ import { usePathname } from "next/navigation";
 
 const links = [
   { href: "/admin", label: "Dashboard", exact: true },
+  { href: "/admin/ana-sayfa", label: "Ana Sayfa" },
+  { href: "/admin/hizmetler", label: "Hizmetler" },
+  { href: "/admin/hakkimizda", label: "Hakkımızda" },
   { href: "/admin/projeler", label: "Projeler" },
   { href: "/admin/referanslar", label: "Referanslar" },
   { href: "/admin/ortaklar", label: "Çözüm Ortakları" },

@@ -3,9 +3,12 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import CountUp from "@/components/ui/CountUp";
-import { stats } from "@/data/site";
 
-export default function StatsSection() {
+interface StatsSectionProps {
+  stats: Array<{ value: string; label: string }>;
+}
+
+export default function StatsSection({ stats }: StatsSectionProps) {
   const pathname = usePathname();
   const prevPath = useRef(pathname);
   const [playKey, setPlayKey] = useState(0);

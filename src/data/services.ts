@@ -3,6 +3,8 @@ export interface Service {
   name: string;
   description: string;
   projectTypes: string[];
+  imageUrl?: string | null;
+  imageAlt?: string;
 }
 
 export const services: Service[] = [

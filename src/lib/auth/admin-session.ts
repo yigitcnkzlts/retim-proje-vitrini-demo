@@ -1,63 +1,23 @@
-import { createHmac, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
+import {
+  ADMIN_SESSION_MAX_AGE_SEC,
+  createAdminSessionToken,
+  verifyAdminSessionToken,
+} from "@/lib/auth/session-token";
 
 const COOKIE_NAME = "retim_admin_session";
-const MAX_AGE_SEC = 60 * 60 * 24 * 7; // 7 gün
 
-function getSecret(): string {
-  return process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_PASSWORD || "dev-secret-change-me";
-}
-
-function sign(payload: string): string {
-  return createHmac("sha256", getSecret()).update(payload).digest("base64url");
-}
-
-export function createAdminSessionToken(): string {
-  const payload = Buffer.from(
-    JSON.stringify({ iat: Date.now(), exp: Date.now() + MAX_AGE_SEC * 1000 })
-  ).toString("base64url");
-  return `${payload}.${sign(payload)}`;
-}
-
-export function verifyAdminSessionToken(token: string | undefined | null): boolean {
-  if (!token) return false;
-  const [payload, signature] = token.split(".");
-  if (!payload || !signature) return false;
-
-  const expected = sign(payload);
-  try {
-    const a = Buffer.from(signature);
-    const b = Buffer.from(expected);
-    if (a.length !== b.length) return false;
-    if (!timingSafeEqual(a, b)) return false;
-  } catch {
-    return false;
-  }
-
-  try {
-    const data = JSON.parse(Buffer.from(payload, "base64url").toString()) as {
-      exp?: number;
-    };
-    return typeof data.exp === "number" && data.exp > Date.now();
-  } catch {
-    return false;
-  }
-}
-
-export function verifyAdminPassword(password: string): boolean {
-  const expected = process.env.ADMIN_PASSWORD;
-  if (!expected) return false;
-  return password === expected;
-}
+export { verifyAdminSessionToken };
 
 export async function setAdminSessionCookie(): Promise<void> {
   const store = await cookies();
-  store.set(COOKIE_NAME, createAdminSessionToken(), {
+  const token = await createAdminSessionToken();
+  store.set(COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: MAX_AGE_SEC,
+    maxAge: ADMIN_SESSION_MAX_AGE_SEC,
   });
 }
 

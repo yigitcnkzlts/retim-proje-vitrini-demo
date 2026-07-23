@@ -1,12 +1,16 @@
-import { siteConfig } from "@/data/site";
+interface MapCardProps {
+  address: string;
+  mapsUrl: string;
+  mapsEmbedUrl: string;
+}
 
-export default function MapCard() {
+export default function MapCard({ address, mapsUrl, mapsEmbedUrl }: MapCardProps) {
   return (
     <div className="overflow-hidden rounded border border-retim-gray-dark">
       <div className="relative h-64 bg-retim-gray md:h-80">
         <iframe
           title="Retim Restorasyon konum haritası"
-          src={siteConfig.mapsEmbedUrl}
+          src={mapsEmbedUrl}
           className="absolute inset-0 h-full w-full border-0"
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
@@ -14,9 +18,9 @@ export default function MapCard() {
         />
       </div>
       <div className="border-t border-retim-gray-dark bg-white p-4">
-        <p className="mb-3 text-center text-sm text-gray-600">{siteConfig.address}</p>
+        <p className="mb-3 text-center text-sm text-gray-600">{address}</p>
         <a
-          href={siteConfig.mapsUrl}
+          href={mapsUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="btn-secondary w-full text-center"

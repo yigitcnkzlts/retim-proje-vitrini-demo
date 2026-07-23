@@ -1,6 +1,9 @@
 import { siteConfig } from "@/data/site";
+import { getSiteSettings } from "@/lib/cms/site-settings";
 
-export default function TopBar() {
+export default async function TopBar() {
+  const settings = await getSiteSettings();
+
   return (
     <div className="hidden border-b border-retim-gray-dark bg-retim-navy text-white lg:block">
       <div className="container-main">
@@ -8,16 +11,19 @@ export default function TopBar() {
           <p className="font-medium text-gray-300">{siteConfig.legalName}</p>
           <div className="flex items-center gap-6 text-gray-300">
             <a
-              href={`tel:${siteConfig.officePhone.replace(/[^\d+]/g, "")}`}
+              href={`tel:${settings.officePhone.replace(/[^\d+]/g, "")}`}
               className="transition-colors duration-200 hover:text-retim-orange"
             >
-              {siteConfig.officePhone}
+              {settings.officePhone}
             </a>
-            <a href={`mailto:${siteConfig.email}`} className="transition-colors duration-200 hover:text-retim-orange">
-              {siteConfig.email}
+            <a
+              href={`mailto:${settings.email}`}
+              className="transition-colors duration-200 hover:text-retim-orange"
+            >
+              {settings.email}
             </a>
             <span>
-              {siteConfig.workingHours} · {siteConfig.workingHoursClosed}
+              {settings.workingHours} · {settings.workingHoursClosed}
             </span>
           </div>
         </div>

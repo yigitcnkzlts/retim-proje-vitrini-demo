@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { footerLinks, siteConfig, socialLinks } from "@/data/site";
 import { getFooterLatestProjects } from "@/lib/cms/references";
+import { getSiteSettings } from "@/lib/cms/site-settings";
 import RetimLogo from "@/components/ui/RetimLogo";
 
 function SocialIcon({ icon }: { icon: string }) {
@@ -29,7 +30,10 @@ function SocialIcon({ icon }: { icon: string }) {
 }
 
 export default async function Footer() {
-  const latestProjects = await getFooterLatestProjects(5);
+  const [latestProjects, settings] = await Promise.all([
+    getFooterLatestProjects(5),
+    getSiteSettings(),
+  ]);
 
   return (
     <footer className="border-t border-retim-gray-dark bg-retim-navy text-white">
@@ -86,26 +90,26 @@ export default async function Footer() {
             </h3>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
-                <p>{siteConfig.addressLine1}</p>
-                <p className="uppercase">{siteConfig.addressLine2}</p>
+                <p>{settings.addressLine1}</p>
+                <p className="uppercase">{settings.addressLine2}</p>
               </li>
               <li>
                 <a
-                  href={`tel:${siteConfig.officePhone.replace(/[^\d+]/g, "")}`}
+                  href={`tel:${settings.officePhone.replace(/[^\d+]/g, "")}`}
                   className="transition-colors hover:text-retim-orange"
                 >
-                  {siteConfig.officePhone}
+                  {settings.officePhone}
                 </a>
               </li>
               <li>
-                <a href={`mailto:${siteConfig.email}`} className="transition-colors hover:text-retim-orange">
-                  {siteConfig.email}
+                <a href={`mailto:${settings.email}`} className="transition-colors hover:text-retim-orange">
+                  {settings.email}
                 </a>
               </li>
               <li>
-                {siteConfig.workingHours}
+                {settings.workingHours}
                 <br />
-                {siteConfig.workingHoursClosed}
+                {settings.workingHoursClosed}
               </li>
             </ul>
 

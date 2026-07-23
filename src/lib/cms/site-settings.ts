@@ -7,7 +7,12 @@ export type SiteSettingsMap = {
   whatsapp: string;
   email: string;
   address: string;
+  addressLine1: string;
+  addressLine2: string;
   workingHours: string;
+  workingHoursClosed: string;
+  mapsUrl: string;
+  mapsEmbedUrl: string;
 };
 
 const DEFAULT_SETTINGS: SiteSettingsMap = {
@@ -16,8 +21,23 @@ const DEFAULT_SETTINGS: SiteSettingsMap = {
   whatsapp: siteConfig.whatsapp,
   email: siteConfig.email,
   address: siteConfig.address,
+  addressLine1: siteConfig.addressLine1,
+  addressLine2: siteConfig.addressLine2,
   workingHours: siteConfig.workingHours,
+  workingHoursClosed: siteConfig.workingHoursClosed,
+  mapsUrl: siteConfig.mapsUrl,
+  mapsEmbedUrl: siteConfig.mapsEmbedUrl,
 };
+
+function whatsappDigits(phone: string): string {
+  return phone.replace(/\D/g, "");
+}
+
+export function buildWhatsappUrl(phone: string, message?: string): string {
+  const digits = whatsappDigits(phone);
+  const text = message ?? siteConfig.whatsappMessage;
+  return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
+}
 
 export async function getSiteSettings(): Promise<SiteSettingsMap> {
   if (!isCmsConfigured()) return DEFAULT_SETTINGS;
@@ -30,8 +50,11 @@ export async function getSiteSettings(): Promise<SiteSettingsMap> {
 
   const merged = { ...DEFAULT_SETTINGS };
   for (const row of data as { key: string; value: unknown }[]) {
-    if (row.key in merged && typeof row.value === "string") {
+    if (!(row.key in merged)) continue;
+    if (typeof row.value === "string") {
       merged[row.key as keyof SiteSettingsMap] = row.value;
+    } else if (row.value != null) {
+      merged[row.key as keyof SiteSettingsMap] = String(row.value);
     }
   }
   return merged;
@@ -50,3 +73,5 @@ export async function updateSiteSettings(settings: Partial<SiteSettingsMap>): Pr
   const { error } = await client.from("site_settings").upsert(rows);
   if (error) throw new Error(error.message);
 }
+
+export { DEFAULT_SETTINGS as defaultSiteSettings };
