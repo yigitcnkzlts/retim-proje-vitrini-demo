@@ -48,6 +48,7 @@ export default function AdminProjectsPage() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -73,6 +74,28 @@ export default function AdminProjectsPage() {
   useEffect(() => {
     void load();
   }, []);
+
+  async function syncFromSite() {
+    setSyncing(true);
+    setError("");
+    setMessage("");
+    const res = await fetch("/api/admin/projects", { method: "PUT" });
+    const data = (await res.json()) as {
+      imported?: number;
+      removed?: number;
+      total?: number;
+      projects?: DbProject[];
+      message?: string;
+      error?: string;
+    };
+    setSyncing(false);
+    if (!res.ok) {
+      setError(data.error || "Siteden aktarım başarısız.");
+      return;
+    }
+    if (data.projects) setProjects(data.projects);
+    setMessage(data.message || "Aktarım tamamlandı.");
+  }
 
   function onServiceSelect(slug: string) {
     const found = services.find((s) => s.slug === slug);
@@ -200,13 +223,22 @@ export default function AdminProjectsPage() {
         <div>
           <h1 className="text-2xl font-bold text-retim-navy">Projeler</h1>
           <p className="mt-1 text-sm text-gray-600">
-            Her alanın altında sitede nereye gittiği yazılıdır. Görsel yüklediğinizde canlı proje sayfasındaki
-            kapak fotoğrafı olarak görünür.
+            Panel, sitede görünen 10 öne çıkan proje ile aynı kalır. Fazla kayıtlar otomatik temizlenir.
           </p>
         </div>
-        <button type="button" onClick={() => setShowForm((v) => !v)} className="btn-primary">
-          {showForm ? "Formu Kapat" : "+ Yeni Proje Ekle"}
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => void syncFromSite()}
+            disabled={syncing || !configured}
+            className="rounded-lg border border-retim-navy/20 bg-white px-4 py-2 text-sm font-semibold text-retim-navy hover:bg-retim-navy/5 disabled:opacity-50"
+          >
+            {syncing ? "Eşitleniyor…" : "Site ile eşitle (10 proje)"}
+          </button>
+          <button type="button" onClick={() => setShowForm((v) => !v)} className="btn-primary">
+            {showForm ? "Formu Kapat" : "+ Yeni Proje Ekle"}
+          </button>
+        </div>
       </div>
 
       {!configured && <SetupAlert />}

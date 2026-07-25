@@ -124,15 +124,10 @@ function staticProjectsAsDb(): DbProject[] {
   }));
 }
 
-/** Sitedeki statik projeleri veritabanına aktarır (boşsa). */
-async function syncStaticProjectsIfEmpty(): Promise<void> {
-  const client = getSupabaseAdmin();
-  if (!client) return;
+const EXCLUDED_SLUGS_KEY = "excluded_project_slugs";
 
-  const { count } = await client.from("projects").select("*", { count: "exact", head: true });
-  if ((count ?? 0) > 0) return;
-
-  const rows = staticProjects.map((p) => ({
+function projectToDbRow(p: Project) {
+  return {
     slug: p.slug,
     name: p.name,
     district: p.district,
@@ -151,21 +146,106 @@ async function syncStaticProjectsIfEmpty(): Promise<void> {
     image_url: p.image,
     image_fallback: p.imageFallback,
     image_alt: p.imageAlt,
-  }));
+  };
+}
 
-  const { error } = await client.from("projects").upsert(rows, { onConflict: "slug" });
-  if (error) console.error("Proje senkron hatası:", error.message);
+async function getExcludedProjectSlugs(): Promise<Set<string>> {
+  const client = getSupabaseAdmin();
+  if (!client) return new Set();
+  const { data } = await client
+    .from("site_settings")
+    .select("value")
+    .eq("key", EXCLUDED_SLUGS_KEY)
+    .maybeSingle();
+  const value = data?.value;
+  if (Array.isArray(value)) return new Set(value.map(String));
+  return new Set();
+}
+
+async function addExcludedProjectSlug(slug: string): Promise<void> {
+  const client = getSupabaseAdmin();
+  if (!client) return;
+  const excluded = await getExcludedProjectSlugs();
+  excluded.add(slug);
+  await client.from("site_settings").upsert({
+    key: EXCLUDED_SLUGS_KEY,
+    value: Array.from(excluded),
+    updated_at: new Date().toISOString(),
+  });
+}
+
+/**
+ * Sitede görünen öne çıkan 10 projeyi panele aktarır;
+ * katalogdan gelen fazla projeleri siler (panel = site).
+ * Panelden elle eklenen (katalog dışı) projeler korunur.
+ * Daha önce silinen öne çıkanlar (excluded) tekrar eklenmez.
+ */
+export async function syncSiteProjectsToAdmin(): Promise<{
+  imported: number;
+  removed: number;
+  total: number;
+}> {
+  const client = getSupabaseAdmin();
+  if (!client) return { imported: 0, removed: 0, total: 0 };
+
+  const excluded = await getExcludedProjectSlugs();
+  const siteProjects = getStaticFeaturedProjects().filter((p) => !excluded.has(p.slug));
+  const keepFeatured = new Set(siteProjects.map((p) => p.slug));
+  const catalogSlugs = new Set(staticProjects.map((p) => p.slug));
+
+  const { data: existing } = await client.from("projects").select("slug");
+  const existingSlugs = (existing ?? []).map((r) => r.slug as string);
+  const have = new Set(existingSlugs);
+
+  const missing = siteProjects.filter((p) => !have.has(p.slug)).map(projectToDbRow);
+  if (missing.length > 0) {
+    const { error } = await client.from("projects").insert(missing);
+    if (error) throw new Error(error.message);
+  }
+
+  // Katalogdaki ama sitede görünmeyen (öne çıkmayan) fazla kayıtları temizle
+  const extras = existingSlugs.filter(
+    (slug) => catalogSlugs.has(slug) && !keepFeatured.has(slug)
+  );
+  let removed = 0;
+  if (extras.length > 0) {
+    const { error, data } = await client.from("projects").delete().in("slug", extras).select("id");
+    if (error) throw new Error(error.message);
+    removed = data?.length ?? extras.length;
+  }
+
+  return { imported: missing.length, removed, total: keepFeatured.size };
+}
+
+function featuredStaticAsDb(): DbProject[] {
+  const bySlug = new Map(staticProjectsAsDb().map((p) => [p.slug, p]));
+  return getStaticFeaturedProjects()
+    .map((p) => bySlug.get(p.slug))
+    .filter((p): p is DbProject => Boolean(p));
+}
+
+/** Admin açılınca sitedeki 10 proje ile paneli eşitle. */
+async function ensureSiteProjectsSynced(): Promise<void> {
+  try {
+    await syncSiteProjectsToAdmin();
+  } catch (error) {
+    console.error("Proje senkron hatası:", error instanceof Error ? error.message : error);
+  }
 }
 
 export async function getAllProjectsAdmin(): Promise<DbProject[]> {
   const client = getSupabaseAdmin();
-  if (!client) return staticProjectsAsDb();
+  if (!client) return featuredStaticAsDb();
 
-  await syncStaticProjectsIfEmpty();
+  await ensureSiteProjectsSynced();
 
   const fromDb = await fetchAllProjectsAdmin();
-  if (fromDb && fromDb.length > 0) return fromDb;
-  return staticProjectsAsDb();
+  if (!fromDb || fromDb.length === 0) return featuredStaticAsDb();
+
+  // Panelde sadece sitedeki öne çıkanlar + panelden elle eklenenler
+  const featuredSlugs = new Set(getStaticFeaturedProjects().map((p) => p.slug));
+  const catalogSlugs = new Set(staticProjects.map((p) => p.slug));
+  return fromDb.filter((p) => featuredSlugs.has(p.slug) || !catalogSlugs.has(p.slug));
 }
 
 export async function getProjectBySlug(slug: string): Promise<Project | undefined> {
@@ -243,14 +323,14 @@ export async function deleteProject(slug: string): Promise<void> {
   const client = getSupabaseAdmin();
   if (!client) throw new Error("CMS yapılandırılmamış");
 
-  // Silmeden önce sitedeki liste DB'deyse eşitle (ilk kurulum)
-  await syncStaticProjectsIfEmpty();
-
   const { data, error } = await client.from("projects").delete().eq("slug", slug).select("id");
   if (error) throw new Error(error.message);
   if (!data || data.length === 0) {
     throw new Error("Proje bulunamadı veya zaten silinmiş.");
   }
+
+  // Sitedeki öne çıkan listeden tekrar otomatik eklenmesin
+  await addExcludedProjectSlug(slug);
 }
 
 export async function getProjectSlugs(): Promise<string[]> {
