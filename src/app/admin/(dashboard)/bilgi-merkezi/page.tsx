@@ -41,21 +41,27 @@ export default function AdminFaqPage() {
 
   async function load() {
     setLoading(true);
+    // Önce sitedeki listeyi göster; API gelene kadar boş kalmasın
+    setItems((prev) => (prev.length > 0 ? prev : SITE_FAQ));
     try {
       const res = await fetch("/api/admin/faq");
       const data = (await res.json()) as {
-        configured: boolean;
-        items: DbFaqItem[];
+        configured?: boolean;
+        items?: DbFaqItem[];
         siteFaqCount?: number;
         message?: string;
+        error?: string;
       };
-      setConfigured(data.configured);
-      if (data.items && data.items.length > 0) {
-        setItems(data.items);
+      if (typeof data.configured === "boolean") setConfigured(data.configured);
+      const apiItems = data.items || [];
+      // API siteden az dönerse site listesini koru
+      if (apiItems.length >= SITE_FAQ.length * 0.5) {
+        setItems(apiItems);
       } else {
         setItems(SITE_FAQ);
       }
-      if (data.message && !data.configured) setMessage(data.message);
+      if (data.message && data.configured === false) setMessage(data.message);
+      if (data.error) setError(data.error);
     } catch {
       setItems(SITE_FAQ);
     } finally {

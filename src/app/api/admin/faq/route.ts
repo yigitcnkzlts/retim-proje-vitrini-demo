@@ -4,23 +4,46 @@ import { requireAdminApi } from "@/lib/auth/require-admin";
 import { createFaqItem, getAllFaqAdmin, getSiteFaqCount, syncSiteFaqToAdmin } from "@/lib/cms/faq";
 import { isCmsConfigured } from "@/lib/cms/supabase";
 import { faqInputSchema } from "@/lib/validation/schemas";
+import { flattenFaqCategories, faqCategories } from "@/data/faq";
+import type { DbFaqItem } from "@/lib/cms/types";
+
+function siteFaqFallback(): DbFaqItem[] {
+  const now = new Date().toISOString();
+  return flattenFaqCategories(faqCategories).map((r, i) => ({
+    id: `static-faq-${i}`,
+    category_slug: r.category_slug,
+    category_title: r.category_title,
+    question: r.question,
+    answer: r.answer,
+    sort_order: r.sort_order,
+    active: true,
+    created_at: now,
+    updated_at: now,
+  }));
+}
 
 export async function GET() {
   const denied = await requireAdminApi();
   if (denied) return denied;
 
-  const items = await getAllFaqAdmin();
-  return NextResponse.json({
-    configured: isCmsConfigured(),
-    siteFaqCount: getSiteFaqCount(),
-    items,
-    message: isCmsConfigured()
-      ? undefined
-      : "Supabase yapılandırılmamış. Liste sitedeki soruları gösterir; kaydetmek için env + faq_items tablosu gerekli.",
-  });
+  try {
+    const items = await getAllFaqAdmin();
+    return NextResponse.json({
+      configured: isCmsConfigured(),
+      siteFaqCount: getSiteFaqCount(),
+      items: items.length > 0 ? items : siteFaqFallback(),
+    });
+  } catch (error) {
+    console.error("FAQ GET:", error);
+    return NextResponse.json({
+      configured: isCmsConfigured(),
+      siteFaqCount: getSiteFaqCount(),
+      items: siteFaqFallback(),
+    });
+  }
 }
 
-/** Sitedeki tüm Bilgi Merkezi sorularını panele aktarır. */
+/** Sitedeki tüm Bilgi Merkezi sorularını panele / DB'ye aktarır. */
 export async function PUT() {
   const denied = await requireAdminApi();
   if (denied) return denied;
@@ -31,15 +54,20 @@ export async function PUT() {
     const items = await getAllFaqAdmin();
     return NextResponse.json({
       ...result,
-      items,
+      items: items.length > 0 ? items : siteFaqFallback(),
       message:
         result.imported > 0
-          ? `${result.imported} soru siteden aktarıldı. Toplam: ${items.length}.`
-          : `Tüm sorular panelde. Toplam: ${items.length}.`,
+          ? `${result.imported} soru siteden aktarıldı. Toplam: ${items.length || getSiteFaqCount()}.`
+          : `Tüm sorular panelde. Toplam: ${items.length || getSiteFaqCount()}.`,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Aktarım başarısız.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    // Tablo yoksa bile site listesini döndür
+    return NextResponse.json({
+      error: `${message} (Supabase'de 0002_faq_items.sql çalıştırın)`,
+      items: siteFaqFallback(),
+      configured: isCmsConfigured(),
+    }, { status: 500 });
   }
 }
 

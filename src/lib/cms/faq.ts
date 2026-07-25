@@ -133,42 +133,56 @@ export async function getFaqCategories(): Promise<FaqCategory[]> {
 }
 
 /**
- * Panelde sitedeki Bilgi Merkezi soruları birebir görünsün:
- * site listesi temel, DB UUID/güncellemeleri üzerine yazılır.
+ * Panelde sitedeki Bilgi Merkezi soruları birebir görünsün.
+ * GET'te senkron yok (timeout olmasın); site listesi her zaman temel.
  */
 async function mergeSiteFaqWithDb(): Promise<DbFaqItem[]> {
+  const siteRows = staticFaqAsDb();
   const client = getSupabaseAdmin();
-  const excluded = client ? await getExcludedQuestions() : new Set<string>();
-  const siteRows = staticFaqAsDb().filter((r) => !excluded.has(r.question));
-
   if (!client) return siteRows;
 
-  // Eksikleri sessizce aktarmayı dene (tablo yoksa site listesi kalır)
+  let excluded = new Set<string>();
   try {
-    await syncSiteFaqToAdmin();
-  } catch (error) {
-    console.error("FAQ senkron hatası:", error instanceof Error ? error.message : error);
+    excluded = await getExcludedQuestions();
+  } catch {
+    /* site_settings yoksa devam */
   }
 
-  const { data } = await client.from("faq_items").select("*").order("sort_order", { ascending: true });
-  const dbRows = (data as DbFaqItem[]) ?? [];
-  const byQuestion = new Map(dbRows.map((r) => [r.question, r]));
+  // Yanlışlıkla hepsi excluded olduysa yine de site listesini göster
+  let visibleSite = siteRows.filter((r) => !excluded.has(r.question));
+  if (visibleSite.length === 0) visibleSite = siteRows;
 
-  const merged = siteRows.map((r) => byQuestion.get(r.question) ?? r);
+  try {
+    const { data, error } = await client
+      .from("faq_items")
+      .select("*")
+      .order("sort_order", { ascending: true });
+    if (error || !data) return visibleSite;
 
-  // Panelden elle eklenen (sitede olmayan) sorular
-  const siteQuestions = new Set(siteRows.map((r) => r.question));
-  for (const row of dbRows) {
-    if (!siteQuestions.has(row.question) && !excluded.has(row.question)) {
-      merged.push(row);
+    const dbRows = data as DbFaqItem[];
+    const byQuestion = new Map(dbRows.map((r) => [r.question, r]));
+    const merged = visibleSite.map((r) => byQuestion.get(r.question) ?? r);
+
+    const siteQuestions = new Set(visibleSite.map((r) => r.question));
+    for (const row of dbRows) {
+      if (!siteQuestions.has(row.question) && !excluded.has(row.question)) {
+        merged.push(row);
+      }
     }
+    return merged.sort((a, b) => a.sort_order - b.sort_order);
+  } catch {
+    return visibleSite;
   }
-
-  return merged.sort((a, b) => a.sort_order - b.sort_order);
 }
 
 export async function getAllFaqAdmin(): Promise<DbFaqItem[]> {
-  return mergeSiteFaqWithDb();
+  try {
+    const rows = await mergeSiteFaqWithDb();
+    // Hiçbir durumda boş dönme — sitedeki listeyi göster
+    return rows.length > 0 ? rows : staticFaqAsDb();
+  } catch {
+    return staticFaqAsDb();
+  }
 }
 
 export function getSiteFaqCount(): number {

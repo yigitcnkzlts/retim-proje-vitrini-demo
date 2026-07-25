@@ -31,18 +31,22 @@ export default function AdminPartnersPage() {
   const [editUploading, setEditUploading] = useState(false);
 
   async function load() {
+    setPartners((prev) => (prev.length > 0 ? prev : SITE_PARTNERS));
     try {
       const res = await fetch("/api/admin/partners");
       const data = (await res.json()) as {
         configured?: boolean;
         partners?: DbPartner[];
+        error?: string;
       };
       setConfigured(data.configured !== false);
-      if (data.partners && data.partners.length > 0) {
-        setPartners(data.partners);
+      const apiPartners = data.partners || [];
+      if (apiPartners.length >= SITE_PARTNERS.length * 0.5) {
+        setPartners(apiPartners);
       } else {
         setPartners(SITE_PARTNERS);
       }
+      if (data.error) setError(data.error);
     } catch {
       setPartners(SITE_PARTNERS);
     }

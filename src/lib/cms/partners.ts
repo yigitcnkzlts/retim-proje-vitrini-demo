@@ -98,32 +98,49 @@ export async function getPartners(): Promise<Partner[]> {
 }
 
 export async function getAllPartnersAdmin(): Promise<DbPartner[]> {
+  const siteRows = staticPartnersAsDb();
   const client = getSupabaseAdmin();
-  if (!client) return staticPartnersAsDb();
+  if (!client) return siteRows;
+
+  let excluded = new Set<string>();
+  try {
+    excluded = await getExcludedPartnerNames();
+  } catch {
+    /* site_settings yoksa devam */
+  }
+
+  let visibleSite = siteRows.filter((p) => !excluded.has(p.name));
+  if (visibleSite.length === 0) visibleSite = siteRows;
 
   try {
-    await syncSitePartnersToAdmin();
-  } catch (error) {
-    console.error("Ortak senkron hatası:", error instanceof Error ? error.message : error);
+    const { data, error } = await client
+      .from("partners")
+      .select("*")
+      .order("sort_order", { ascending: true });
+    if (error || !data || data.length === 0) return visibleSite;
+
+    const dbRows = (data as DbPartner[]).filter((p) => !excluded.has(p.name));
+    const byName = new Map(dbRows.map((r) => [r.name, r]));
+    const merged = visibleSite.map((r) => byName.get(r.name) ?? r);
+
+    const siteNames = new Set(visibleSite.map((r) => r.name));
+    for (const row of dbRows) {
+      if (!siteNames.has(row.name)) merged.push(row);
+    }
+    return merged.sort((a, b) => a.sort_order - b.sort_order);
+  } catch {
+    return visibleSite;
   }
+}
 
-  const excluded = await getExcludedPartnerNames();
-  const siteRows = staticPartnersAsDb().filter((p) => !excluded.has(p.name));
-
-  const { data } = await client.from("partners").select("*").order("sort_order", { ascending: true });
-  const dbRows = ((data as DbPartner[]) ?? []).filter((p) => !excluded.has(p.name));
-
-  if (dbRows.length === 0) return siteRows;
-
-  const byName = new Map(dbRows.map((r) => [r.name, r]));
-  const merged = siteRows.map((r) => byName.get(r.name) ?? r);
-
-  const siteNames = new Set(siteRows.map((r) => r.name));
-  for (const row of dbRows) {
-    if (!siteNames.has(row.name)) merged.push(row);
+/** Güvenli admin listesi — hata olsa bile sitedeki markalar döner */
+export async function getAllPartnersAdminSafe(): Promise<DbPartner[]> {
+  try {
+    const rows = await getAllPartnersAdmin();
+    return rows.length > 0 ? rows : staticPartnersAsDb();
+  } catch {
+    return staticPartnersAsDb();
   }
-
-  return merged.sort((a, b) => a.sort_order - b.sort_order);
 }
 
 export function getSitePartnerCount(): number {
