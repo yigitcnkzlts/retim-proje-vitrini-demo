@@ -12,6 +12,7 @@ const links = [
   { href: "/admin/referanslar", label: "Referanslar" },
   { href: "/admin/ortaklar", label: "Çözüm Ortakları" },
   { href: "/admin/formlar", label: "Keşif Talepleri" },
+  { href: "/admin/bilgi-merkezi", label: "Bilgi Merkezi" },
   { href: "/admin/ayarlar", label: "Site Ayarları" },
 ];
 

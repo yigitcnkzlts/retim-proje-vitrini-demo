@@ -79,3 +79,12 @@ export const aboutContentSchema = z.object({
   founderTitle: z.string().trim().optional().default("Kurucu"),
   founderImage: z.string().trim().optional().default("/images/retim/hakkimizda/kurumsal.jpeg"),
 });
+
+export const faqInputSchema = z.object({
+  category_slug: z.string().trim().min(1, "Kategori gerekli."),
+  category_title: z.string().trim().min(1, "Kategori başlığı gerekli."),
+  question: z.string().trim().min(3, "Soru en az 3 karakter olmalıdır."),
+  answer: z.string().trim().min(3, "Cevap en az 3 karakter olmalıdır."),
+  sort_order: z.number().int().optional().default(0),
+  active: z.boolean().optional().default(true),
+});

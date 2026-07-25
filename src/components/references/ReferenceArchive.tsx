@@ -8,7 +8,6 @@ import {
   sortReferencesNewestFirst,
   years,
 } from "@/data/references";
-import NoCopyZone from "@/components/references/NoCopyZone";
 
 interface ReferenceArchiveProps {
   items?: Reference[];
@@ -102,50 +101,48 @@ export default function ReferenceArchive({ items = staticReferences }: Reference
         </p>
       </div>
 
-      <NoCopyZone>
-        {filtered.length === 0 ? (
-          <div className="rounded border border-retim-gray-dark bg-retim-gray py-12 text-center">
-            <p className="text-gray-600">Arama kriterlerinize uygun referans bulunamadı.</p>
+      {filtered.length === 0 ? (
+        <div className="rounded border border-retim-gray-dark bg-retim-gray py-12 text-center">
+          <p className="text-gray-600">Arama kriterlerinize uygun referans bulunamadı.</p>
+        </div>
+      ) : (
+        <>
+          <div className="hidden overflow-hidden rounded border border-retim-gray-dark md:block">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[700px]">
+                <thead>
+                  <tr>
+                    <th className="table-header">NO</th>
+                    <th className="table-header">PROJE</th>
+                    <th className="table-header">İŞLEM</th>
+                    <th className="table-header">KONUM</th>
+                    <th className="table-header">YIL</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pageItems.map((ref) => (
+                    <ReferenceRow key={`${ref.refNo}-${ref.projectName}`} ref={ref} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        ) : (
-          <>
-            <div className="hidden overflow-hidden rounded border border-retim-gray-dark md:block">
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[700px]">
-                  <thead>
-                    <tr>
-                      <th className="table-header">NO</th>
-                      <th className="table-header">PROJE</th>
-                      <th className="table-header">İŞLEM</th>
-                      <th className="table-header">KONUM</th>
-                      <th className="table-header">YIL</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pageItems.map((ref) => (
-                      <ReferenceRow key={`${ref.refNo}-${ref.projectName}`} ref={ref} />
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
 
-            <div className="space-y-3 md:hidden">
-              {pageItems.map((ref) => (
-                <ReferenceMobileCard key={`${ref.refNo}-${ref.projectName}`} ref={ref} />
-              ))}
-            </div>
+          <div className="space-y-3 md:hidden">
+            {pageItems.map((ref) => (
+              <ReferenceMobileCard key={`${ref.refNo}-${ref.projectName}`} ref={ref} />
+            ))}
+          </div>
 
-            {totalPages > 1 && (
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setPage}
-              />
-            )}
-          </>
-        )}
-      </NoCopyZone>
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
+          )}
+        </>
+      )}
     </div>
   );
 }

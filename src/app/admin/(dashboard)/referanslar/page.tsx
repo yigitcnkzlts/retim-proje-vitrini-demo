@@ -17,6 +17,7 @@ export default function AdminReferencesPage() {
   const [tab, setTab] = useState<"catalog" | "archive">("catalog");
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<RefFormState | null>(null);
   const [form, setForm] = useState({
@@ -48,6 +49,7 @@ export default function AdminReferencesPage() {
   async function handleCreate(e: FormEvent) {
     e.preventDefault();
     setMessage("");
+    setError("");
     const res = await fetch("/api/admin/references", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -55,7 +57,7 @@ export default function AdminReferencesPage() {
     });
     const data = (await res.json()) as { error?: string };
     if (!res.ok) {
-      setMessage(data.error || "Eklenemedi.");
+      setError(data.error || "Eklenemedi.");
       return;
     }
     setMessage("Referans eklendi.");
@@ -64,8 +66,16 @@ export default function AdminReferencesPage() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Bu referansı silmek istediğinize emin misiniz?")) return;
-    await fetch(`/api/admin/references/${id}`, { method: "DELETE" });
+    if (!confirm("Bu referansı çıkarmak istediğinize emin misiniz? Listeden kalıcı olarak silinir.")) return;
+    setMessage("");
+    setError("");
+    const res = await fetch(`/api/admin/references/${id}`, { method: "DELETE" });
+    const data = (await res.json().catch(() => ({}))) as { error?: string };
+    if (!res.ok) {
+      setError(data.error || "Referans çıkarılamadı.");
+      return;
+    }
+    setMessage("Referans çıkarıldı.");
     await load();
   }
 
@@ -123,6 +133,7 @@ export default function AdminReferencesPage() {
           <input className="input-field" placeholder="Semt" value={form.district} onChange={(e) => setForm({ ...form, district: e.target.value })} required />
           <input className="input-field" type="number" placeholder="Yıl" value={form.year} onChange={(e) => setForm({ ...form, year: Number(e.target.value) })} required />
         </div>
+        {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
         {message && <p className="mt-3 text-sm text-green-700">{message}</p>}
         <button type="submit" className="btn-primary mt-4">Ekle</button>
       </form>
@@ -205,8 +216,8 @@ export default function AdminReferencesPage() {
                         <button type="button" onClick={() => startEdit(r)} className="text-sm font-semibold text-retim-navy hover:underline">
                           Düzenle
                         </button>
-                        <button type="button" onClick={() => void handleDelete(r.id)} className="text-sm text-red-600 hover:underline">
-                          Sil
+                        <button type="button" onClick={() => void handleDelete(r.id)} className="rounded border border-red-200 px-2 py-1 text-sm font-semibold text-red-600 hover:bg-red-50">
+                          Çıkar
                         </button>
                       </div>
                     </td>

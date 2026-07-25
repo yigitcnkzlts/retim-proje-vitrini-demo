@@ -24,6 +24,8 @@ const EMPTY_FORM = {
   featured: false,
   published: true,
   short_description: "",
+  image_url: "",
+  image_alt: "",
 };
 
 export default function AdminProjectsPage() {
@@ -33,6 +35,7 @@ export default function AdminProjectsPage() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
@@ -49,6 +52,22 @@ export default function AdminProjectsPage() {
     void load();
   }, []);
 
+  async function handleImageUpload(file: File) {
+    setUploading(true);
+    setError("");
+    const body = new FormData();
+    body.append("file", file);
+    body.append("folder", "projects");
+    const res = await fetch("/api/admin/upload", { method: "POST", body });
+    const data = (await res.json()) as { url?: string; error?: string };
+    setUploading(false);
+    if (!res.ok) {
+      setError(data.error || "Görsel yüklenemedi.");
+      return;
+    }
+    setForm((prev) => ({ ...prev, image_url: data.url || "" }));
+  }
+
   async function handleCreate(e: FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -60,6 +79,8 @@ export default function AdminProjectsPage() {
       ...form,
       slug,
       service_slug: form.service_slug || slugify(form.service),
+      image_url: form.image_url || null,
+      image_alt: form.image_alt || null,
       scope: [],
       highlights: [],
     };
@@ -164,6 +185,42 @@ export default function AdminProjectsPage() {
             value={form.short_description}
             onChange={(e) => setForm({ ...form, short_description: e.target.value })}
           />
+
+          <div className="mt-4 rounded-lg border border-gray-200 p-4">
+            <h3 className="text-sm font-semibold text-retim-navy">Proje Görseli</h3>
+            <div className="mt-3 grid gap-3 md:grid-cols-2">
+              <div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  disabled={uploading}
+                  className="input-field"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) void handleImageUpload(file);
+                  }}
+                />
+                <input
+                  className="input-field mt-2"
+                  placeholder="veya görsel URL yapıştırın"
+                  value={form.image_url}
+                  onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+                />
+              </div>
+              <input
+                className="input-field self-end"
+                placeholder="Görsel alt metni"
+                value={form.image_alt}
+                onChange={(e) => setForm({ ...form, image_alt: e.target.value })}
+              />
+            </div>
+            {form.image_url && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={form.image_url} alt="" className="mt-3 h-28 w-auto rounded-lg border object-cover" />
+            )}
+            {uploading && <p className="mt-2 text-xs text-gray-500">Görsel yükleniyor...</p>}
+          </div>
+
           <div className="mt-3 flex items-center gap-6">
             <label className="flex items-center gap-2 text-sm text-gray-700">
               <input
@@ -183,7 +240,7 @@ export default function AdminProjectsPage() {
             </label>
           </div>
           {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
-          <button type="submit" disabled={saving} className="btn-primary mt-4 disabled:opacity-60">
+          <button type="submit" disabled={saving || uploading} className="btn-primary mt-4 disabled:opacity-60">
             {saving ? "Ekleniyor..." : "Projeyi Ekle"}
           </button>
         </form>
@@ -198,6 +255,7 @@ export default function AdminProjectsPage() {
           <table className="admin-table">
             <thead>
               <tr>
+                <th>Görsel</th>
                 <th>Proje</th>
                 <th>Semt</th>
                 <th>Yıl</th>
@@ -209,6 +267,14 @@ export default function AdminProjectsPage() {
             <tbody>
               {projects.map((p) => (
                 <tr key={p.id}>
+                  <td>
+                    {p.image_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={p.image_url} alt="" className="h-10 w-14 rounded object-cover" />
+                    ) : (
+                      <span className="text-xs text-gray-400">—</span>
+                    )}
+                  </td>
                   <td className="font-medium text-retim-navy">{p.name}</td>
                   <td>{p.district}</td>
                   <td>{p.year}</td>
@@ -222,7 +288,7 @@ export default function AdminProjectsPage() {
                   <td className="text-right">
                     <div className="flex justify-end gap-3">
                       <Link href={`/admin/projeler/${p.slug}`} className="text-sm font-semibold text-retim-orange hover:underline">
-                        Düzenle →
+                        Düzenle / Görsel →
                       </Link>
                       <button
                         type="button"

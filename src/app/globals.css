@@ -151,13 +151,6 @@
     @apply bg-retim-orange/5;
   }
 
-  .references-no-copy,
-  .references-no-copy * {
-    -webkit-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none;
-  }
-
   .table-row-interactive:hover .table-cell {
     @apply text-retim-navy;
   }

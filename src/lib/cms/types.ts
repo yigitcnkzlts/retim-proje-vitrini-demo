@@ -104,6 +104,18 @@ export interface DbAboutContent {
   updated_at: string;
 }
 
+export interface DbFaqItem {
+  id: string;
+  category_slug: string;
+  category_title: string;
+  question: string;
+  answer: string;
+  sort_order: number;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface ProjectInput {
   slug: string;
   name: string;

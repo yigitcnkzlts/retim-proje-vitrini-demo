@@ -3,8 +3,9 @@
 ## 1. Supabase projesi oluşturun
 
 1. [supabase.com](https://supabase.com) → Yeni proje oluşturun
-2. **SQL Editor** → `supabase/migrations/0001_init.sql` dosyasının TÜM içeriğini yapıştırıp **Run** ile çalıştırın
-   - Bu tek dosya tüm tabloları, indeksleri, RLS politikalarını ve `cms-uploads` storage bucket'ını oluşturur (idempotent — tekrar çalıştırılsa hata vermez)
+2. **SQL Editor** → önce `supabase/migrations/0001_init.sql`, ardından `supabase/migrations/0002_faq_items.sql` dosyalarını sırayla yapıştırıp **Run** ile çalıştırın
+   - 0001: tüm ana tablolar, indeksler, RLS ve `cms-uploads` storage bucket'ı
+   - 0002: Bilgi Merkezi SSS (`faq_items`) tablosu
    - Bucket ayrıca otomatik oluşur; **Storage** sekmesinden `cms-uploads` bucket'ının **Public** olduğunu doğrulayın
 
 ## 2. Ortam değişkenleri
@@ -61,6 +62,7 @@ Bu komut mevcut projeleri, referansları, çözüm ortaklarını, hizmetleri, an
 | **Referanslar** | Katalog + arşiv ekleme/silme (katalog → otomatik proje) |
 | **Çözüm Ortakları** | Logo ve firma adı |
 | **Keşif Talepleri** | Formdan gelen talepler; durum (Yeni/Görüşüldü/Sürüyor/Kapandı), not, arama/filtre, CSV export |
+| **Bilgi Merkezi** | SSS soru-cevap ekle/düzenle/çıkar |
 | **Site Ayarları** | Telefon, WhatsApp, adres, e-posta, çalışma saatleri, harita |
 
 ## Notlar

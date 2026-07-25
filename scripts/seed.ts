@@ -10,6 +10,7 @@ import { references2023, references2024, referencesArchive } from "../src/data/r
 import { partners } from "../src/data/partners";
 import { services } from "../src/data/services";
 import { aboutText, approachSteps, homeDistricts, siteConfig, stats } from "../src/data/site";
+import { flattenFaqCategories, faqCategories } from "../src/data/faq";
 
 function loadEnvFile(filename: string) {
   const path = resolve(process.cwd(), filename);
@@ -170,6 +171,26 @@ async function seedAboutContent() {
   console.log("✓ Hakkımızda içeriği");
 }
 
+async function seedFaq() {
+  const rows = flattenFaqCategories(faqCategories).map((r) => ({
+    ...r,
+    active: true,
+  }));
+
+  const { count } = await supabase
+    .from("faq_items")
+    .select("*", { count: "exact", head: true });
+
+  if ((count ?? 0) > 0) {
+    console.log(`✓ Bilgi Merkezi SSS: ${count} kayıt zaten var (atlandı)`);
+    return;
+  }
+
+  const { error } = await supabase.from("faq_items").insert(rows);
+  if (error) throw new Error(error.message);
+  console.log(`✓ Bilgi Merkezi SSS: ${rows.length} soru`);
+}
+
 async function main() {
   console.log("Supabase seed başlıyor...\n");
   await seedRefs();
@@ -178,6 +199,7 @@ async function main() {
   await seedServices();
   await seedHomeContent();
   await seedAboutContent();
+  await seedFaq();
   console.log("\nTamamlandı! /admin adresinden giriş yapabilirsiniz.");
 }
 
