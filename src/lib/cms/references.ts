@@ -181,10 +181,10 @@ export async function syncSiteRefsToAdmin(maxInserts = 600): Promise<{
   const haveCatalog = await fetchAllRefNos(client, "catalog");
   const haveArchive = await fetchAllRefNos(client, "archive");
 
-  let missingCatalog = catalogSource
+  const missingCatalog = catalogSource
     .filter((r) => !haveCatalog.has(r.refNo))
     .map((r) => toDbRow(r, "catalog"));
-  let missingArchive = archiveSource
+  const missingArchive = archiveSource
     .filter((r) => !haveArchive.has(r.refNo))
     .map((r) => toDbRow(r, "archive"));
 
