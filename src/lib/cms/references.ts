@@ -16,6 +16,10 @@ import {
 import { getProjectImageSource } from "@/data/mediaAssets";
 import { createProject, getProjectBySlugAdmin } from "@/lib/cms/projects";
 
+const EXCLUDED_REFS_KEY = "excluded_project_refs";
+const PAGE_SIZE = 1000;
+const UPSERT_BATCH = 200;
+
 function mapDbToReference(row: DbProjectRef): Reference {
   return {
     refNo: row.ref_no,
@@ -30,22 +34,194 @@ function staticCatalogRefs(): Reference[] {
   return [...references2024, ...references2023];
 }
 
+function excludedKey(refType: RefType, refNo: string): string {
+  return `${refType}:${refNo}`;
+}
+
+async function getExcludedRefKeys(): Promise<Set<string>> {
+  const client = getSupabaseAdmin();
+  if (!client) return new Set();
+  const { data } = await client
+    .from("site_settings")
+    .select("value")
+    .eq("key", EXCLUDED_REFS_KEY)
+    .maybeSingle();
+  const value = data?.value;
+  if (Array.isArray(value)) return new Set(value.map(String));
+  return new Set();
+}
+
+async function addExcludedRef(refType: RefType, refNo: string): Promise<void> {
+  const client = getSupabaseAdmin();
+  if (!client) return;
+  const excluded = await getExcludedRefKeys();
+  excluded.add(excludedKey(refType, refNo));
+  await client.from("site_settings").upsert({
+    key: EXCLUDED_REFS_KEY,
+    value: Array.from(excluded),
+    updated_at: new Date().toISOString(),
+  });
+}
+
+type AdminClient = NonNullable<ReturnType<typeof getSupabaseAdmin>>;
+
+/** Supabase varsayılan 1000 satır limitini aşmak için sayfalı çekim */
+async function fetchAllRefRows(client: AdminClient, type?: RefType): Promise<DbProjectRef[]> {
+  const rows: DbProjectRef[] = [];
+  let from = 0;
+
+  while (true) {
+    let query = client
+      .from("project_refs")
+      .select("*")
+      .order("year", { ascending: false })
+      .order("ref_no", { ascending: false })
+      .range(from, from + PAGE_SIZE - 1);
+    if (type) query = query.eq("ref_type", type);
+
+    const { data, error } = await query;
+    if (error) {
+      console.error("Referans okuma hatası:", error.message);
+      return rows.length > 0 ? rows : [];
+    }
+    if (!data?.length) break;
+    rows.push(...(data as DbProjectRef[]));
+    if (data.length < PAGE_SIZE) break;
+    from += PAGE_SIZE;
+  }
+
+  return rows;
+}
+
+async function fetchAllRefNos(client: AdminClient, type: RefType): Promise<Set<string>> {
+  const nos = new Set<string>();
+  let from = 0;
+
+  while (true) {
+    const { data, error } = await client
+      .from("project_refs")
+      .select("ref_no")
+      .eq("ref_type", type)
+      .range(from, from + PAGE_SIZE - 1);
+
+    if (error) throw new Error(error.message);
+    if (!data?.length) break;
+    for (const row of data) nos.add(row.ref_no as string);
+    if (data.length < PAGE_SIZE) break;
+    from += PAGE_SIZE;
+  }
+
+  return nos;
+}
+
+async function upsertRefBatches(
+  client: AdminClient,
+  rows: Array<{
+    ref_no: string;
+    project_name: string;
+    service: string;
+    district: string;
+    year: number;
+    ref_type: RefType;
+  }>
+): Promise<void> {
+  for (let i = 0; i < rows.length; i += UPSERT_BATCH) {
+    const batch = rows.slice(i, i + UPSERT_BATCH);
+    const { error } = await client.from("project_refs").upsert(batch, {
+      onConflict: "ref_no,ref_type",
+    });
+    if (error) throw new Error(error.message);
+  }
+}
+
+function toDbRow(r: Reference, refType: RefType) {
+  return {
+    ref_no: r.refNo,
+    project_name: r.projectName,
+    service: r.service,
+    district: r.district,
+    year: r.year,
+    ref_type: refType,
+  };
+}
+
+/**
+ * Sitedeki referansları panele aktarır (eksik olanlar).
+ * maxInserts ile parça parça çalışır (Vercel timeout önlemi); tekrar çağrılabilir.
+ */
+export async function syncSiteRefsToAdmin(maxInserts = 600): Promise<{
+  importedCatalog: number;
+  importedArchive: number;
+  totalCatalog: number;
+  totalArchive: number;
+  remaining: number;
+  done: boolean;
+}> {
+  const client = getSupabaseAdmin();
+  if (!client) {
+    return {
+      importedCatalog: 0,
+      importedArchive: 0,
+      totalCatalog: 0,
+      totalArchive: 0,
+      remaining: 0,
+      done: true,
+    };
+  }
+
+  const excluded = await getExcludedRefKeys();
+
+  const catalogSource = staticCatalogRefs().filter(
+    (r) => !excluded.has(excludedKey("catalog", r.refNo))
+  );
+  const archiveSource = referencesArchive.filter(
+    (r) => !excluded.has(excludedKey("archive", r.refNo))
+  );
+
+  const haveCatalog = await fetchAllRefNos(client, "catalog");
+  const haveArchive = await fetchAllRefNos(client, "archive");
+
+  let missingCatalog = catalogSource
+    .filter((r) => !haveCatalog.has(r.refNo))
+    .map((r) => toDbRow(r, "catalog"));
+  let missingArchive = archiveSource
+    .filter((r) => !haveArchive.has(r.refNo))
+    .map((r) => toDbRow(r, "archive"));
+
+  let budget = maxInserts;
+  const catalogBatch = missingCatalog.slice(0, budget);
+  budget -= catalogBatch.length;
+  const archiveBatch = missingArchive.slice(0, Math.max(0, budget));
+
+  if (catalogBatch.length > 0) await upsertRefBatches(client, catalogBatch);
+  if (archiveBatch.length > 0) await upsertRefBatches(client, archiveBatch);
+
+  const remaining =
+    missingCatalog.length - catalogBatch.length + (missingArchive.length - archiveBatch.length);
+
+  return {
+    importedCatalog: catalogBatch.length,
+    importedArchive: archiveBatch.length,
+    totalCatalog: catalogSource.length,
+    totalArchive: archiveSource.length,
+    remaining,
+    done: remaining === 0,
+  };
+}
+
 async function fetchRefs(type?: RefType): Promise<DbProjectRef[] | null> {
   const client = getSupabasePublic() ?? getSupabaseAdmin();
   if (!client) return null;
 
-  let query = client.from("project_refs").select("*").order("year", { ascending: false });
-  if (type) query = query.eq("ref_type", type);
-
-  const { data, error } = await query;
-  if (error || !data) return null;
-  return data as DbProjectRef[];
+  const rows = await fetchAllRefRows(client, type);
+  return rows;
 }
 
 export async function getCatalogReferences(): Promise<Reference[]> {
   if (!isCmsConfigured()) return staticCatalogRefs();
   const rows = await fetchRefs("catalog");
   if (rows === null) return staticCatalogRefs();
+  if (rows.length === 0) return staticCatalogRefs();
   return rows.map(mapDbToReference);
 }
 
@@ -53,6 +229,9 @@ export async function getArchiveReferences(): Promise<Reference[]> {
   if (!isCmsConfigured()) return referencesArchive;
   const rows = await fetchRefs("archive");
   if (rows === null) return referencesArchive;
+  // DB boş/eksikse sitede tam arşiv görünsün
+  if (rows.length === 0) return referencesArchive;
+  if (rows.length < referencesArchive.length * 0.9) return referencesArchive;
   return rows.map(mapDbToReference);
 }
 
@@ -95,51 +274,47 @@ function staticRefsAsDb(type?: RefType): DbProjectRef[] {
   return [...catalog, ...archive];
 }
 
-/** Sitedeki statik referansları veritabanına aktarır (boşsa). */
-async function syncStaticRefsIfEmpty(type?: RefType): Promise<void> {
-  const client = getSupabaseAdmin();
-  if (!client) return;
-
-  let countQuery = client.from("project_refs").select("*", { count: "exact", head: true });
-  if (type) countQuery = countQuery.eq("ref_type", type);
-  const { count } = await countQuery;
-  if ((count ?? 0) > 0) return;
-
-  const catalog = staticCatalogRefs().map((r) => ({
-    ref_no: r.refNo,
-    project_name: r.projectName,
-    service: r.service,
-    district: r.district,
-    year: r.year,
-    ref_type: "catalog" as const,
-  }));
-  const archive = referencesArchive.map((r) => ({
-    ref_no: r.refNo,
-    project_name: r.projectName,
-    service: r.service,
-    district: r.district,
-    year: r.year,
-    ref_type: "archive" as const,
-  }));
-
-  const rows = type === "catalog" ? catalog : type === "archive" ? archive : [...catalog, ...archive];
-  if (rows.length === 0) return;
-
-  const { error } = await client.from("project_refs").upsert(rows, { onConflict: "ref_no,ref_type" });
-  if (error) console.error("Referans senkron hatası:", error.message);
-}
-
 export async function getAllRefsAdmin(type?: RefType): Promise<DbProjectRef[]> {
   const client = getSupabaseAdmin();
   if (!client) return staticRefsAsDb(type);
 
-  await syncStaticRefsIfEmpty(type);
+  // Katalog küçük — eksikleri sessizce tamamla
+  if (type === "catalog" || type === undefined) {
+    try {
+      const excluded = await getExcludedRefKeys();
+      const catalogSource = staticCatalogRefs().filter(
+        (r) => !excluded.has(excludedKey("catalog", r.refNo))
+      );
+      const haveCatalog = await fetchAllRefNos(client, "catalog");
+      const missingCatalog = catalogSource
+        .filter((r) => !haveCatalog.has(r.refNo))
+        .map((r) => toDbRow(r, "catalog"));
+      if (missingCatalog.length > 0) await upsertRefBatches(client, missingCatalog);
+    } catch (error) {
+      console.error("Katalog senkron hatası:", error instanceof Error ? error.message : error);
+    }
+  }
 
-  let query = client.from("project_refs").select("*").order("year", { ascending: false });
-  if (type) query = query.eq("ref_type", type);
-  const { data } = await query;
-  const rows = (data as DbProjectRef[]) ?? [];
-  return rows.length > 0 ? rows : staticRefsAsDb(type);
+  const rows = await fetchAllRefRows(client, type);
+
+  // Arşiv DB'de eksikse sitedeki tam listeyi göster (Site ile eşitle ile DB'ye yazılır)
+  if (type === "archive") {
+    if (rows.length >= referencesArchive.length * 0.9) return rows;
+    return staticRefsAsDb("archive");
+  }
+  if (type === "catalog") {
+    return rows.length > 0 ? rows : staticRefsAsDb("catalog");
+  }
+
+  // type yok: katalog DB + arşiv (eksikse static)
+  const archiveRows =
+    rows.filter((r) => r.ref_type === "archive").length >= referencesArchive.length * 0.9
+      ? rows
+      : [
+          ...rows.filter((r) => r.ref_type === "catalog"),
+          ...staticRefsAsDb("archive"),
+        ];
+  return archiveRows.length > 0 ? archiveRows : staticRefsAsDb();
 }
 
 export async function createReference(
@@ -200,8 +375,19 @@ export async function updateReference(
 export async function deleteReference(id: string): Promise<void> {
   const client = getSupabaseAdmin();
   if (!client) throw new Error("CMS yapılandırılmamış");
+
+  const { data: existing } = await client
+    .from("project_refs")
+    .select("ref_no, ref_type")
+    .eq("id", id)
+    .maybeSingle();
+
   const { error } = await client.from("project_refs").delete().eq("id", id);
   if (error) throw new Error(error.message);
+
+  if (existing?.ref_no && existing?.ref_type) {
+    await addExcludedRef(existing.ref_type as RefType, existing.ref_no as string);
+  }
 }
 
 function buildingTypeFromName(name: string): string {
