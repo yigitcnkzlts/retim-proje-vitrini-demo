@@ -6,6 +6,7 @@ import Footer from "@/components/layout/Footer";
 import BackToTop from "@/components/ui/BackToTop";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import ScrollProgress from "@/components/ui/ScrollProgress";
+import VisitTracker from "@/components/analytics/VisitTracker";
 import { siteConfig } from "@/data/site";
 import "./globals.css";
 
@@ -46,6 +47,7 @@ export default function RootLayout({
           <BackToTop />
           <ScrollProgress />
         </div>
+        <VisitTracker />
       </body>
     </html>
   );
