@@ -43,9 +43,53 @@ export async function getServiceBySlugCms(slug: string): Promise<Service | undef
   return all.find((s) => s.slug === slug);
 }
 
+async function syncStaticServicesIfEmpty(): Promise<void> {
+  const client = getSupabaseAdmin();
+  if (!client) return;
+  const { count } = await client.from("services").select("*", { count: "exact", head: true });
+  if ((count ?? 0) > 0) return;
+
+  const rows = staticServices.map((s, i) => ({
+    slug: s.slug,
+    name: s.name,
+    description: s.description,
+    detail: "",
+    image_url: null,
+    image_alt: "",
+    project_types: s.projectTypes,
+    sort_order: i,
+    active: true,
+    featured: false,
+    seo_title: "",
+    seo_description: "",
+  }));
+  const { error } = await client.from("services").upsert(rows, { onConflict: "slug" });
+  if (error) console.error("Hizmet senkron hatası:", error.message);
+}
+
 export async function getAllServicesAdmin(): Promise<DbService[]> {
   const client = getSupabaseAdmin();
-  if (!client) return [];
+  if (!client) {
+    return staticServices.map((s, i) => ({
+      id: `static-${s.slug}`,
+      slug: s.slug,
+      name: s.name,
+      description: s.description,
+      detail: "",
+      image_url: null,
+      image_alt: "",
+      project_types: s.projectTypes,
+      sort_order: i,
+      active: true,
+      featured: false,
+      seo_title: "",
+      seo_description: "",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }));
+  }
+
+  await syncStaticServicesIfEmpty();
   const { data } = await client.from("services").select("*").order("sort_order", { ascending: true });
   return ((data as Record<string, unknown>[]) ?? []).map(normalizeRow);
 }

@@ -1,11 +1,13 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import type { DbProject } from "@/lib/cms/types";
 
 interface ProjectEditFormProps {
   project: DbProject;
 }
+
+type ServiceOption = { slug: string; name: string };
 
 function linesToArray(text: string): string[] {
   return text
@@ -41,9 +43,31 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [services, setServices] = useState<ServiceOption[]>([]);
+
+  useEffect(() => {
+    void fetch("/api/admin/services")
+      .then((r) => r.json())
+      .then((d: { services: Array<{ slug: string; name: string; active?: boolean }> }) => {
+        setServices(
+          (d.services || [])
+            .filter((s) => s.active !== false)
+            .map((s) => ({ slug: s.slug, name: s.name }))
+        );
+      });
+  }, []);
 
   function updateField<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function onServiceSelect(slug: string) {
+    const found = services.find((s) => s.slug === slug);
+    setForm((prev) => ({
+      ...prev,
+      service_slug: slug,
+      service: found?.name || prev.service,
+    }));
   }
 
   async function handleImageUpload(file: File) {
@@ -76,6 +100,8 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
       body: JSON.stringify({
         ...form,
         year: Number(form.year),
+        service_slug: form.service_slug,
+        service: form.service,
         scope: linesToArray(form.scope),
         highlights: linesToArray(form.highlights),
         image_url: form.image_url || null,
@@ -112,14 +138,28 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
             placeholder="örn. Beyoğlu"
           />
           <Field label="Yıl" hint="Sitede: Yıl" type="number" value={String(form.year)} onChange={(v) => updateField("year", Number(v))} />
-          <Field
-            label="Hizmet Türü"
-            hint="Sitede: Hizmet Türü"
-            value={form.service}
-            onChange={(v) => updateField("service", v)}
-            className="md:col-span-2"
-            placeholder="örn. DIŞ CEPHE RESTORASYON -BOYA İŞLEMLERİ"
-          />
+          <label className="md:col-span-2">
+            <span className="mb-0.5 block text-sm font-medium text-gray-700">Hizmet Türü</span>
+            <span className="mb-1.5 block text-xs text-gray-500">
+              Sitede bu hizmete tıklanınca proje listelenir (örn. /projeler?hizmet=cati-yalitim)
+            </span>
+            <select
+              className="input-field"
+              value={form.service_slug}
+              onChange={(e) => onServiceSelect(e.target.value)}
+              required
+            >
+              <option value="">Hizmet seçin...</option>
+              {services.map((s) => (
+                <option key={s.slug} value={s.slug}>
+                  {s.name}
+                </option>
+              ))}
+              {form.service_slug && !services.some((s) => s.slug === form.service_slug) && (
+                <option value={form.service_slug}>{form.service || form.service_slug}</option>
+              )}
+            </select>
+          </label>
           <Field label="Bina Tipi" hint="Sitede: Bina Tipi" value={form.building_type} onChange={(v) => updateField("building_type", v)} />
           <Field
             label="Süre"

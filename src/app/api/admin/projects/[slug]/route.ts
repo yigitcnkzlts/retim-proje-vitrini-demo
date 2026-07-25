@@ -50,6 +50,8 @@ export async function DELETE(_request: Request, context: RouteContext) {
     const { slug } = await context.params;
     await deleteProject(slug);
     revalidatePath("/projeler");
+    revalidatePath(`/projeler/${slug}`);
+    revalidatePath("/hizmetler");
     revalidatePath("/", "layout");
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -45,13 +45,15 @@ async function fetchRefs(type?: RefType): Promise<DbProjectRef[] | null> {
 export async function getCatalogReferences(): Promise<Reference[]> {
   if (!isCmsConfigured()) return staticCatalogRefs();
   const rows = await fetchRefs("catalog");
-  return rows && rows.length > 0 ? rows.map(mapDbToReference) : staticCatalogRefs();
+  if (rows === null) return staticCatalogRefs();
+  return rows.map(mapDbToReference);
 }
 
 export async function getArchiveReferences(): Promise<Reference[]> {
   if (!isCmsConfigured()) return referencesArchive;
   const rows = await fetchRefs("archive");
-  return rows && rows.length > 0 ? rows.map(mapDbToReference) : referencesArchive;
+  if (rows === null) return referencesArchive;
+  return rows.map(mapDbToReference);
 }
 
 export type FooterProjectLink = {

@@ -41,6 +41,7 @@ export async function POST(request: Request) {
     }
     revalidatePath("/projeler");
     revalidatePath(`/projeler/${project.slug}`);
+    revalidatePath("/hizmetler");
     revalidatePath("/", "layout");
     return NextResponse.json({ project });
   } catch (error) {

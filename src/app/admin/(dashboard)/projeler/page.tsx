@@ -19,12 +19,15 @@ function linesToArray(text: string): string[] {
     .filter(Boolean);
 }
 
+type ServiceOption = { slug: string; name: string };
+
 const EMPTY_FORM = {
   name: "",
   district: "",
   year: new Date().getFullYear(),
   ref_no: "",
   service: "",
+  service_slug: "",
   building_type: "Apartman",
   duration: "—",
   featured: false,
@@ -39,6 +42,7 @@ const EMPTY_FORM = {
 
 export default function AdminProjectsPage() {
   const [projects, setProjects] = useState<DbProject[]>([]);
+  const [services, setServices] = useState<ServiceOption[]>([]);
   const [configured, setConfigured] = useState(true);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -50,16 +54,34 @@ export default function AdminProjectsPage() {
 
   async function load() {
     setLoading(true);
-    const res = await fetch("/api/admin/projects");
-    const data = (await res.json()) as { configured: boolean; projects: DbProject[] };
-    setConfigured(data.configured);
-    setProjects(data.projects || []);
+    const [projRes, svcRes] = await Promise.all([
+      fetch("/api/admin/projects"),
+      fetch("/api/admin/services"),
+    ]);
+    const projData = (await projRes.json()) as { configured: boolean; projects: DbProject[] };
+    const svcData = (await svcRes.json()) as { services: Array<{ slug: string; name: string; active?: boolean }> };
+    setConfigured(projData.configured);
+    setProjects(projData.projects || []);
+    setServices(
+      (svcData.services || [])
+        .filter((s) => s.active !== false)
+        .map((s) => ({ slug: s.slug, name: s.name }))
+    );
     setLoading(false);
   }
 
   useEffect(() => {
     void load();
   }, []);
+
+  function onServiceSelect(slug: string) {
+    const found = services.find((s) => s.slug === slug);
+    setForm((prev) => ({
+      ...prev,
+      service_slug: slug,
+      service: found?.name || prev.service,
+    }));
+  }
 
   function fillExampleTexts() {
     const name = form.name.trim() || "Proje";
@@ -106,6 +128,12 @@ export default function AdminProjectsPage() {
     setError("");
     setMessage("");
 
+    if (!form.service_slug) {
+      setSaving(false);
+      setError("Lütfen bir hizmet türü seçin (örn. Çatı Yalıtım İşlemleri).");
+      return;
+    }
+
     const slug = `${slugify(form.name)}-${form.ref_no || Date.now()}`;
     const payload = {
       name: form.name.trim(),
@@ -113,7 +141,7 @@ export default function AdminProjectsPage() {
       year: Number(form.year),
       ref_no: form.ref_no.trim(),
       service: form.service.trim(),
-      service_slug: slugify(form.service),
+      service_slug: form.service_slug,
       building_type: form.building_type.trim() || "Apartman",
       duration: form.duration.trim() || "—",
       featured: form.featured,
@@ -140,20 +168,29 @@ export default function AdminProjectsPage() {
       return;
     }
 
-    setMessage("Proje eklendi. İsterseniz listeden 'Düzenle' ile tekrar güncelleyebilirsiniz.");
+    setMessage(
+      `Proje eklendi. Sitede /projeler?hizmet=${form.service_slug} adresinde bu hizmete tıklanınca görünecek.`
+    );
     setForm(EMPTY_FORM);
     setShowForm(false);
     await load();
   }
 
   async function handleDelete(slug: string) {
-    const project = projects.find((p) => p.slug === slug);
-    if (project?.id.startsWith("static-")) {
-      setError("Bu proje henüz veritabanında değil. Sayfayı yenileyin; sitedeki liste otomatik aktarılacak.");
+    setError("");
+    setMessage("");
+    if (!confirm("Bu projeyi silmek istediğinize emin misiniz? Siteden de kalkar.")) return;
+
+    // Önce listeyi senkronize et (static- id varsa)
+    await load();
+    const res = await fetch(`/api/admin/projects/${slug}`, { method: "DELETE" });
+    const data = (await res.json().catch(() => ({}))) as { error?: string };
+    if (!res.ok) {
+      setError(data.error || "Proje silinemedi.");
+      await load();
       return;
     }
-    if (!confirm("Bu projeyi silmek istediğinize emin misiniz? Bu işlem geri alınamaz.")) return;
-    await fetch(`/api/admin/projects/${slug}`, { method: "DELETE" });
+    setMessage("Proje silindi.");
     await load();
   }
 
@@ -225,15 +262,25 @@ export default function AdminProjectsPage() {
                 onChange={(v) => setForm({ ...form, year: Number(v) })}
                 required
               />
-              <LabeledInput
-                label="Hizmet Türü"
-                hint="Sitede: Hizmet Türü — örn. DIŞ CEPHE RESTORASYON -BOYA İŞLEMLERİ"
-                value={form.service}
-                onChange={(v) => setForm({ ...form, service: v })}
-                placeholder="örn. DIŞ CEPHE RESTORASYON -BOYA İŞLEMLERİ"
-                className="md:col-span-2"
-                required
-              />
+              <label className="md:col-span-2">
+                <span className="mb-0.5 block text-sm font-medium text-gray-700">Hizmet Türü</span>
+                <span className="mb-1.5 block text-xs text-gray-500">
+                  Sitede bu hizmete (örn. Çatı Yalıtım) tıklanınca proje listelenir
+                </span>
+                <select
+                  className="input-field"
+                  value={form.service_slug}
+                  onChange={(e) => onServiceSelect(e.target.value)}
+                  required
+                >
+                  <option value="">Hizmet seçin...</option>
+                  {services.map((s) => (
+                    <option key={s.slug} value={s.slug}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <LabeledInput
                 label="Bina Tipi"
                 hint="Sitede: Bina Tipi"
@@ -387,6 +434,7 @@ export default function AdminProjectsPage() {
               <tr>
                 <th>Görsel</th>
                 <th>Proje</th>
+                <th>Hizmet</th>
                 <th>Semt</th>
                 <th>Yıl</th>
                 <th>Ref No</th>
@@ -406,6 +454,9 @@ export default function AdminProjectsPage() {
                     )}
                   </td>
                   <td className="font-medium text-retim-navy">{p.name}</td>
+                  <td className="max-w-[10rem] truncate text-xs text-gray-600" title={p.service}>
+                    {p.service || p.service_slug || "—"}
+                  </td>
                   <td>{p.district}</td>
                   <td>{p.year}</td>
                   <td>{p.ref_no}</td>

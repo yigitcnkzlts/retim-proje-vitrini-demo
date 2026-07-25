@@ -86,7 +86,14 @@ async function fetchAllProjectsAdmin(): Promise<DbProject[] | null> {
 export async function getProjects(): Promise<Project[]> {
   if (!isCmsConfigured()) return staticProjects;
   const fromDb = await fetchPublishedProjects();
-  return fromDb && fromDb.length > 0 ? fromDb : staticProjects;
+  // CMS bağlıysa DB sonucuna güven (boş liste = silinmiş demektir; statik fallback yapma)
+  if (fromDb !== null) return fromDb;
+  return staticProjects;
+}
+
+export async function getProjectsByService(serviceSlug: string): Promise<Project[]> {
+  const all = await getProjects();
+  return all.filter((p) => p.serviceSlug === serviceSlug);
 }
 
 function staticProjectsAsDb(): DbProject[] {
@@ -235,8 +242,15 @@ export async function updateProject(slug: string, input: Partial<ProjectInput>):
 export async function deleteProject(slug: string): Promise<void> {
   const client = getSupabaseAdmin();
   if (!client) throw new Error("CMS yapılandırılmamış");
-  const { error } = await client.from("projects").delete().eq("slug", slug);
+
+  // Silmeden önce sitedeki liste DB'deyse eşitle (ilk kurulum)
+  await syncStaticProjectsIfEmpty();
+
+  const { data, error } = await client.from("projects").delete().eq("slug", slug).select("id");
   if (error) throw new Error(error.message);
+  if (!data || data.length === 0) {
+    throw new Error("Proje bulunamadı veya zaten silinmiş.");
+  }
 }
 
 export async function getProjectSlugs(): Promise<string[]> {
