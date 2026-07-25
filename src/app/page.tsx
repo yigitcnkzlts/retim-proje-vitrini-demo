@@ -29,7 +29,10 @@ export default async function HomePage() {
       </ScrollReveal>
 
       <ScrollReveal delay={100}>
-        <DiscoveryProcessSection />
+        <DiscoveryProcessSection
+          problemsSection={homeContent.problemsSection}
+          discoverySection={homeContent.discoverySection}
+        />
       </ScrollReveal>
 
       <ScrollReveal delay={100}>

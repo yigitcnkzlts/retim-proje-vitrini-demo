@@ -3,25 +3,31 @@
 import Image from "next/image";
 import { useState } from "react";
 import BuildingProblemIcon from "@/components/home/BuildingProblemIcon";
-import { buildingProblemCards } from "@/data/site";
+import type { ProblemsSectionContent } from "@/lib/cms/home-content";
+import { mergeProblemCardsForDisplay } from "@/lib/cms/home-content";
 
-export default function BuildingProblemsDiagram() {
+type Props = {
+  section: ProblemsSectionContent;
+};
+
+export default function BuildingProblemsDiagram({ section }: Props) {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const cards = mergeProblemCardsForDisplay(section);
 
-  const leftCards = buildingProblemCards.filter((c) => c.side === "left");
-  const rightCards = buildingProblemCards.filter((c) => c.side === "right");
+  const leftCards = cards.filter((c) => c.side === "left");
+  const rightCards = cards.filter((c) => c.side === "right");
 
   return (
     <div className="building-problems-diagram">
       <div className="mb-8 max-w-2xl md:mb-10">
         <p className="text-xs font-bold uppercase tracking-[0.22em] text-retim-orange">
-          Binanızın Sorun Haritası
+          {section.label}
         </p>
         <h2 className="mt-3 font-serif text-3xl font-bold leading-tight tracking-tight text-retim-navy md:text-4xl">
-          Binanızda Bu Sorunlar Gözden Kaçmasın
+          {section.title}
         </h2>
         <p className="mt-4 text-base leading-relaxed text-gray-600 md:text-lg">
-          Cephe çatlakları, çatı akıntıları, drenaj sorunları ve yalıtım problemleri zamanla daha büyük maliyetlere yol açabilir. Retim, bu sorunları yerinde ve teknoloji destekli keşif süreciyle tespit eder.
+          {section.description}
         </p>
       </div>
 
@@ -42,7 +48,7 @@ export default function BuildingProblemsDiagram() {
             preserveAspectRatio="none"
             aria-hidden
           >
-            {buildingProblemCards.map((card) => {
+            {cards.map((card) => {
               const isActive = activeId === card.id;
               return (
                 <g key={card.id}>
@@ -74,7 +80,7 @@ export default function BuildingProblemsDiagram() {
             </defs>
           </svg>
 
-          {buildingProblemCards.map((card) => (
+          {cards.map((card) => (
             <button
               key={`hotspot-${card.id}`}
               type="button"
@@ -123,7 +129,7 @@ export default function BuildingProblemsDiagram() {
               sizes="100vw"
               priority
             />
-            {buildingProblemCards.map((card) => (
+            {cards.map((card) => (
               <span
                 key={`mobile-hotspot-${card.id}`}
                 className="building-problem-hotspot is-static"
@@ -133,7 +139,7 @@ export default function BuildingProblemsDiagram() {
             ))}
           </div>
           <div className="grid gap-3 p-4 sm:grid-cols-2">
-            {buildingProblemCards.map((card) => (
+            {cards.map((card) => (
               <ProblemCard key={card.id} card={card} compact />
             ))}
           </div>
@@ -143,8 +149,10 @@ export default function BuildingProblemsDiagram() {
   );
 }
 
+type DisplayCard = ReturnType<typeof mergeProblemCardsForDisplay>[number];
+
 interface ProblemCardProps {
-  card: (typeof buildingProblemCards)[number];
+  card: DisplayCard;
   isActive?: boolean;
   compact?: boolean;
   onActivate?: () => void;

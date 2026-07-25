@@ -57,6 +57,42 @@ export default function AdminHomeContentPage() {
     setContent({ ...content, homeDistricts: content.homeDistricts.filter((_, i) => i !== index) });
   }
 
+  function updateProblemCard(index: number, field: "title" | "description", value: string) {
+    if (!content) return;
+    const cards = content.problemsSection.cards.map((c, i) =>
+      i === index ? { ...c, [field]: value } : c
+    );
+    setContent({
+      ...content,
+      problemsSection: { ...content.problemsSection, cards },
+    });
+  }
+
+  function updateDiscoveryStep(
+    index: number,
+    field: "title" | "description" | "highlightsText",
+    value: string
+  ) {
+    if (!content) return;
+    const steps = content.discoverySection.steps.map((s, i) => {
+      if (i !== index) return s;
+      if (field === "highlightsText") {
+        return {
+          ...s,
+          highlights: value
+            .split("\n")
+            .map((l) => l.trim())
+            .filter(Boolean),
+        };
+      }
+      return { ...s, [field]: value };
+    });
+    setContent({
+      ...content,
+      discoverySection: { ...content.discoverySection, steps },
+    });
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!content) return;
@@ -71,7 +107,11 @@ export default function AdminHomeContentPage() {
       });
       const data = (await res.json()) as { error?: string };
       if (!res.ok) {
-        setError(data.error || "Kayıt başarısız.");
+        setError(
+          data.error?.includes("problems_section") || data.error?.includes("discovery_section")
+            ? `${data.error} — Supabase'de 0004_home_discovery_problems.sql çalıştırın.`
+            : data.error || "Kayıt başarısız."
+        );
       } else {
         setMessage("Ana sayfa içeriği kaydedildi.");
       }
@@ -88,7 +128,7 @@ export default function AdminHomeContentPage() {
     <div className="p-6 md:p-8">
       <h1 className="text-2xl font-bold text-retim-navy">Ana Sayfa</h1>
       <p className="mt-1 text-sm text-gray-600">
-        Hero başlığı, istatistikler, süreç kartları ve semt listesini yönetin.
+        Hero, istatistikler, sorun haritası, keşif süreci, süreç kartları ve semt listesini yönetin.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-6 max-w-3xl space-y-6">
@@ -142,6 +182,218 @@ export default function AdminHomeContentPage() {
                 />
               </div>
             ))}
+          </div>
+        </div>
+
+        <div className="admin-card space-y-4">
+          <h2 className="admin-card-title">Binanızın Sorun Haritası</h2>
+          <p className="text-xs text-gray-500">
+            Ana sayfadaki sorun diyagramı başlıkları ve kart metinleri. Görsel/konum sabit kalır.
+          </p>
+          <label>
+            <span className="mb-1.5 block text-sm font-medium text-gray-700">Üst etiket</span>
+            <input
+              className="input-field"
+              value={content.problemsSection.label}
+              onChange={(e) =>
+                setContent({
+                  ...content,
+                  problemsSection: { ...content.problemsSection, label: e.target.value },
+                })
+              }
+            />
+          </label>
+          <label>
+            <span className="mb-1.5 block text-sm font-medium text-gray-700">Başlık</span>
+            <input
+              className="input-field"
+              value={content.problemsSection.title}
+              onChange={(e) =>
+                setContent({
+                  ...content,
+                  problemsSection: { ...content.problemsSection, title: e.target.value },
+                })
+              }
+            />
+          </label>
+          <label>
+            <span className="mb-1.5 block text-sm font-medium text-gray-700">Açıklama</span>
+            <textarea
+              className="input-field"
+              rows={3}
+              value={content.problemsSection.description}
+              onChange={(e) =>
+                setContent({
+                  ...content,
+                  problemsSection: { ...content.problemsSection, description: e.target.value },
+                })
+              }
+            />
+          </label>
+          <div className="space-y-3">
+            {content.problemsSection.cards.map((card, i) => (
+              <div key={card.id} className="rounded-lg border border-gray-200 p-3">
+                <p className="text-xs font-semibold uppercase text-gray-400">{card.id}</p>
+                <input
+                  className="input-field mt-2"
+                  value={card.title}
+                  onChange={(e) => updateProblemCard(i, "title", e.target.value)}
+                />
+                <textarea
+                  className="input-field mt-2"
+                  rows={2}
+                  value={card.description}
+                  onChange={(e) => updateProblemCard(i, "description", e.target.value)}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="admin-card space-y-4">
+          <h2 className="admin-card-title">Keşif Süreci</h2>
+          <label>
+            <span className="mb-1.5 block text-sm font-medium text-gray-700">Üst etiket</span>
+            <input
+              className="input-field"
+              value={content.discoverySection.label}
+              onChange={(e) =>
+                setContent({
+                  ...content,
+                  discoverySection: { ...content.discoverySection, label: e.target.value },
+                })
+              }
+            />
+          </label>
+          <label>
+            <span className="mb-1.5 block text-sm font-medium text-gray-700">Başlık</span>
+            <input
+              className="input-field"
+              value={content.discoverySection.title}
+              onChange={(e) =>
+                setContent({
+                  ...content,
+                  discoverySection: { ...content.discoverySection, title: e.target.value },
+                })
+              }
+            />
+          </label>
+          <label>
+            <span className="mb-1.5 block text-sm font-medium text-gray-700">Açıklama</span>
+            <textarea
+              className="input-field"
+              rows={2}
+              value={content.discoverySection.description}
+              onChange={(e) =>
+                setContent({
+                  ...content,
+                  discoverySection: { ...content.discoverySection, description: e.target.value },
+                })
+              }
+            />
+          </label>
+
+          {content.discoverySection.steps.map((step, i) => (
+            <div key={step.step} className="rounded-lg border border-gray-200 p-3">
+              <p className="text-xs font-semibold text-gray-400">ADIM {step.step}</p>
+              <input
+                className="input-field mt-2"
+                value={step.title}
+                onChange={(e) => updateDiscoveryStep(i, "title", e.target.value)}
+              />
+              <textarea
+                className="input-field mt-2"
+                rows={3}
+                value={step.description}
+                onChange={(e) => updateDiscoveryStep(i, "description", e.target.value)}
+              />
+              <label className="mt-2 block">
+                <span className="mb-1 block text-xs font-medium text-gray-600">
+                  Madde madde (her satır bir madde)
+                </span>
+                <textarea
+                  className="input-field"
+                  rows={3}
+                  value={step.highlights.join("\n")}
+                  onChange={(e) => updateDiscoveryStep(i, "highlightsText", e.target.value)}
+                />
+              </label>
+            </div>
+          ))}
+
+          <div className="rounded-lg border border-gray-200 p-3">
+            <p className="text-xs font-semibold text-gray-400">Keşif Raporu kutusu</p>
+            <input
+              className="input-field mt-2"
+              placeholder="Etiket (örn. Keşif Raporu)"
+              value={content.discoverySection.report.title}
+              onChange={(e) =>
+                setContent({
+                  ...content,
+                  discoverySection: {
+                    ...content.discoverySection,
+                    report: { ...content.discoverySection.report, title: e.target.value },
+                  },
+                })
+              }
+            />
+            <input
+              className="input-field mt-2"
+              placeholder="Alt başlık"
+              value={content.discoverySection.report.subtitle}
+              onChange={(e) =>
+                setContent({
+                  ...content,
+                  discoverySection: {
+                    ...content.discoverySection,
+                    report: { ...content.discoverySection.report, subtitle: e.target.value },
+                  },
+                })
+              }
+            />
+            <textarea
+              className="input-field mt-2"
+              rows={3}
+              placeholder="Açıklama"
+              value={content.discoverySection.report.description}
+              onChange={(e) =>
+                setContent({
+                  ...content,
+                  discoverySection: {
+                    ...content.discoverySection,
+                    report: { ...content.discoverySection.report, description: e.target.value },
+                  },
+                })
+              }
+            />
+            <input
+              className="input-field mt-2"
+              placeholder="Buton yazısı"
+              value={content.discoverySection.report.ctaLabel}
+              onChange={(e) =>
+                setContent({
+                  ...content,
+                  discoverySection: {
+                    ...content.discoverySection,
+                    report: { ...content.discoverySection.report, ctaLabel: e.target.value },
+                  },
+                })
+              }
+            />
+            <input
+              className="input-field mt-2"
+              placeholder="Buton linki"
+              value={content.discoverySection.report.ctaHref}
+              onChange={(e) =>
+                setContent({
+                  ...content,
+                  discoverySection: {
+                    ...content.discoverySection,
+                    report: { ...content.discoverySection.report, ctaHref: e.target.value },
+                  },
+                })
+              }
+            />
           </div>
         </div>
 

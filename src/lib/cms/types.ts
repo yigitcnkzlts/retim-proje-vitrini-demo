@@ -89,6 +89,8 @@ export interface DbHomeContent {
   discovery_lead: string;
   approach_steps: Array<{ title: string; description: string }>;
   home_districts: string[];
+  problems_section?: Record<string, unknown> | null;
+  discovery_section?: Record<string, unknown> | null;
   updated_at: string;
 }
 

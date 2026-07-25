@@ -68,6 +68,42 @@ export const homeContentSchema = z.object({
     .array(z.object({ title: z.string().trim().min(1), description: z.string().trim().min(1) }))
     .default([]),
   homeDistricts: z.array(z.string().trim().min(1)).default([]),
+  problemsSection: z.object({
+    label: z.string().trim().min(1),
+    title: z.string().trim().min(1),
+    description: z.string().trim().min(1),
+    cards: z
+      .array(
+        z.object({
+          id: z.string().trim().min(1),
+          title: z.string().trim().min(1),
+          description: z.string().trim().min(1),
+        })
+      )
+      .min(1),
+  }),
+  discoverySection: z.object({
+    label: z.string().trim().min(1),
+    title: z.string().trim().min(1),
+    description: z.string().trim().min(1),
+    steps: z
+      .array(
+        z.object({
+          step: z.number().int().positive(),
+          title: z.string().trim().min(1),
+          description: z.string().trim().min(1),
+          highlights: z.array(z.string().trim().min(1)).default([]),
+        })
+      )
+      .min(1),
+    report: z.object({
+      title: z.string().trim().min(1),
+      subtitle: z.string().trim().min(1),
+      description: z.string().trim().min(1),
+      ctaLabel: z.string().trim().min(1),
+      ctaHref: z.string().trim().min(1),
+    }),
+  }),
 });
 
 export const aboutContentSchema = z.object({
