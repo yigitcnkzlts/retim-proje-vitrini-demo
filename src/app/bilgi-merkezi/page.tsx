@@ -5,8 +5,8 @@ import { getFaqCategories } from "@/lib/cms/faq";
 
 export const metadata: Metadata = {
   title: "Bilgi Merkezi",
-  description:
-    "Retim Restorasyon bilgi merkezi; yapı onarımı, mantolama, yalıtım ve restorasyon konularında detaylı içerikler.",
+  description: "Retim Restorasyon bilgi merkezi ve sık sorulan sorular.",
+  alternates: { canonical: "/bilgi-merkezi" },
 };
 
 export default async function InformationCenterPage() {

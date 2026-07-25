@@ -21,8 +21,7 @@ const heroHighlights = [
 
 const quickLinks = [
   { href: "/hizmetler", label: "Hizmetler →" },
-  { href: "/referanslar", label: "Referanslar →" },
-  { href: "/hakkimizda", label: "Kurumsal →" },
+  { href: "/iletisim", label: "İletişim →" },
 ];
 
 export default function HeroBanner({
@@ -80,8 +79,8 @@ export default function HeroBanner({
           </div>
 
           <div className="hero-actions">
-            <Link href="/projeler" className="btn-primary group">
-              <span>Projeleri İncele</span>
+            <Link href="/hizmetler" className="btn-primary group">
+              <span>Hizmetleri İncele</span>
               <svg
                 className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
                 fill="none"

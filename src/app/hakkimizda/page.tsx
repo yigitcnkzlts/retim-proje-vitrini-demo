@@ -7,7 +7,8 @@ import { getAboutContent } from "@/lib/cms/about-content";
 
 export const metadata: Metadata = {
   title: "Hakkımızda",
-  description: "Retim Restorasyon Madencilik Sanayii ve Ticaret Ltd. Şti. hakkında kurumsal bilgiler.",
+  description: "Retim Restorasyon hakkında kurumsal bilgiler.",
+  alternates: { canonical: "/hakkimizda" },
 };
 
 export default async function AboutPage() {
@@ -16,8 +17,8 @@ export default async function AboutPage() {
   return (
     <>
       <PageHero
-        title="Kurumsal"
-        description="Hakkımızda"
+        title="Hakkımızda"
+        description="Retim Restorasyon Madencilik Sanayii ve Ticaret Ltd. Şti. kurumsal tanıtım."
         breadcrumb={[{ label: "Ana Sayfa", href: "/" }, { label: "Hakkımızda" }]}
       />
 

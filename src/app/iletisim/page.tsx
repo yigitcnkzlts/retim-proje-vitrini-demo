@@ -7,6 +7,7 @@ import { getSiteSettings } from "@/lib/cms/site-settings";
 export const metadata: Metadata = {
   title: "İletişim",
   description: "Retim ile iletişime geçin. Ücretsiz keşif talebi için formu doldurun.",
+  alternates: { canonical: "/iletisim" },
 };
 
 export default async function ContactPage() {

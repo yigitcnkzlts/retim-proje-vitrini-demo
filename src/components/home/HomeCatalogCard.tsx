@@ -8,7 +8,7 @@ interface HomeCatalogCardProps {
 
 export default function HomeCatalogCard({ slug, name, description }: HomeCatalogCardProps) {
   return (
-    <Link href={`/projeler?hizmet=${slug}`} className="home-catalog-card group block">
+    <Link href={`/hizmetler#${slug}`} className="home-catalog-card group block">
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-base font-bold text-retim-navy transition-colors duration-300 group-hover:text-retim-orange">
           {name}

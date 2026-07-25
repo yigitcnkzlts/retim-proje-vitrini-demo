@@ -7,8 +7,8 @@ import { getServiceBySlugCms } from "@/lib/cms/services";
 
 export const metadata: Metadata = {
   title: "Projeler",
-  description:
-    "Farklı il ve ilçelerde tamamladığımız dış cephe, çatı, yalıtım ve restorasyon projelerini inceleyin.",
+  description: "Retim Restorasyon seçili proje örnekleri.",
+  alternates: { canonical: "/projeler" },
 };
 
 export const revalidate = 30;

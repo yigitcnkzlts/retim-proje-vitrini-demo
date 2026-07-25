@@ -5,8 +5,8 @@ import { getArchiveReferences } from "@/lib/cms/references";
 
 export const metadata: Metadata = {
   title: "Referanslar",
-  description:
-    "İstanbul merkezli Retim Restorasyon referansları — dış cephe, çatı, yalıtım ve güçlendirme uygulamaları.",
+  description: "Retim Restorasyon tamamlanmış uygulama referansları.",
+  alternates: { canonical: "/referanslar" },
 };
 
 export const revalidate = 60;

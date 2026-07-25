@@ -64,9 +64,17 @@ export default async function HomePage() {
           <div className="container-main">
             <div className="mb-10">
               <p className="section-label">Hizmetler</p>
-              <h2 className="section-title mt-2">Uygulama Alanlarımız</h2>
+              <h2 className="section-title mt-2">
+                <Link href="/hizmetler" className="transition-colors hover:text-retim-orange">
+                  Uygulama Alanlarımız
+                </Link>
+              </h2>
               <p className="section-subtitle">
-                Mantolama, boya, çatı yalıtımı ve drenaj alanlarında kapsamlı hizmet.
+                Mantolama, dış cephe boya, çatı yalıtımı, drenaj ve restorasyon için{" "}
+                <Link href="/hizmetler" className="font-medium text-retim-navy underline-offset-2 hover:text-retim-orange hover:underline">
+                  Retim hizmetlerini
+                </Link>{" "}
+                inceleyin.
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -75,8 +83,8 @@ export default async function HomePage() {
               ))}
             </div>
             <div className="mt-8 text-center">
-              <Link href="/hizmetler" className="btn-secondary">
-                Tüm Hizmetler
+              <Link href="/hizmetler" className="btn-primary">
+                Tüm Hizmetleri İncele
               </Link>
             </div>
           </div>

@@ -36,6 +36,7 @@ export const navigation = [
 
 export const footerLinks = [
   { name: "Ana Sayfa", href: "/" },
+  { name: "Hizmetler", href: "/hizmetler" },
   { name: "Hakkımızda", href: "/hakkimizda" },
   { name: "Projeler", href: "/projeler" },
   { name: "Referanslar", href: "/referanslar" },

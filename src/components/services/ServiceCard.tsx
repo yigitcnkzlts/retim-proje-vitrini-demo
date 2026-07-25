@@ -26,7 +26,9 @@ export default function ServiceCard({ service }: ServiceCardProps) {
       </div>
       <div className="flex flex-1 flex-col p-5">
         <h3 className="text-lg font-bold text-retim-navy transition-colors duration-200 group-hover:text-retim-orange">
-          {service.name}
+          <Link href={`/hizmetler#${service.slug}`} className="hover:text-retim-orange">
+            {service.name}
+          </Link>
         </h3>
         <p className="mt-3 flex-1 text-sm leading-relaxed text-gray-600">{service.description}</p>
         <div className="mt-4">
@@ -41,12 +43,20 @@ export default function ServiceCard({ service }: ServiceCardProps) {
             ))}
           </div>
         </div>
-        <Link
-          href={`/projeler?hizmet=${service.slug}`}
-          className="btn-secondary mt-5 px-4 py-2 text-xs"
-        >
-          İlgili Projeleri Gör
-        </Link>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Link
+            href={`/hizmetler#${service.slug}`}
+            className="btn-secondary px-4 py-2 text-xs"
+          >
+            Hizmet Detayı
+          </Link>
+          <Link
+            href={`/projeler?hizmet=${service.slug}`}
+            className="inline-flex items-center text-xs font-medium text-gray-500 transition-colors hover:text-retim-orange"
+          >
+            İlgili projeler
+          </Link>
+        </div>
       </div>
     </div>
   );

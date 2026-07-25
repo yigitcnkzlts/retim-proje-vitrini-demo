@@ -7,7 +7,8 @@ import { getPartners } from "@/lib/cms/partners";
 
 export const metadata: Metadata = {
   title: "Çözüm Ortakları",
-  description: "Retim'in malzeme ve uygulama alanında iş birliği yaptığı çözüm ortakları.",
+  description: "Retim Restorasyon çözüm ortakları.",
+  alternates: { canonical: "/cozum-ortaklari" },
 };
 
 export const revalidate = 60;

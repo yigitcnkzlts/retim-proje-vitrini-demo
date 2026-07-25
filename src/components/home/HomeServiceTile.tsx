@@ -15,7 +15,7 @@ export default function HomeServiceTile({ service }: HomeServiceTileProps) {
 
   return (
     <Link
-      href={`/projeler?hizmet=${service.slug}`}
+      href={`/hizmetler#${service.slug}`}
       className="home-service-tile group block overflow-hidden"
     >
       <div className="relative h-28 overflow-hidden sm:h-32">
