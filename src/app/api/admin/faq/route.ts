@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { requireAdminApi } from "@/lib/auth/require-admin";
-import { createFaqItem, getAllFaqAdmin } from "@/lib/cms/faq";
+import { createFaqItem, getAllFaqAdmin, syncSiteFaqToAdmin } from "@/lib/cms/faq";
 import { isCmsConfigured } from "@/lib/cms/supabase";
 import { faqInputSchema } from "@/lib/validation/schemas";
 
@@ -9,12 +9,37 @@ export async function GET() {
   const denied = await requireAdminApi();
   if (denied) return denied;
 
-  if (!isCmsConfigured()) {
-    return NextResponse.json({ configured: false, items: [] });
-  }
-
   const items = await getAllFaqAdmin();
-  return NextResponse.json({ configured: true, items });
+  return NextResponse.json({
+    configured: isCmsConfigured(),
+    items,
+    message: isCmsConfigured()
+      ? undefined
+      : "Supabase yapılandırılmamış. Liste sitedeki statik sorulardır; kaydetmek için env + faq_items tablosu gerekli.",
+  });
+}
+
+/** Sitedeki tüm Bilgi Merkezi sorularını panele aktarır. */
+export async function PUT() {
+  const denied = await requireAdminApi();
+  if (denied) return denied;
+
+  try {
+    const result = await syncSiteFaqToAdmin();
+    revalidatePath("/bilgi-merkezi");
+    const items = await getAllFaqAdmin();
+    return NextResponse.json({
+      ...result,
+      items,
+      message:
+        result.imported > 0
+          ? `${result.imported} soru siteden aktarıldı. Toplam: ${items.length}.`
+          : `Tüm sorular panelde. Toplam: ${items.length}.`,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Aktarım başarısız.";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {

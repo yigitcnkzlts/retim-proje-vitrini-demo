@@ -1,4 +1,8 @@
-import { faqCategories as staticFaqCategories, type FaqCategory } from "@/data/faq";
+import {
+  faqCategories as staticFaqCategories,
+  flattenFaqCategories,
+  type FaqCategory,
+} from "@/data/faq";
 import { getSupabaseAdmin, getSupabasePublic, isCmsConfigured } from "@/lib/cms/supabase";
 import type { DbFaqItem } from "@/lib/cms/types";
 
@@ -11,6 +15,9 @@ export type FaqInput = {
   active?: boolean;
 };
 
+const EXCLUDED_FAQ_KEY = "excluded_faq_questions";
+const UPSERT_BATCH = 50;
+
 function groupByCategory(rows: DbFaqItem[]): FaqCategory[] {
   const map = new Map<string, FaqCategory>();
   for (const row of rows) {
@@ -22,6 +29,91 @@ function groupByCategory(rows: DbFaqItem[]): FaqCategory[] {
     cat.items.push({ question: row.question, answer: row.answer });
   }
   return Array.from(map.values());
+}
+
+function staticFaqAsDb(): DbFaqItem[] {
+  const now = new Date().toISOString();
+  return flattenFaqCategories(staticFaqCategories).map((r, i) => ({
+    id: `static-faq-${i}`,
+    category_slug: r.category_slug,
+    category_title: r.category_title,
+    question: r.question,
+    answer: r.answer,
+    sort_order: r.sort_order,
+    active: true,
+    created_at: now,
+    updated_at: now,
+  }));
+}
+
+async function getExcludedQuestions(): Promise<Set<string>> {
+  const client = getSupabaseAdmin();
+  if (!client) return new Set();
+  const { data } = await client
+    .from("site_settings")
+    .select("value")
+    .eq("key", EXCLUDED_FAQ_KEY)
+    .maybeSingle();
+  const value = data?.value;
+  if (Array.isArray(value)) return new Set(value.map(String));
+  return new Set();
+}
+
+async function addExcludedQuestion(question: string): Promise<void> {
+  const client = getSupabaseAdmin();
+  if (!client) return;
+  const excluded = await getExcludedQuestions();
+  excluded.add(question);
+  await client.from("site_settings").upsert({
+    key: EXCLUDED_FAQ_KEY,
+    value: Array.from(excluded),
+    updated_at: new Date().toISOString(),
+  });
+}
+
+/**
+ * Sitedeki tüm Bilgi Merkezi sorularını panele aktarır (eksik olanlar).
+ * Silinen sorular (excluded) tekrar eklenmez.
+ */
+export async function syncSiteFaqToAdmin(): Promise<{
+  imported: number;
+  total: number;
+  done: boolean;
+}> {
+  const client = getSupabaseAdmin();
+  if (!client) return { imported: 0, total: 0, done: true };
+
+  const excluded = await getExcludedQuestions();
+  const source = flattenFaqCategories(staticFaqCategories).filter(
+    (r) => !excluded.has(r.question)
+  );
+
+  const { data: existing, error: readError } = await client
+    .from("faq_items")
+    .select("question");
+  if (readError) throw new Error(readError.message);
+
+  const have = new Set((existing ?? []).map((r) => r.question as string));
+  const missing = source
+    .filter((r) => !have.has(r.question))
+    .map((r) => ({
+      category_slug: r.category_slug,
+      category_title: r.category_title,
+      question: r.question,
+      answer: r.answer,
+      sort_order: r.sort_order,
+      active: true,
+    }));
+
+  let imported = 0;
+  for (let i = 0; i < missing.length; i += UPSERT_BATCH) {
+    const batch = missing.slice(i, i + UPSERT_BATCH);
+    const { error } = await client.from("faq_items").insert(batch);
+    if (error) throw new Error(error.message);
+    imported += batch.length;
+  }
+
+  return { imported, total: source.length, done: true };
 }
 
 export async function getFaqCategories(): Promise<FaqCategory[]> {
@@ -42,9 +134,19 @@ export async function getFaqCategories(): Promise<FaqCategory[]> {
 
 export async function getAllFaqAdmin(): Promise<DbFaqItem[]> {
   const client = getSupabaseAdmin();
-  if (!client) return [];
+  if (!client) return staticFaqAsDb();
+
+  // Eksik soruları otomatik aktar
+  try {
+    await syncSiteFaqToAdmin();
+  } catch (error) {
+    console.error("FAQ senkron hatası:", error instanceof Error ? error.message : error);
+  }
+
   const { data } = await client.from("faq_items").select("*").order("sort_order", { ascending: true });
-  return (data as DbFaqItem[]) ?? [];
+  const rows = (data as DbFaqItem[]) ?? [];
+  if (rows.length > 0) return rows;
+  return staticFaqAsDb();
 }
 
 export async function createFaqItem(input: FaqInput): Promise<DbFaqItem | null> {
@@ -88,6 +190,17 @@ export async function updateFaqItem(id: string, input: Partial<FaqInput>): Promi
 export async function deleteFaqItem(id: string): Promise<void> {
   const client = getSupabaseAdmin();
   if (!client) throw new Error("CMS yapılandırılmamış");
+
+  const { data: existing } = await client
+    .from("faq_items")
+    .select("question")
+    .eq("id", id)
+    .maybeSingle();
+
   const { error } = await client.from("faq_items").delete().eq("id", id);
   if (error) throw new Error(error.message);
+
+  if (existing?.question) {
+    await addExcludedQuestion(existing.question as string);
+  }
 }

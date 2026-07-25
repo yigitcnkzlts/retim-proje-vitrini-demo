@@ -289,7 +289,7 @@ export const faqCategories: FaqCategory[] = [
       },
     ],
   },
-];;
+];
 
 export function flattenFaqCategories(categories: FaqCategory[]) {
   const rows: Array<{
