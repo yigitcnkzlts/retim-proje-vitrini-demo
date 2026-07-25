@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { projects } from "@/data/projects";
+import { FEATURED_SERVICE_SLUGS } from "@/lib/seo/featured-services";
 import { getSiteUrl } from "@/lib/seo/site-url";
 
 const siteUrl = getSiteUrl();
@@ -10,13 +11,13 @@ const staticPages: {
   priority: number;
 }[] = [
   { path: "", changeFrequency: "weekly", priority: 1 },
-  { path: "/hizmetler", changeFrequency: "weekly", priority: 0.9 },
-  { path: "/iletisim", changeFrequency: "monthly", priority: 0.6 },
-  { path: "/hakkimizda", changeFrequency: "yearly", priority: 0.4 },
-  { path: "/projeler", changeFrequency: "monthly", priority: 0.4 },
-  { path: "/referanslar", changeFrequency: "monthly", priority: 0.35 },
-  { path: "/cozum-ortaklari", changeFrequency: "yearly", priority: 0.3 },
-  { path: "/bilgi-merkezi", changeFrequency: "monthly", priority: 0.35 },
+  { path: "/hizmetler", changeFrequency: "weekly", priority: 0.95 },
+  { path: "/iletisim", changeFrequency: "monthly", priority: 0.55 },
+  { path: "/hakkimizda", changeFrequency: "yearly", priority: 0.3 },
+  { path: "/projeler", changeFrequency: "monthly", priority: 0.3 },
+  { path: "/referanslar", changeFrequency: "monthly", priority: 0.25 },
+  { path: "/cozum-ortaklari", changeFrequency: "yearly", priority: 0.2 },
+  { path: "/bilgi-merkezi", changeFrequency: "monthly", priority: 0.25 },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -29,12 +30,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: page.priority,
   }));
 
+  const servicePages: MetadataRoute.Sitemap = FEATURED_SERVICE_SLUGS.map((slug) => ({
+    url: `${siteUrl}/hizmetler/${slug}`,
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority: 0.85,
+  }));
+
   const projectPages: MetadataRoute.Sitemap = projects.map((project) => ({
     url: `${siteUrl}/projeler/${project.slug}`,
     lastModified: now,
-    changeFrequency: "monthly",
-    priority: 0.25,
+    changeFrequency: "monthly" as const,
+    priority: 0.15,
   }));
 
-  return [...pages, ...projectPages];
+  return [...pages, ...servicePages, ...projectPages];
 }

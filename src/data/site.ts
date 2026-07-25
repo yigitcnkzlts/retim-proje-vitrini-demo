@@ -37,12 +37,11 @@ export const navigation = [
 export const footerLinks = [
   { name: "Ana Sayfa", href: "/" },
   { name: "Hizmetler", href: "/hizmetler" },
-  { name: "Hakkımızda", href: "/hakkimizda" },
-  { name: "Projeler", href: "/projeler" },
-  { name: "Referanslar", href: "/referanslar" },
-  { name: "Sık Sorulan Sorular", href: "/bilgi-merkezi" },
-  { name: "Çözüm Ortakları", href: "/cozum-ortaklari" },
+  { name: "Mantolama İşlemleri", href: "/hizmetler/mantolama" },
+  { name: "Çatı Yalıtım İşlemleri", href: "/hizmetler/cati-yalitim" },
   { name: "İletişim", href: "/iletisim" },
+  { name: "Hakkımızda", href: "/hakkimizda" },
+  { name: "Sık Sorulan Sorular", href: "/bilgi-merkezi" },
 ];
 
 export const socialLinks = [
@@ -192,9 +191,9 @@ export const buildingProblemCards = [
     id: "cati",
     side: "left" as const,
     icon: "cati" as const,
-    title: "Çatı ve Teras Problemleri",
+    title: "Çatı Yalıtım Problemleri",
     description:
-      "Su yalıtımı zayıflayan çatı ve teraslarda rutubet, tavan lekeleri ve betonarme hasarları oluşabilir.",
+      "Su yalıtımı zayıflayan çatılarda rutubet, tavan lekeleri ve betonarme hasarları oluşabilir.",
     hotspot: { x: 50, y: 22 },
     path: "M 248 424 Q 390 300 500 126",
     arrowPoints: "500,126 494,134 506,134",

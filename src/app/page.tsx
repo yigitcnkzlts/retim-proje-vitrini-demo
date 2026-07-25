@@ -9,9 +9,11 @@ import ScrollReveal from "@/components/ui/ScrollReveal";
 import TrustStrip from "@/components/ui/TrustStrip";
 import { getServices } from "@/lib/cms/services";
 import { getHomeContent } from "@/lib/cms/home-content";
+import { getFeaturedServices } from "@/lib/seo/featured-services";
 
 export default async function HomePage() {
   const [services, homeContent] = await Promise.all([getServices(), getHomeContent()]);
+  const featuredServices = getFeaturedServices(services);
   const tickerItems = homeContent.homeDistricts;
 
   return (
@@ -70,7 +72,7 @@ export default async function HomePage() {
                 </Link>
               </h2>
               <p className="section-subtitle">
-                Mantolama, dış cephe boya, çatı yalıtımı, drenaj ve restorasyon için{" "}
+                Mantolama, dış cephe boya, çatı yalıtımı, drenaj ve güçlendirme için{" "}
                 <Link href="/hizmetler" className="font-medium text-retim-navy underline-offset-2 hover:text-retim-orange hover:underline">
                   Retim hizmetlerini
                 </Link>{" "}
@@ -78,7 +80,7 @@ export default async function HomePage() {
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {services.map((service) => (
+              {featuredServices.map((service) => (
                 <HomeServiceTile key={service.slug} service={service} />
               ))}
             </div>
@@ -115,12 +117,20 @@ export default async function HomePage() {
             Binanız için doğru uygulama geçmişine sahip ekiple çalışın.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl animate-fade-up text-gray-300" style={{ animationDelay: "150ms" }}>
-            Dış cephe, yalıtım, restorasyon veya güçlendirme ihtiyaçlarınız için Retim&apos;in
-            proje deneyiminden faydalanın.
+            Mantolama, yalıtım veya güçlendirme ihtiyaçlarınız için{" "}
+            <Link href="/hizmetler" className="text-white underline underline-offset-2 hover:text-retim-orange">
+              Retim hizmetlerini
+            </Link>{" "}
+            inceleyin.
           </p>
-          <Link href="/iletisim#kesif-formu" className="btn-primary btn-kesif mt-8">
-            Ücretsiz Keşif Al
-          </Link>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <Link href="/hizmetler" className="btn-primary">
+              Hizmetleri İncele
+            </Link>
+            <Link href="/iletisim#kesif-formu" className="btn-outline-white btn-kesif">
+              Ücretsiz Keşif Al
+            </Link>
+          </div>
         </div>
       </section>
     </>

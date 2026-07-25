@@ -111,7 +111,7 @@ export default function Header() {
                           {services.map((service) => (
                             <Link
                               key={service.slug}
-                              href={`/hizmetler#${service.slug}`}
+                              href={`/hizmetler/${service.slug}`}
                               className="mega-menu-link"
                             >
                               <span className="mega-menu-dot" aria-hidden />
@@ -229,7 +229,7 @@ export default function Header() {
                     {services.map((service) => (
                       <Link
                         key={service.slug}
-                        href={`/hizmetler#${service.slug}`}
+                        href={`/hizmetler/${service.slug}`}
                         className="mobile-service-link"
                         onClick={closeMobile}
                       >

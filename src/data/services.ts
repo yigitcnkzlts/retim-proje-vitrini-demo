@@ -10,17 +10,17 @@ export interface Service {
 export const services: Service[] = [
   {
     slug: "mantolama",
-    name: "Mantolama işlemleri",
+    name: "Mantolama İşlemleri",
     description:
       "Isı yalıtım levhalarının bina dış cephelerine kimyasal ve mekanik olarak kaplanıp, sıvanması ve boyanması işlemlerinin bütünüdür. FilliBoya, STO ve diğer marka mantolama paketleri ile uygulanır.",
     projectTypes: ["Apartman", "Site", "Rezidans", "Ticari Bina"],
   },
   {
     slug: "boya-onarim",
-    name: "Onarım ve boya işlemleri",
+    name: "Onarım ve Boya İşlemleri",
     description:
       "Dış cephe onarım, sıva, fileli sıva ve silikon esaslı dış cephe boya uygulamaları. Polisan, FilliBoya, Baumit, Dyo ve STO marka boyaları ile uygulanır.",
-    projectTypes: ["Apartman", "Villa", "Ticari Bina", "Tarihi Bina"],
+    projectTypes: ["Apartman", "Villa", "Ticari Bina", "Ticari Yapı"],
   },
   {
     slug: "cati-yalitim",
@@ -31,7 +31,7 @@ export const services: Service[] = [
   },
   {
     slug: "drenaj",
-    name: "Drenaj işlemleri",
+    name: "Drenaj İşlemleri",
     description:
       "Bina çevresi ve temel drenaj sistemleri ile su birikintisi ve nem sorunlarına kalıcı çözümler getirilir.",
     projectTypes: ["Site", "Apartman", "Ticari Bina"],
@@ -48,7 +48,7 @@ export const services: Service[] = [
     name: "Yapı Güçlendirme İşlemleri",
     description:
       "Bina güçlendirme, zemin ve kolon güçlendirme uygulamaları ile yapısal güvenlik artırılır.",
-    projectTypes: ["Apartman", "Ticari Bina", "Tarihi Bina"],
+    projectTypes: ["Apartman", "Ticari Bina", "Site"],
   },
   {
     slug: "istinat-duvari",

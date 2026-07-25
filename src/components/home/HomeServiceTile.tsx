@@ -2,6 +2,7 @@ import Link from "next/link";
 import RetimImage from "@/components/ui/RetimImage";
 import type { Service } from "@/data/services";
 import { getServiceImageSource } from "@/data/mediaAssets";
+import { servicePagePath } from "@/lib/seo/featured-services";
 
 interface HomeServiceTileProps {
   service: Service;
@@ -15,7 +16,7 @@ export default function HomeServiceTile({ service }: HomeServiceTileProps) {
 
   return (
     <Link
-      href={`/hizmetler#${service.slug}`}
+      href={servicePagePath(service.slug)}
       className="home-service-tile group block overflow-hidden"
     >
       <div className="relative h-28 overflow-hidden sm:h-32">
