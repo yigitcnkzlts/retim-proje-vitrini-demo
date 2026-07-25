@@ -1,6 +1,12 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import {
+  REFERENCES_PAGE_SIZE,
+  references2023,
+  references2024,
+  referencesArchive,
+} from "@/data/references";
 import type { DbProjectRef } from "@/lib/cms/types";
 
 type RefFormState = {
@@ -11,14 +17,36 @@ type RefFormState = {
   year: number;
 };
 
+function toStaticDb(
+  refs: Array<{ refNo: string; projectName: string; service: string; district: string; year: number }>,
+  refType: "catalog" | "archive",
+  prefix: string
+): DbProjectRef[] {
+  const now = new Date().toISOString();
+  return refs.map((r) => ({
+    id: `${prefix}-${r.refNo}`,
+    ref_no: r.refNo,
+    project_name: r.projectName,
+    service: r.service,
+    district: r.district,
+    year: r.year,
+    ref_type: refType,
+    created_at: now,
+    updated_at: now,
+  }));
+}
+
+const SITE_ARCHIVE = toStaticDb(referencesArchive, "archive", "static-archive");
+const SITE_CATALOG = toStaticDb([...references2024, ...references2023], "catalog", "static-catalog");
+
 export default function AdminReferencesPage() {
-  const [catalog, setCatalog] = useState<DbProjectRef[]>([]);
-  const [archive, setArchive] = useState<DbProjectRef[]>([]);
-  // Sitedeki /referanslar = Arşiv listesi
+  const [catalog, setCatalog] = useState<DbProjectRef[]>(SITE_CATALOG);
+  const [archive, setArchive] = useState<DbProjectRef[]>(SITE_ARCHIVE);
   const [tab, setTab] = useState<"catalog" | "archive">("archive");
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -34,15 +62,31 @@ export default function AdminReferencesPage() {
 
   async function load() {
     setLoading(true);
-    const [catRes, arcRes] = await Promise.all([
-      fetch("/api/admin/references?type=catalog"),
-      fetch("/api/admin/references?type=archive"),
-    ]);
-    const catData = (await catRes.json()) as { references: DbProjectRef[] };
-    const arcData = (await arcRes.json()) as { references: DbProjectRef[] };
-    setCatalog(catData.references || []);
-    setArchive(arcData.references || []);
-    setLoading(false);
+    try {
+      const [catRes, arcRes] = await Promise.all([
+        fetch("/api/admin/references?type=catalog"),
+        fetch("/api/admin/references?type=archive"),
+      ]);
+      const catData = (await catRes.json()) as { references?: DbProjectRef[] };
+      const arcData = (await arcRes.json()) as { references?: DbProjectRef[] };
+
+      // API dolu gelirse kullan; aksi halde sitedeki tam liste kalsın
+      if (catData.references && catData.references.length > 0) {
+        setCatalog(catData.references);
+      }
+      if (arcData.references && arcData.references.length >= SITE_ARCHIVE.length * 0.5) {
+        setArchive(arcData.references);
+      } else if (arcData.references && arcData.references.length > 0) {
+        // Kısmi DB — site listesiyle birleştir
+        const byNo = new Map(arcData.references.map((r) => [r.ref_no, r]));
+        setArchive(SITE_ARCHIVE.map((r) => byNo.get(r.ref_no) ?? r));
+      }
+    } catch {
+      setArchive(SITE_ARCHIVE);
+      setCatalog(SITE_CATALOG);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -52,28 +96,29 @@ export default function AdminReferencesPage() {
   async function syncFromSite() {
     setSyncing(true);
     setError("");
-    setMessage("Aktarılıyor…");
+    setMessage("Sitedeki referanslar aktarılıyor…");
     setTab("archive");
 
     try {
-      for (let round = 0; round < 20; round++) {
+      for (let round = 0; round < 30; round++) {
         const res = await fetch("/api/admin/references", { method: "PUT" });
         const data = (await res.json()) as {
-          catalog?: DbProjectRef[];
-          archive?: DbProjectRef[];
           message?: string;
           error?: string;
           done?: boolean;
           remaining?: number;
+          totalArchive?: number;
         };
         if (!res.ok) {
           setError(data.error || "Siteden aktarım başarısız.");
           break;
         }
-        if (data.catalog) setCatalog(data.catalog);
-        if (data.archive) setArchive(data.archive);
         setMessage(data.message || "Aktarım devam ediyor…");
-        if (data.done) break;
+        if (data.done) {
+          await load();
+          setMessage(`Tamam. Panelde sitedeki gibi ${data.totalArchive ?? archive.length} referans var.`);
+          break;
+        }
       }
     } finally {
       setSyncing(false);
@@ -108,7 +153,7 @@ export default function AdminReferencesPage() {
 
   async function handleDelete(id: string) {
     if (id.startsWith("static-")) {
-      setError("Bu kayıt henüz veritabanında değil. “Site ile eşitle”ye basın.");
+      setError("Kalıcı silmek için önce “Site ile eşitle”ye basın, sonra Çıkar’a tıklayın.");
       return;
     }
     if (!confirm("Bu referansı çıkarmak istediğinize emin misiniz? Listeden kalıcı olarak silinir.")) return;
@@ -142,6 +187,10 @@ export default function AdminReferencesPage() {
 
   async function saveEdit(id: string) {
     if (!editForm) return;
+    if (id.startsWith("static-")) {
+      setError("Düzenlemek için önce “Site ile eşitle”ye basın.");
+      return;
+    }
     await fetch(`/api/admin/references/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -166,14 +215,25 @@ export default function AdminReferencesPage() {
     );
   }, [list, search]);
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / REFERENCES_PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pageItems = useMemo(() => {
+    const start = (currentPage - 1) * REFERENCES_PAGE_SIZE;
+    return filtered.slice(start, start + REFERENCES_PAGE_SIZE);
+  }, [filtered, currentPage]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, tab]);
+
   return (
     <div className="p-6 md:p-8">
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-retim-navy">Referanslar</h1>
           <p className="mt-1 text-sm text-gray-600">
-            Sitedeki <strong>/referanslar</strong> listesi <strong>Arşiv</strong> sekmesidir (~
-            {archive.length || "…"} kayıt). Katalog yalnızca proje kartlarıyla bağlantılı listedir.
+            Sitedeki <strong>/referanslar</strong> listesi burada <strong>Arşiv</strong> olarak görünür:{" "}
+            <strong>{archive.length}</strong> referans (sitede {SITE_ARCHIVE.length}).
           </p>
         </div>
         <button
@@ -182,7 +242,7 @@ export default function AdminReferencesPage() {
           disabled={syncing}
           className="rounded-lg border border-retim-navy/20 bg-white px-4 py-2 text-sm font-semibold text-retim-navy hover:bg-retim-navy/5 disabled:opacity-50"
         >
-          {syncing ? "Aktarılıyor… (biraz sürebilir)" : "Site ile eşitle (tüm referanslar)"}
+          {syncing ? "Aktarılıyor… (birkaç tur sürebilir)" : "Site ile eşitle (veritabanına yaz)"}
         </button>
       </div>
 
@@ -250,132 +310,165 @@ export default function AdminReferencesPage() {
         </button>
       </form>
 
-      <div className="mt-6">
-        <input
-          className="input-field max-w-md"
-          placeholder="Listede ara (ref no, proje, semt…)"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <p className="mt-2 text-xs text-gray-500">
+      <div className="mt-6 flex flex-wrap items-end gap-4">
+        <div className="min-w-[240px] flex-1">
+          <input
+            className="input-field max-w-md"
+            placeholder="Listede ara (ref no, proje, semt…)"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <p className="text-sm text-gray-600">
           {filtered.length === list.length
             ? `${list.length} kayıt`
             : `${filtered.length} / ${list.length} kayıt`}
+          {tab === "archive" && (
+            <span className="ml-2 font-semibold text-retim-navy">
+              (sitede {SITE_ARCHIVE.length})
+            </span>
+          )}
         </p>
       </div>
 
       <div className="admin-card mt-4 overflow-hidden p-0">
         {loading ? (
-          <p className="p-8 text-center text-sm text-gray-500">
-            Yükleniyor… Sitedeki arşiv ilk seferde aktarılırken biraz sürebilir.
-          </p>
+          <p className="p-8 text-center text-sm text-gray-500">Yükleniyor…</p>
         ) : (
-          <div className="max-h-[70vh] overflow-auto">
-            <table className="admin-table">
-              <thead className="sticky top-0 bg-white">
-                <tr>
-                  <th>No</th>
-                  <th>Proje</th>
-                  <th>İşlem</th>
-                  <th>Konum</th>
-                  <th>Yıl</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((r) =>
-                  editingId === r.id && editForm ? (
-                    <tr key={r.id} className="bg-retim-orange/5">
-                      <td>
-                        <input
-                          className="input-field"
-                          value={editForm.ref_no}
-                          onChange={(e) => setEditForm({ ...editForm, ref_no: e.target.value })}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          className="input-field"
-                          value={editForm.project_name}
-                          onChange={(e) =>
-                            setEditForm({ ...editForm, project_name: e.target.value })
-                          }
-                        />
-                      </td>
-                      <td>
-                        <input
-                          className="input-field"
-                          value={editForm.service}
-                          onChange={(e) => setEditForm({ ...editForm, service: e.target.value })}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          className="input-field"
-                          value={editForm.district}
-                          onChange={(e) => setEditForm({ ...editForm, district: e.target.value })}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          className="input-field"
-                          type="number"
-                          value={editForm.year}
-                          onChange={(e) =>
-                            setEditForm({ ...editForm, year: Number(e.target.value) })
-                          }
-                        />
-                      </td>
-                      <td className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <button
-                            type="button"
-                            onClick={() => void saveEdit(r.id)}
-                            className="text-sm font-semibold text-green-700 hover:underline"
-                          >
-                            Kaydet
-                          </button>
-                          <button
-                            type="button"
-                            onClick={cancelEdit}
-                            className="text-sm text-gray-500 hover:underline"
-                          >
-                            Vazgeç
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : (
-                    <tr key={r.id}>
-                      <td>{r.ref_no}</td>
-                      <td className="font-medium">{r.project_name}</td>
-                      <td className="max-w-xs truncate">{r.service}</td>
-                      <td>{r.district}</td>
-                      <td>{r.year}</td>
-                      <td className="text-right">
-                        <div className="flex justify-end gap-3">
-                          <button
-                            type="button"
-                            onClick={() => startEdit(r)}
-                            className="text-sm font-semibold text-retim-navy hover:underline"
-                          >
-                            Düzenle
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => void handleDelete(r.id)}
-                            className="rounded border border-red-200 px-2 py-1 text-sm font-semibold text-red-600 hover:bg-red-50"
-                          >
-                            Çıkar
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                )}
-              </tbody>
-            </table>
-          </div>
+          <>
+            <div className="overflow-x-auto">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Proje</th>
+                    <th>İşlem</th>
+                    <th>Konum</th>
+                    <th>Yıl</th>
+                    <th />
+                  </tr>
+                </thead>
+                <tbody>
+                  {pageItems.map((r) =>
+                    editingId === r.id && editForm ? (
+                      <tr key={r.id} className="bg-retim-orange/5">
+                        <td>
+                          <input
+                            className="input-field"
+                            value={editForm.ref_no}
+                            onChange={(e) => setEditForm({ ...editForm, ref_no: e.target.value })}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            className="input-field"
+                            value={editForm.project_name}
+                            onChange={(e) =>
+                              setEditForm({ ...editForm, project_name: e.target.value })
+                            }
+                          />
+                        </td>
+                        <td>
+                          <input
+                            className="input-field"
+                            value={editForm.service}
+                            onChange={(e) => setEditForm({ ...editForm, service: e.target.value })}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            className="input-field"
+                            value={editForm.district}
+                            onChange={(e) => setEditForm({ ...editForm, district: e.target.value })}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            className="input-field"
+                            type="number"
+                            value={editForm.year}
+                            onChange={(e) =>
+                              setEditForm({ ...editForm, year: Number(e.target.value) })
+                            }
+                          />
+                        </td>
+                        <td className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <button
+                              type="button"
+                              onClick={() => void saveEdit(r.id)}
+                              className="text-sm font-semibold text-green-700 hover:underline"
+                            >
+                              Kaydet
+                            </button>
+                            <button
+                              type="button"
+                              onClick={cancelEdit}
+                              className="text-sm text-gray-500 hover:underline"
+                            >
+                              Vazgeç
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : (
+                      <tr key={r.id}>
+                        <td>{r.ref_no}</td>
+                        <td className="font-medium">{r.project_name}</td>
+                        <td className="max-w-xs truncate">{r.service}</td>
+                        <td>{r.district}</td>
+                        <td>{r.year}</td>
+                        <td className="text-right">
+                          <div className="flex justify-end gap-3">
+                            <button
+                              type="button"
+                              onClick={() => startEdit(r)}
+                              className="text-sm font-semibold text-retim-navy hover:underline"
+                            >
+                              Düzenle
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => void handleDelete(r.id)}
+                              className="rounded border border-red-200 px-2 py-1 text-sm font-semibold text-red-600 hover:bg-red-50"
+                            >
+                              Çıkar
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {totalPages > 1 && (
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-4 py-3">
+                <p className="text-xs text-gray-500">
+                  Sayfa {currentPage} / {totalPages}
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    disabled={currentPage <= 1}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    className="rounded border px-3 py-1 text-sm disabled:opacity-40"
+                  >
+                    Önceki
+                  </button>
+                  <button
+                    type="button"
+                    disabled={currentPage >= totalPages}
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    className="rounded border px-3 py-1 text-sm disabled:opacity-40"
+                  >
+                    Sonraki
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
         {!loading && filtered.length === 0 && (
           <p className="p-8 text-center text-sm text-gray-500">Kayıt bulunamadı.</p>

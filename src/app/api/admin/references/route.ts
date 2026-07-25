@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { requireAdminApi } from "@/lib/auth/require-admin";
-import { createReference, getAllRefsAdmin, syncSiteRefsToAdmin } from "@/lib/cms/references";
+import {
+  createReference,
+  getAllRefsAdmin,
+  getSiteArchiveCount,
+  syncSiteRefsToAdmin,
+} from "@/lib/cms/references";
 import { isCmsConfigured } from "@/lib/cms/supabase";
 import type { ProjectRefInput } from "@/lib/cms/types";
 
@@ -15,6 +20,7 @@ export async function GET(request: Request) {
   const references = await getAllRefsAdmin(type ?? undefined);
   return NextResponse.json({
     configured: isCmsConfigured(),
+    siteArchiveCount: getSiteArchiveCount(),
     references,
   });
 }
@@ -30,19 +36,15 @@ export async function PUT() {
       revalidatePath("/referanslar");
       revalidatePath("/", "layout");
     }
-    const [catalog, archive] = await Promise.all([
-      getAllRefsAdmin("catalog"),
-      getAllRefsAdmin("archive"),
-    ]);
     const imported = result.importedCatalog + result.importedArchive;
     return NextResponse.json({
       ...result,
-      catalog,
-      archive,
+      siteArchiveCount: getSiteArchiveCount(),
+      // Büyük listeyi her turda gönderme — istemci bitince yeniden yükler
       message: result.done
         ? imported > 0
-          ? `Aktarım bitti. Arşiv: ${archive.length}, Katalog: ${catalog.length}.`
-          : `Panel sitedeki referanslarla aynı. Arşiv: ${archive.length}.`
+          ? `Aktarım bitti. Sitedeki arşiv: ${result.totalArchive} referans.`
+          : `Panel sitedeki ${result.totalArchive} referans ile aynı.`
         : `${imported} kayıt aktarıldı, ${result.remaining} kaldı…`,
     });
   } catch (error) {

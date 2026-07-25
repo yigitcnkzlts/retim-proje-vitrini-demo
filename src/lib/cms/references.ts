@@ -274,8 +274,42 @@ function staticRefsAsDb(type?: RefType): DbProjectRef[] {
   return [...catalog, ...archive];
 }
 
+/**
+ * Panelde sitedeki liste birebir görünsün:
+ * site arşivi (~2414) temel alınır, DB'deki UUID/güncellemeler üzerine yazılır.
+ */
+async function mergeSiteArchiveWithDb(client: AdminClient | null): Promise<DbProjectRef[]> {
+  const excluded = client ? await getExcludedRefKeys() : new Set<string>();
+  const siteRows = staticRefsAsDb("archive").filter(
+    (r) => !excluded.has(excludedKey("archive", r.ref_no))
+  );
+
+  if (!client) return siteRows;
+
+  const dbRows = await fetchAllRefRows(client, "archive");
+  const byNo = new Map(dbRows.map((r) => [r.ref_no, r]));
+
+  const merged = siteRows.map((r) => byNo.get(r.ref_no) ?? r);
+
+  // Panelden elle eklenen (sitede olmayan) arşiv kayıtları
+  const siteNos = new Set(siteRows.map((r) => r.ref_no));
+  for (const row of dbRows) {
+    if (!siteNos.has(row.ref_no) && !excluded.has(excludedKey("archive", row.ref_no))) {
+      merged.push(row);
+    }
+  }
+
+  return merged;
+}
+
 export async function getAllRefsAdmin(type?: RefType): Promise<DbProjectRef[]> {
   const client = getSupabaseAdmin();
+
+  // Arşiv = sitedeki /referanslar (~2414) — her zaman tam liste
+  if (type === "archive") {
+    return mergeSiteArchiveWithDb(client);
+  }
+
   if (!client) return staticRefsAsDb(type);
 
   // Katalog küçük — eksikleri sessizce tamamla
@@ -295,26 +329,23 @@ export async function getAllRefsAdmin(type?: RefType): Promise<DbProjectRef[]> {
     }
   }
 
-  const rows = await fetchAllRefRows(client, type);
-
-  // Arşiv DB'de eksikse sitedeki tam listeyi göster (Site ile eşitle ile DB'ye yazılır)
-  if (type === "archive") {
-    if (rows.length >= referencesArchive.length * 0.9) return rows;
-    return staticRefsAsDb("archive");
-  }
   if (type === "catalog") {
+    const rows = await fetchAllRefRows(client, "catalog");
     return rows.length > 0 ? rows : staticRefsAsDb("catalog");
   }
 
-  // type yok: katalog DB + arşiv (eksikse static)
-  const archiveRows =
-    rows.filter((r) => r.ref_type === "archive").length >= referencesArchive.length * 0.9
-      ? rows
-      : [
-          ...rows.filter((r) => r.ref_type === "catalog"),
-          ...staticRefsAsDb("archive"),
-        ];
-  return archiveRows.length > 0 ? archiveRows : staticRefsAsDb();
+  // type yok: katalog + tam arşiv
+  const [catalogRows, archiveRows] = await Promise.all([
+    fetchAllRefRows(client, "catalog"),
+    mergeSiteArchiveWithDb(client),
+  ]);
+  const catalog = catalogRows.length > 0 ? catalogRows : staticRefsAsDb("catalog");
+  return [...catalog, ...archiveRows];
+}
+
+/** Sitedeki arşiv referans sayısı (panel sayacı için) */
+export function getSiteArchiveCount(): number {
+  return referencesArchive.length;
 }
 
 export async function createReference(
