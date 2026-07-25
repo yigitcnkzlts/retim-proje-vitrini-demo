@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import PageHero from "@/components/ui/PageHero";
 import ProjectCard from "@/components/projects/ProjectCard";
-import { getFeaturedProjects, getProjects, getProjectsByService } from "@/lib/cms/projects";
+import { getFeaturedProjects, getProjectsByService } from "@/lib/cms/projects";
 import { getServiceBySlugCms } from "@/lib/cms/services";
 
 export const metadata: Metadata = {
@@ -74,7 +74,7 @@ export default async function ProjectsPage({ searchParams }: PageProps) {
     );
   }
 
-  const [featured, all] = await Promise.all([getFeaturedProjects(), getProjects()]);
+  const featured = await getFeaturedProjects();
 
   return (
     <>
@@ -85,32 +85,18 @@ export default async function ProjectsPage({ searchParams }: PageProps) {
       />
 
       <section className="py-12 md:py-16">
-        <div className="container-main space-y-12">
-          {featured.length > 0 && (
-            <div>
-              <p className="section-label">Öne Çıkan</p>
-              <h2 className="section-title mt-2">Son Tamamlanan Projeler</h2>
-              <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-                {featured.map((project) => (
-                  <ProjectCard key={project.slug} project={project} variant="compact" />
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div>
-            <p className="section-label">Tüm Projeler</p>
-            <h2 className="section-title mt-2">Proje Arşivi</h2>
-            <p className="mt-2 text-sm text-gray-600">{all.length} proje</p>
-            <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {all.map((project) => (
-                <ProjectCard key={project.slug} project={project} />
+        <div className="container-main">
+          <p className="section-label">Öne Çıkan</p>
+          <h2 className="section-title mt-2">Son Tamamlanan Projeler</h2>
+          {featured.length > 0 ? (
+            <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+              {featured.map((project) => (
+                <ProjectCard key={project.slug} project={project} variant="compact" />
               ))}
             </div>
-            {all.length === 0 && (
-              <p className="mt-6 text-sm text-gray-500">Henüz yayınlanmış proje yok.</p>
-            )}
-          </div>
+          ) : (
+            <p className="mt-6 text-sm text-gray-500">Henüz yayınlanmış proje yok.</p>
+          )}
         </div>
       </section>
     </>
