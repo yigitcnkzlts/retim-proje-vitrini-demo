@@ -1,11 +1,13 @@
 import type { ContactFormPayload } from "@/lib/contact/web3forms";
 
-export type ContactFieldErrors = Partial<Record<keyof ContactFormPayload, string>>;
+export type ContactFieldErrors = Partial<
+  Record<keyof ContactFormPayload | "kvkk", string>
+>;
 
 const phoneDigits = (value: string) => value.replace(/\D/g, "");
 
 export function validateContactForm(
-  payload: ContactFormPayload,
+  payload: ContactFormPayload & { kvkk?: boolean },
   options: { compact?: boolean } = {}
 ): ContactFieldErrors {
   const errors: ContactFieldErrors = {};
@@ -36,6 +38,10 @@ export function validateContactForm(
 
   if (payload.message.trim() && payload.message.trim().length < 2) {
     errors.message = "Mesaj çok kısa.";
+  }
+
+  if (!payload.kvkk) {
+    errors.kvkk = "Devam etmek için KVKK / iletişim formu bilgilendirmesini onaylamalısınız.";
   }
 
   return errors;

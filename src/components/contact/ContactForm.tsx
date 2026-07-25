@@ -38,6 +38,7 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
       building: String(formData.get("building") ?? "").trim(),
       service: String(formData.get("service") ?? "").trim(),
       message: String(formData.get("message") ?? "").trim(),
+      kvkk: formData.get("kvkk") === "on",
     };
 
     const validationErrors = validateContactForm(payload, { compact });
@@ -48,12 +49,13 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
     }
 
     try {
-      await submitContactToWeb3Forms(payload);
+      const { kvkk: _kvkk, ...contactPayload } = payload;
+      await submitContactToWeb3Forms(contactPayload);
       // Admin inbox — mail başarısından sonra, başarısızlık kullanıcıyı etkilemez
       void fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...payload, logOnly: true }),
+        body: JSON.stringify({ ...contactPayload, logOnly: true }),
       }).catch(() => undefined);
       setSubmitted(true);
       form.reset();
@@ -233,6 +235,38 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
           {error}
         </p>
       )}
+
+      <div className="rounded-sm border border-retim-gray-dark bg-retim-gray/60 px-4 py-3">
+        <label className="flex cursor-pointer items-start gap-3 text-sm text-gray-700">
+          <input
+            id="kvkk"
+            name="kvkk"
+            type="checkbox"
+            required
+            disabled={loading}
+            aria-invalid={Boolean(fieldErrors.kvkk)}
+            aria-describedby={fieldErrors.kvkk ? "kvkk-error" : "kvkk-help"}
+            className="mt-1 h-4 w-4 shrink-0 rounded border-gray-300 text-retim-orange focus:ring-retim-orange"
+          />
+          <span>
+            <span className="font-medium text-retim-navy">
+              KVKK / İletişim Formu Aydınlatma Metni <span className="text-red-500">*</span>
+            </span>
+            <span id="kvkk-help" className="mt-1 block text-xs leading-relaxed text-gray-600">
+              6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında, iletişim ve ücretsiz keşif
+              talebimle paylaştığım kimlik ve iletişim bilgilerimin (ad soyad, telefon, e-posta ve
+              mesaj içeriği) Retim Restorasyon tarafından talebimin değerlendirilmesi ve tarafıma
+              dönüş yapılması amacıyla işlenmesini kabul ediyorum.
+            </span>
+          </span>
+        </label>
+        {fieldErrors.kvkk && (
+          <p id="kvkk-error" className="mt-2 text-xs text-red-600">
+            {fieldErrors.kvkk}
+          </p>
+        )}
+      </div>
+
       <button type="submit" disabled={loading} className="btn-primary w-full sm:w-auto disabled:opacity-60">
         {loading ? "Gönderiliyor..." : "Formu Gönder"}
       </button>
