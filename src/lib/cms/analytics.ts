@@ -106,7 +106,9 @@ export async function recordVisit(input: {
   path: string;
 }): Promise<void> {
   const client = getSupabaseAdmin();
-  if (!client) return;
+  if (!client) {
+    throw new Error("SUPABASE_SERVICE_ROLE_KEY eksik — ziyaret kaydedilemedi.");
+  }
 
   const visitorId = input.visitorId.trim().slice(0, 80);
   const path = (input.path || "/").trim().slice(0, 300);
@@ -121,7 +123,6 @@ export async function recordVisit(input: {
   });
 
   if (error) {
-    // Tablo yoksa sessiz geç
-    console.error("Ziyaret kaydı:", error.message);
+    throw new Error(error.message);
   }
 }

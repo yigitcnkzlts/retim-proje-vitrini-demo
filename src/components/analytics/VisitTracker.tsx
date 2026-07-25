@@ -12,11 +12,11 @@ function getVisitorId(): string {
     const id =
       typeof crypto !== "undefined" && "randomUUID" in crypto
         ? crypto.randomUUID()
-        : `v-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        : `v-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
     localStorage.setItem(STORAGE_KEY, id);
     return id;
   } catch {
-    return `v-${Date.now()}`;
+    return `v-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
   }
 }
 
@@ -30,27 +30,23 @@ export default function VisitTracker() {
     const visitorId = getVisitorId();
     const payload = JSON.stringify({ visitorId, path: pathname });
 
-    // Aynı oturumda aynı path'i 30 sn içinde tekrar yazma
+    // Aynı oturumda aynı path'i 15 sn içinde tekrar yazma
     const dedupeKey = `retim_pv_${pathname}`;
     try {
       const last = sessionStorage.getItem(dedupeKey);
-      if (last && Date.now() - Number(last) < 30_000) return;
+      if (last && Date.now() - Number(last) < 15_000) return;
       sessionStorage.setItem(dedupeKey, String(Date.now()));
     } catch {
       /* ignore */
     }
 
-    if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
-      const blob = new Blob([payload], { type: "application/json" });
-      navigator.sendBeacon("/api/analytics/visit", blob);
-      return;
-    }
-
+    // sendBeacon bazı ortamlarda JSON body'yi bozuyor — fetch daha güvenilir
     void fetch("/api/analytics/visit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: payload,
       keepalive: true,
+      cache: "no-store",
     }).catch(() => undefined);
   }, [pathname]);
 

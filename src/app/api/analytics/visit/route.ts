@@ -14,19 +14,22 @@ export async function POST(request: Request) {
   try {
     let body: unknown;
     try {
-      body = await request.json();
+      const text = await request.text();
+      body = text ? JSON.parse(text) : {};
     } catch {
-      return NextResponse.json({ ok: false }, { status: 400 });
+      return NextResponse.json({ ok: false, error: "invalid_json" }, { status: 400 });
     }
 
     const parsed = schema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ ok: false }, { status: 400 });
+      return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
     }
 
     await recordVisit(parsed.data);
     return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json({ ok: false }, { status: 500 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "record_failed";
+    console.error("Visit API:", message);
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 }
