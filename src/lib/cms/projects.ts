@@ -89,9 +89,76 @@ export async function getProjects(): Promise<Project[]> {
   return fromDb && fromDb.length > 0 ? fromDb : staticProjects;
 }
 
+function staticProjectsAsDb(): DbProject[] {
+  const now = new Date().toISOString();
+  return staticProjects.map((p) => ({
+    id: `static-${p.slug}`,
+    ref_id: null,
+    slug: p.slug,
+    name: p.name,
+    district: p.district,
+    year: p.year,
+    ref_no: p.refNo,
+    service: p.service,
+    service_slug: p.serviceSlug,
+    building_type: p.buildingType,
+    duration: p.duration,
+    featured: p.featured,
+    published: true,
+    short_description: p.shortDescription,
+    description: p.description,
+    scope: p.scope,
+    highlights: p.highlights,
+    image_url: p.image,
+    image_fallback: p.imageFallback,
+    image_alt: p.imageAlt,
+    created_at: now,
+    updated_at: now,
+  }));
+}
+
+/** Sitedeki statik projeleri veritabanına aktarır (boşsa). */
+async function syncStaticProjectsIfEmpty(): Promise<void> {
+  const client = getSupabaseAdmin();
+  if (!client) return;
+
+  const { count } = await client.from("projects").select("*", { count: "exact", head: true });
+  if ((count ?? 0) > 0) return;
+
+  const rows = staticProjects.map((p) => ({
+    slug: p.slug,
+    name: p.name,
+    district: p.district,
+    year: p.year,
+    ref_no: p.refNo,
+    service: p.service,
+    service_slug: p.serviceSlug,
+    building_type: p.buildingType,
+    duration: p.duration,
+    featured: p.featured,
+    published: true,
+    short_description: p.shortDescription,
+    description: p.description,
+    scope: p.scope,
+    highlights: p.highlights,
+    image_url: p.image,
+    image_fallback: p.imageFallback,
+    image_alt: p.imageAlt,
+  }));
+
+  const { error } = await client.from("projects").upsert(rows, { onConflict: "slug" });
+  if (error) console.error("Proje senkron hatası:", error.message);
+}
+
 export async function getAllProjectsAdmin(): Promise<DbProject[]> {
+  const client = getSupabaseAdmin();
+  if (!client) return staticProjectsAsDb();
+
+  await syncStaticProjectsIfEmpty();
+
   const fromDb = await fetchAllProjectsAdmin();
-  return fromDb ?? [];
+  if (fromDb && fromDb.length > 0) return fromDb;
+  return staticProjectsAsDb();
 }
 
 export async function getProjectBySlug(slug: string): Promise<Project | undefined> {
@@ -122,7 +189,7 @@ export async function getFeaturedProjects(): Promise<Project[]> {
 
 export async function createProject(input: ProjectInput): Promise<DbProject | null> {
   const client = getSupabaseAdmin();
-  if (!client) return null;
+  if (!client) throw new Error("CMS yapılandırılmamış — proje kaydedilemedi.");
   const { data, error } = await client
     .from("projects")
     .insert(mapInputToDb(input))

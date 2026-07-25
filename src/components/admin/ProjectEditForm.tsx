@@ -96,36 +96,63 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="admin-card">
-        <h2 className="admin-card-title">Temel Bilgiler</h2>
+        <h2 className="admin-card-title">1. Proje Bilgileri</h2>
+        <p className="mt-1 text-sm text-gray-600">
+          Sitede proje detay sayfasının sağındaki <strong>Proje Bilgileri</strong> kartında görünür
+          (Referans No, Lokasyon, Semt, Yıl, Hizmet Türü, Bina Tipi, Süre).
+        </p>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
-          <Field label="Proje Adı" value={form.name} onChange={(v) => updateField("name", v)} />
-          <Field label="Semt / Lokasyon" value={form.district} onChange={(v) => updateField("district", v)} />
-          <Field label="Yıl" type="number" value={String(form.year)} onChange={(v) => updateField("year", Number(v))} />
-          <Field label="Referans No" value={form.ref_no} onChange={(v) => updateField("ref_no", v)} />
-          <Field label="Hizmet Türü" value={form.service} onChange={(v) => updateField("service", v)} className="md:col-span-2" />
-          <Field label="Bina Tipi" value={form.building_type} onChange={(v) => updateField("building_type", v)} />
-          <Field label="Süre" value={form.duration} onChange={(v) => updateField("duration", v)} placeholder="örn. 3 ay" />
+          <Field label="Proje Adı" hint="Sayfa başlığı ve açıklamada kullanılır" value={form.name} onChange={(v) => updateField("name", v)} />
+          <Field label="Referans No" hint="Sitede: Referans No" value={form.ref_no} onChange={(v) => updateField("ref_no", v)} />
+          <Field
+            label="Lokasyon / Semt"
+            hint="Sitede hem Lokasyon hem Semt olarak aynı değer görünür"
+            value={form.district}
+            onChange={(v) => updateField("district", v)}
+            placeholder="örn. Beyoğlu"
+          />
+          <Field label="Yıl" hint="Sitede: Yıl" type="number" value={String(form.year)} onChange={(v) => updateField("year", Number(v))} />
+          <Field
+            label="Hizmet Türü"
+            hint="Sitede: Hizmet Türü"
+            value={form.service}
+            onChange={(v) => updateField("service", v)}
+            className="md:col-span-2"
+            placeholder="örn. DIŞ CEPHE RESTORASYON -BOYA İŞLEMLERİ"
+          />
+          <Field label="Bina Tipi" hint="Sitede: Bina Tipi" value={form.building_type} onChange={(v) => updateField("building_type", v)} />
+          <Field
+            label="Süre"
+            hint="Sitede: Süre — boş bırakırsanız — görünür"
+            value={form.duration}
+            onChange={(v) => updateField("duration", v)}
+            placeholder="örn. 45 gün veya —"
+          />
         </div>
         <div className="mt-4 flex flex-wrap gap-6">
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={form.published} onChange={(e) => updateField("published", e.target.checked)} />
-            Yayında
+            Yayında (sitede görünsün)
           </label>
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={form.featured} onChange={(e) => updateField("featured", e.target.checked)} />
-            Öne çıkan proje
+            Ana sayfada öne çıkan proje
           </label>
         </div>
       </div>
 
       <div className="admin-card">
-        <h2 className="admin-card-title">Proje Açıklaması</h2>
+        <h2 className="admin-card-title">2. Proje Açıklaması</h2>
+        <p className="mt-1 text-sm text-gray-600">
+          Sitede proje detay sayfasının solundaki <strong>uzun açıklama metni</strong> olarak görünür.
+        </p>
         <textarea
           className="input-field mt-4 min-h-32"
           value={form.description}
           onChange={(e) => updateField("description", e.target.value)}
         />
-        <label className="mt-4 block text-sm font-medium text-gray-700">Kısa Açıklama (liste kartı)</label>
+        <label className="mt-4 block text-sm font-medium text-gray-700">Kısa Açıklama</label>
+        <p className="mt-0.5 text-xs text-gray-500">/projeler listesindeki kart altında kısa özet olarak görünür</p>
         <input
           className="input-field mt-1"
           value={form.short_description}
@@ -135,8 +162,10 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="admin-card">
-          <h2 className="admin-card-title">Uygulama Kapsamı</h2>
-          <p className="mt-1 text-xs text-gray-500">Her satır bir madde</p>
+          <h2 className="admin-card-title">3. Uygulama Kapsamı</h2>
+          <p className="mt-1 text-sm text-gray-600">
+            Sitede <strong>onay işaretli madde listesi</strong> olarak görünür. Her satır bir madde olur.
+          </p>
           <textarea
             className="input-field mt-3 min-h-40"
             value={form.scope}
@@ -144,8 +173,10 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
           />
         </div>
         <div className="admin-card">
-          <h2 className="admin-card-title">Öne Çıkan Maddeler</h2>
-          <p className="mt-1 text-xs text-gray-500">Her satır bir madde</p>
+          <h2 className="admin-card-title">4. Öne Çıkan Uygulama Maddeleri</h2>
+          <p className="mt-1 text-sm text-gray-600">
+            Sitede projenin <strong>öne çıkan kısa maddeleri</strong> olarak görünür. Her satır bir madde olur.
+          </p>
           <textarea
             className="input-field mt-3 min-h-40"
             value={form.highlights}
@@ -155,18 +186,16 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
       </div>
 
       <div className="admin-card">
-        <h2 className="admin-card-title">Kapak Görseli</h2>
+        <h2 className="admin-card-title">5. Kapak Görseli</h2>
+        <p className="mt-1 text-sm text-gray-600">
+          Sitede proje detayındaki <strong>büyük kapak görseli</strong> ve /projeler listesindeki kart fotoğrafı
+          olarak görünür.
+        </p>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700">Görsel URL</label>
-            <input
-              className="input-field"
-              value={form.image_url}
-              onChange={(e) => updateField("image_url", e.target.value)}
-              placeholder="/images/... veya Supabase URL"
-            />
-            <label className="mt-3 block">
-              <span className="btn-secondary mt-2 inline-flex cursor-pointer">
+            <label className="mb-1.5 block text-sm font-medium text-gray-700">Görsel dosyası yükle</label>
+            <label className="block">
+              <span className="btn-secondary inline-flex cursor-pointer">
                 {uploading ? "Yükleniyor..." : "Dosya Yükle"}
               </span>
               <input
@@ -179,12 +208,27 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
                 }}
               />
             </label>
+            <label className="mb-1.5 mt-3 block text-sm font-medium text-gray-700">veya görsel URL</label>
+            <input
+              className="input-field"
+              value={form.image_url}
+              onChange={(e) => updateField("image_url", e.target.value)}
+              placeholder="https://... veya /images/..."
+            />
           </div>
-          <Field label="Görsel Alt Metni" value={form.image_alt} onChange={(v) => updateField("image_alt", v)} />
+          <Field
+            label="Görsel Alt Metni"
+            hint="Erişilebilirlik için kısa açıklama"
+            value={form.image_alt}
+            onChange={(v) => updateField("image_alt", v)}
+          />
         </div>
         {form.image_url && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={form.image_url} alt="" className="mt-4 h-40 w-auto rounded-lg border object-cover" />
+          <div className="mt-4">
+            <p className="mb-2 text-xs font-medium text-gray-500">Sitede görünecek önizleme:</p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={form.image_url} alt="" className="h-40 w-auto rounded-lg border object-cover" />
+          </div>
         )}
       </div>
 
@@ -200,6 +244,7 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
 
 function Field({
   label,
+  hint,
   value,
   onChange,
   type = "text",
@@ -207,6 +252,7 @@ function Field({
   className = "",
 }: {
   label: string;
+  hint?: string;
   value: string;
   onChange: (v: string) => void;
   type?: string;
@@ -215,7 +261,8 @@ function Field({
 }) {
   return (
     <label className={className}>
-      <span className="mb-1.5 block text-sm font-medium text-gray-700">{label}</span>
+      <span className="mb-0.5 block text-sm font-medium text-gray-700">{label}</span>
+      {hint && <span className="mb-1.5 block text-xs text-gray-500">{hint}</span>}
       <input
         type={type}
         className="input-field"

@@ -9,16 +9,14 @@ export async function GET() {
   const denied = await requireAdminApi();
   if (denied) return denied;
 
-  if (!isCmsConfigured()) {
-    return NextResponse.json({
-      configured: false,
-      projects: [],
-      message: "Supabase yapılandırılmamış. .env dosyasını kontrol edin.",
-    });
-  }
-
   const projects = await getAllProjectsAdmin();
-  return NextResponse.json({ configured: true, projects });
+  return NextResponse.json({
+    configured: isCmsConfigured(),
+    projects,
+    message: isCmsConfigured()
+      ? undefined
+      : "Supabase yapılandırılmamış. Görüntülenen liste sitedeki statik veridir; kayıt için .env.local gerekli.",
+  });
 }
 
 export async function POST(request: Request) {
@@ -35,7 +33,14 @@ export async function POST(request: Request) {
       );
     }
     const project = await createProject(parsed.data);
+    if (!project) {
+      return NextResponse.json(
+        { error: "Proje kaydedilemedi. Supabase bağlantısını kontrol edin." },
+        { status: 503 }
+      );
+    }
     revalidatePath("/projeler");
+    revalidatePath(`/projeler/${project.slug}`);
     revalidatePath("/", "layout");
     return NextResponse.json({ project });
   } catch (error) {

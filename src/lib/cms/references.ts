@@ -71,13 +71,73 @@ export async function getFooterLatestProjects(count = 5): Promise<FooterProjectL
   }));
 }
 
+function staticRefsAsDb(type?: RefType): DbProjectRef[] {
+  const now = new Date().toISOString();
+  const mapRow = (r: Reference, refType: RefType, prefix: string): DbProjectRef => ({
+    id: `${prefix}-${r.refNo}`,
+    ref_no: r.refNo,
+    project_name: r.projectName,
+    service: r.service,
+    district: r.district,
+    year: r.year,
+    ref_type: refType,
+    created_at: now,
+    updated_at: now,
+  });
+
+  const catalog = staticCatalogRefs().map((r) => mapRow(r, "catalog", "static-catalog"));
+  const archive = referencesArchive.map((r) => mapRow(r, "archive", "static-archive"));
+
+  if (type === "catalog") return catalog;
+  if (type === "archive") return archive;
+  return [...catalog, ...archive];
+}
+
+/** Sitedeki statik referansları veritabanına aktarır (boşsa). */
+async function syncStaticRefsIfEmpty(type?: RefType): Promise<void> {
+  const client = getSupabaseAdmin();
+  if (!client) return;
+
+  let countQuery = client.from("project_refs").select("*", { count: "exact", head: true });
+  if (type) countQuery = countQuery.eq("ref_type", type);
+  const { count } = await countQuery;
+  if ((count ?? 0) > 0) return;
+
+  const catalog = staticCatalogRefs().map((r) => ({
+    ref_no: r.refNo,
+    project_name: r.projectName,
+    service: r.service,
+    district: r.district,
+    year: r.year,
+    ref_type: "catalog" as const,
+  }));
+  const archive = referencesArchive.map((r) => ({
+    ref_no: r.refNo,
+    project_name: r.projectName,
+    service: r.service,
+    district: r.district,
+    year: r.year,
+    ref_type: "archive" as const,
+  }));
+
+  const rows = type === "catalog" ? catalog : type === "archive" ? archive : [...catalog, ...archive];
+  if (rows.length === 0) return;
+
+  const { error } = await client.from("project_refs").upsert(rows, { onConflict: "ref_no,ref_type" });
+  if (error) console.error("Referans senkron hatası:", error.message);
+}
+
 export async function getAllRefsAdmin(type?: RefType): Promise<DbProjectRef[]> {
   const client = getSupabaseAdmin();
-  if (!client) return [];
+  if (!client) return staticRefsAsDb(type);
+
+  await syncStaticRefsIfEmpty(type);
+
   let query = client.from("project_refs").select("*").order("year", { ascending: false });
   if (type) query = query.eq("ref_type", type);
   const { data } = await query;
-  return (data as DbProjectRef[]) ?? [];
+  const rows = (data as DbProjectRef[]) ?? [];
+  return rows.length > 0 ? rows : staticRefsAsDb(type);
 }
 
 export async function createReference(

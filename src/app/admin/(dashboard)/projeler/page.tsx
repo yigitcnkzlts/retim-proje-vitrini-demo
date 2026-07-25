@@ -12,18 +12,27 @@ function slugify(text: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+function linesToArray(text: string): string[] {
+  return text
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+}
+
 const EMPTY_FORM = {
   name: "",
   district: "",
   year: new Date().getFullYear(),
   ref_no: "",
   service: "",
-  service_slug: "",
   building_type: "Apartman",
   duration: "—",
   featured: false,
   published: true,
   short_description: "",
+  description: "",
+  scope: "Keşif ve mevcut durum analizi\n\nKontrollü saha uygulaması\nTeslim ve kontrol süreci",
+  highlights: "",
   image_url: "",
   image_alt: "",
 };
@@ -52,6 +61,29 @@ export default function AdminProjectsPage() {
     void load();
   }, []);
 
+  function fillExampleTexts() {
+    const name = form.name.trim() || "Proje";
+    const district = form.district.trim() || "İstanbul";
+    const service = form.service.trim() || "uygulama";
+    const year = form.year;
+    const refNo = form.ref_no.trim() || "—";
+
+    setForm((prev) => ({
+      ...prev,
+      short_description: prev.short_description || `${district} — ${service}`,
+      description:
+        prev.description ||
+        `${name} projesinde ${district} bölgesinde ${service.toLowerCase()} uygulaması Retim tarafından tamamlanmıştır. Referans No: ${refNo}`,
+      scope:
+        prev.scope.includes(service) || !service
+          ? prev.scope
+          : `Keşif ve mevcut durum analizi\n${service}\nKontrollü saha uygulaması\nTeslim ve kontrol süreci`,
+      highlights:
+        prev.highlights.trim() ||
+        `Retim referans projesi\n${year} yılı uygulaması\n${district} bölgesi`,
+    }));
+  }
+
   async function handleImageUpload(file: File) {
     setUploading(true);
     setError("");
@@ -76,13 +108,23 @@ export default function AdminProjectsPage() {
 
     const slug = `${slugify(form.name)}-${form.ref_no || Date.now()}`;
     const payload = {
-      ...form,
+      name: form.name.trim(),
+      district: form.district.trim(),
+      year: Number(form.year),
+      ref_no: form.ref_no.trim(),
+      service: form.service.trim(),
+      service_slug: slugify(form.service),
+      building_type: form.building_type.trim() || "Apartman",
+      duration: form.duration.trim() || "—",
+      featured: form.featured,
+      published: form.published,
+      short_description: form.short_description.trim(),
+      description: form.description.trim(),
+      scope: linesToArray(form.scope),
+      highlights: linesToArray(form.highlights),
       slug,
-      service_slug: form.service_slug || slugify(form.service),
       image_url: form.image_url || null,
       image_alt: form.image_alt || null,
-      scope: [],
-      highlights: [],
     };
 
     const res = await fetch("/api/admin/projects", {
@@ -98,13 +140,18 @@ export default function AdminProjectsPage() {
       return;
     }
 
-    setMessage("Proje eklendi. Detayları düzenlemek için 'Düzenle' bağlantısını kullanın.");
+    setMessage("Proje eklendi. İsterseniz listeden 'Düzenle' ile tekrar güncelleyebilirsiniz.");
     setForm(EMPTY_FORM);
     setShowForm(false);
     await load();
   }
 
   async function handleDelete(slug: string) {
+    const project = projects.find((p) => p.slug === slug);
+    if (project?.id.startsWith("static-")) {
+      setError("Bu proje henüz veritabanında değil. Sayfayı yenileyin; sitedeki liste otomatik aktarılacak.");
+      return;
+    }
     if (!confirm("Bu projeyi silmek istediğinize emin misiniz? Bu işlem geri alınamaz.")) return;
     await fetch(`/api/admin/projects/${slug}`, { method: "DELETE" });
     await load();
@@ -116,7 +163,8 @@ export default function AdminProjectsPage() {
         <div>
           <h1 className="text-2xl font-bold text-retim-navy">Projeler</h1>
           <p className="mt-1 text-sm text-gray-600">
-            Proje ekleyin, silin veya detaylarını (açıklama, kapsam, süre, görsel) düzenleyin.
+            Her alanın altında sitede nereye gittiği yazılıdır. Görsel yüklediğinizde canlı proje sayfasındaki
+            kapak fotoğrafı olarak görünür.
           </p>
         </div>
         <button type="button" onClick={() => setShowForm((v) => !v)} className="btn-primary">
@@ -127,69 +175,163 @@ export default function AdminProjectsPage() {
       {!configured && <SetupAlert />}
 
       {showForm && (
-        <form onSubmit={handleCreate} className="admin-card mb-6">
-          <h2 className="admin-card-title">Yeni Proje</h2>
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
-            <input
-              className="input-field"
-              placeholder="Proje adı (örn. Yalı Apartmanı)"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              required
+        <form onSubmit={handleCreate} className="mb-6 space-y-4">
+          <div className="admin-card">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <div>
+                <h2 className="admin-card-title">1. Proje Bilgileri</h2>
+                <p className="mt-1 text-sm text-gray-600">
+                  Sitede proje detay sayfasının sağındaki <strong>Proje Bilgileri</strong> kartında görünür
+                  (Referans No, Lokasyon, Semt, Yıl, Hizmet Türü, Bina Tipi, Süre).
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={fillExampleTexts}
+                className="text-xs font-semibold text-retim-orange hover:underline"
+              >
+                Örnek metinleri doldur
+              </button>
+            </div>
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <LabeledInput
+                label="Proje Adı"
+                hint="Sayfa başlığı ve açıklamada kullanılır"
+                value={form.name}
+                onChange={(v) => setForm({ ...form, name: v })}
+                placeholder="örn. Asmalımescit No 28"
+                required
+              />
+              <LabeledInput
+                label="Referans No"
+                hint="Sitede: Referans No"
+                value={form.ref_no}
+                onChange={(v) => setForm({ ...form, ref_no: v })}
+                placeholder="örn. 2359"
+              />
+              <LabeledInput
+                label="Lokasyon / Semt"
+                hint="Sitede hem Lokasyon hem Semt olarak aynı değer görünür"
+                value={form.district}
+                onChange={(v) => setForm({ ...form, district: v })}
+                placeholder="örn. Beyoğlu"
+                required
+              />
+              <LabeledInput
+                label="Yıl"
+                hint="Sitede: Yıl"
+                type="number"
+                value={String(form.year)}
+                onChange={(v) => setForm({ ...form, year: Number(v) })}
+                required
+              />
+              <LabeledInput
+                label="Hizmet Türü"
+                hint="Sitede: Hizmet Türü — örn. DIŞ CEPHE RESTORASYON -BOYA İŞLEMLERİ"
+                value={form.service}
+                onChange={(v) => setForm({ ...form, service: v })}
+                placeholder="örn. DIŞ CEPHE RESTORASYON -BOYA İŞLEMLERİ"
+                className="md:col-span-2"
+                required
+              />
+              <LabeledInput
+                label="Bina Tipi"
+                hint="Sitede: Bina Tipi"
+                value={form.building_type}
+                onChange={(v) => setForm({ ...form, building_type: v })}
+                placeholder="Apartman, Site, Villa..."
+              />
+              <LabeledInput
+                label="Süre"
+                hint="Sitede: Süre — boş bırakırsanız — görünür"
+                value={form.duration}
+                onChange={(v) => setForm({ ...form, duration: v })}
+                placeholder="örn. 45 gün veya —"
+              />
+            </div>
+            <div className="mt-4 flex flex-wrap gap-6">
+              <label className="flex items-center gap-2 text-sm text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={form.published}
+                  onChange={(e) => setForm({ ...form, published: e.target.checked })}
+                />
+                Yayında (sitede görünsün)
+              </label>
+              <label className="flex items-center gap-2 text-sm text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={form.featured}
+                  onChange={(e) => setForm({ ...form, featured: e.target.checked })}
+                />
+                Ana sayfada öne çıkan proje
+              </label>
+            </div>
+          </div>
+
+          <div className="admin-card">
+            <h2 className="admin-card-title">2. Proje Açıklaması</h2>
+            <p className="mt-1 text-sm text-gray-600">
+              Sitede proje detay sayfasının solundaki <strong>uzun açıklama metni</strong> olarak görünür.
+            </p>
+            <textarea
+              className="input-field mt-4 min-h-32"
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              placeholder="örn. Asmalımescit No 28 projesinde Beyoğlu bölgesinde diş cephe restorasyon -boya işlemleri uygulaması Retim tarafından tamamlanmıştır. Referans No: 2359"
             />
+            <label className="mt-4 block text-sm font-medium text-gray-700">
+              Kısa Açıklama
+            </label>
+            <p className="mt-0.5 text-xs text-gray-500">
+              /projeler listesindeki kart altında kısa özet olarak görünür
+            </p>
             <input
-              className="input-field"
-              placeholder="Semt (örn. Beşiktaş)"
-              value={form.district}
-              onChange={(e) => setForm({ ...form, district: e.target.value })}
-              required
-            />
-            <input
-              className="input-field"
-              type="number"
-              placeholder="Yıl"
-              value={form.year}
-              onChange={(e) => setForm({ ...form, year: Number(e.target.value) })}
-              required
-            />
-            <input
-              className="input-field"
-              placeholder="Ref No"
-              value={form.ref_no}
-              onChange={(e) => setForm({ ...form, ref_no: e.target.value })}
-            />
-            <input
-              className="input-field"
-              placeholder="Hizmet (örn. Mantolama işlemleri)"
-              value={form.service}
-              onChange={(e) => setForm({ ...form, service: e.target.value })}
-              required
-            />
-            <input
-              className="input-field"
-              placeholder="Bina tipi (Apartman, Site, Villa...)"
-              value={form.building_type}
-              onChange={(e) => setForm({ ...form, building_type: e.target.value })}
-            />
-            <input
-              className="input-field"
-              placeholder="Süre (örn. 45 gün)"
-              value={form.duration}
-              onChange={(e) => setForm({ ...form, duration: e.target.value })}
+              className="input-field mt-1"
+              value={form.short_description}
+              onChange={(e) => setForm({ ...form, short_description: e.target.value })}
+              placeholder="örn. Beyoğlu — Dış cephe restorasyon - boya"
             />
           </div>
-          <textarea
-            className="input-field mt-3"
-            placeholder="Kısa açıklama"
-            rows={2}
-            value={form.short_description}
-            onChange={(e) => setForm({ ...form, short_description: e.target.value })}
-          />
 
-          <div className="mt-4 rounded-lg border border-gray-200 p-4">
-            <h3 className="text-sm font-semibold text-retim-navy">Proje Görseli</h3>
-            <div className="mt-3 grid gap-3 md:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div className="admin-card">
+              <h2 className="admin-card-title">3. Uygulama Kapsamı</h2>
+              <p className="mt-1 text-sm text-gray-600">
+                Sitede açıklamanın altında <strong>onay işaretli madde listesi</strong> olarak görünür.
+                Her satır bir madde olur.
+              </p>
+              <textarea
+                className="input-field mt-3 min-h-40"
+                value={form.scope}
+                onChange={(e) => setForm({ ...form, scope: e.target.value })}
+                placeholder={"Keşif ve mevcut durum analizi\nDIŞ CEPHE RESTORASYON -BOYA İŞLEMLERİ\nKontrollü saha uygulaması\nTeslim ve kontrol süreci"}
+              />
+            </div>
+            <div className="admin-card">
+              <h2 className="admin-card-title">4. Öne Çıkan Uygulama Maddeleri</h2>
+              <p className="mt-1 text-sm text-gray-600">
+                Sitede projenin <strong>öne çıkan kısa maddeleri</strong> olarak görünür.
+                Her satır bir madde olur.
+              </p>
+              <textarea
+                className="input-field mt-3 min-h-40"
+                value={form.highlights}
+                onChange={(e) => setForm({ ...form, highlights: e.target.value })}
+                placeholder={"Retim referans projesi\n2024 yılı uygulaması\nBeyoğlu bölgesi"}
+              />
+            </div>
+          </div>
+
+          <div className="admin-card">
+            <h2 className="admin-card-title">5. Kapak Görseli</h2>
+            <p className="mt-1 text-sm text-gray-600">
+              Sitede proje detayındaki <strong>büyük kapak görseli</strong> ve /projeler listesindeki kart
+              fotoğrafı olarak görünür. Yüklediğiniz görsel canlı sitede aynı şekilde çıkar.
+            </p>
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
               <div>
+                <label className="mb-1.5 block text-sm font-medium text-gray-700">Görsel dosyası yükle</label>
                 <input
                   type="file"
                   accept="image/*"
@@ -200,48 +342,36 @@ export default function AdminProjectsPage() {
                     if (file) void handleImageUpload(file);
                   }}
                 />
+                <label className="mb-1.5 mt-3 block text-sm font-medium text-gray-700">veya görsel URL</label>
                 <input
-                  className="input-field mt-2"
-                  placeholder="veya görsel URL yapıştırın"
+                  className="input-field"
+                  placeholder="https://... veya /images/..."
                   value={form.image_url}
                   onChange={(e) => setForm({ ...form, image_url: e.target.value })}
                 />
               </div>
-              <input
-                className="input-field self-end"
-                placeholder="Görsel alt metni"
+              <LabeledInput
+                label="Görsel Alt Metni"
+                hint="Erişilebilirlik için kısa açıklama"
                 value={form.image_alt}
-                onChange={(e) => setForm({ ...form, image_alt: e.target.value })}
+                onChange={(v) => setForm({ ...form, image_alt: v })}
+                placeholder="örn. Beyoğlu dış cephe uygulama görseli"
+                className="self-end"
               />
             </div>
             {form.image_url && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={form.image_url} alt="" className="mt-3 h-28 w-auto rounded-lg border object-cover" />
+              <div className="mt-4">
+                <p className="mb-2 text-xs font-medium text-gray-500">Sitede görünecek önizleme:</p>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={form.image_url} alt="" className="h-40 w-auto rounded-lg border object-cover" />
+              </div>
             )}
             {uploading && <p className="mt-2 text-xs text-gray-500">Görsel yükleniyor...</p>}
           </div>
 
-          <div className="mt-3 flex items-center gap-6">
-            <label className="flex items-center gap-2 text-sm text-gray-700">
-              <input
-                type="checkbox"
-                checked={form.published}
-                onChange={(e) => setForm({ ...form, published: e.target.checked })}
-              />
-              Yayında
-            </label>
-            <label className="flex items-center gap-2 text-sm text-gray-700">
-              <input
-                type="checkbox"
-                checked={form.featured}
-                onChange={(e) => setForm({ ...form, featured: e.target.checked })}
-              />
-              Öne çıkan
-            </label>
-          </div>
-          {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
-          <button type="submit" disabled={saving || uploading} className="btn-primary mt-4 disabled:opacity-60">
-            {saving ? "Ekleniyor..." : "Projeyi Ekle"}
+          {error && <p className="text-sm text-red-600">{error}</p>}
+          <button type="submit" disabled={saving || uploading} className="btn-primary disabled:opacity-60">
+            {saving ? "Ekleniyor..." : "Projeyi Kaydet (sitede yayınla)"}
           </button>
         </form>
       )}
@@ -287,8 +417,11 @@ export default function AdminProjectsPage() {
                   </td>
                   <td className="text-right">
                     <div className="flex justify-end gap-3">
-                      <Link href={`/admin/projeler/${p.slug}`} className="text-sm font-semibold text-retim-orange hover:underline">
-                        Düzenle / Görsel →
+                      <Link
+                        href={`/admin/projeler/${p.slug}`}
+                        className="text-sm font-semibold text-retim-orange hover:underline"
+                      >
+                        Düzenle →
                       </Link>
                       <button
                         type="button"
@@ -311,6 +444,41 @@ export default function AdminProjectsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+function LabeledInput({
+  label,
+  hint,
+  value,
+  onChange,
+  type = "text",
+  placeholder,
+  required,
+  className = "",
+}: {
+  label: string;
+  hint?: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+  placeholder?: string;
+  required?: boolean;
+  className?: string;
+}) {
+  return (
+    <label className={className}>
+      <span className="mb-0.5 block text-sm font-medium text-gray-700">{label}</span>
+      {hint && <span className="mb-1.5 block text-xs text-gray-500">{hint}</span>}
+      <input
+        type={type}
+        className="input-field"
+        value={value}
+        placeholder={placeholder}
+        required={required}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    </label>
   );
 }
 

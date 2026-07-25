@@ -66,6 +66,10 @@ export default function AdminReferencesPage() {
   }
 
   async function handleDelete(id: string) {
+    if (id.startsWith("static-")) {
+      setError("Bu kayıt henüz veritabanında değil. Sayfayı yenileyin; sitedeki liste otomatik aktarılacak.");
+      return;
+    }
     if (!confirm("Bu referansı çıkarmak istediğinize emin misiniz? Listeden kalıcı olarak silinir.")) return;
     setMessage("");
     setError("");
@@ -112,7 +116,8 @@ export default function AdminReferencesPage() {
     <div className="p-6 md:p-8">
       <h1 className="text-2xl font-bold text-retim-navy">Referanslar</h1>
       <p className="mt-1 text-sm text-gray-600">
-        Katalog referansları otomatik proje oluşturur. Arşiv referansları /referanslar sayfasında görünür.
+        Sitedeki /referanslar listesi burada da görünür. Katalog referansları otomatik proje oluşturur;
+        Arşiv referansları sitede arşiv tablosunda listelenir. Ekleyin veya <strong>Çıkar</strong> ile silin.
       </p>
 
       <div className="mt-6 flex gap-2">

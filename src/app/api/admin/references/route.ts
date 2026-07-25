@@ -12,12 +12,11 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const type = searchParams.get("type") as "catalog" | "archive" | null;
 
-  if (!isCmsConfigured()) {
-    return NextResponse.json({ configured: false, references: [] });
-  }
-
   const references = await getAllRefsAdmin(type ?? undefined);
-  return NextResponse.json({ configured: true, references });
+  return NextResponse.json({
+    configured: isCmsConfigured(),
+    references,
+  });
 }
 
 export async function POST(request: Request) {
