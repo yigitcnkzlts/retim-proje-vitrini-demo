@@ -1,13 +1,29 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { faqCategories } from "@/data/faq";
+import { faqCategories, flattenFaqCategories } from "@/data/faq";
 import type { DbFaqItem } from "@/lib/cms/types";
 
 const CATEGORY_OPTIONS = faqCategories.map((c) => ({ slug: c.id, title: c.title }));
 
+const SITE_FAQ: DbFaqItem[] = flattenFaqCategories(faqCategories).map((r, i) => {
+  const now = new Date().toISOString();
+  return {
+    id: `static-faq-${i}`,
+    category_slug: r.category_slug,
+    category_title: r.category_title,
+    question: r.question,
+    answer: r.answer,
+    sort_order: r.sort_order,
+    active: true,
+    created_at: now,
+    updated_at: now,
+  };
+});
+
 export default function AdminFaqPage() {
-  const [items, setItems] = useState<DbFaqItem[]>([]);
+  // Sitedeki sorular hemen görünsün (API beklenmeden)
+  const [items, setItems] = useState<DbFaqItem[]>(SITE_FAQ);
   const [configured, setConfigured] = useState(true);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
@@ -25,12 +41,26 @@ export default function AdminFaqPage() {
 
   async function load() {
     setLoading(true);
-    const res = await fetch("/api/admin/faq");
-    const data = (await res.json()) as { configured: boolean; items: DbFaqItem[]; message?: string };
-    setConfigured(data.configured);
-    setItems(data.items || []);
-    if (data.message && !data.configured) setMessage(data.message);
-    setLoading(false);
+    try {
+      const res = await fetch("/api/admin/faq");
+      const data = (await res.json()) as {
+        configured: boolean;
+        items: DbFaqItem[];
+        siteFaqCount?: number;
+        message?: string;
+      };
+      setConfigured(data.configured);
+      if (data.items && data.items.length > 0) {
+        setItems(data.items);
+      } else {
+        setItems(SITE_FAQ);
+      }
+      if (data.message && !data.configured) setMessage(data.message);
+    } catch {
+      setItems(SITE_FAQ);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -53,10 +83,13 @@ export default function AdminFaqPage() {
         data.error ||
           "Aktarım başarısız. Supabase'de faq_items tablosu var mı? (0002_faq_items.sql)"
       );
+      // Tablo yoksa bile sitedeki liste kalsın
+      setItems(SITE_FAQ);
       return;
     }
-    if (data.items) setItems(data.items);
-    setMessage(data.message || "Aktarım tamamlandı.");
+    if (data.items && data.items.length > 0) setItems(data.items);
+    else setItems(SITE_FAQ);
+    setMessage(data.message || `Sitedeki ${SITE_FAQ.length} soru panelde.`);
   }
 
   function onCategoryChange(slug: string) {
@@ -169,8 +202,8 @@ export default function AdminFaqPage() {
         <div>
           <h1 className="text-2xl font-bold text-retim-navy">Bilgi Merkezi</h1>
           <p className="mt-1 text-sm text-gray-600">
-            Sitedeki tüm SSS burada listelenir. Yeni soru ekleyebilir, düzenleyebilir veya{" "}
-            <strong>Çıkar</strong> ile silebilirsiniz. Toplam: {items.length}
+            Sitedeki Bilgi Merkezi metinleri burada görünür. Ekle / düzenle / çıkar yapabilirsiniz.
+            Toplam: <strong>{items.length}</strong> (sitede {SITE_FAQ.length})
           </p>
         </div>
         <button
@@ -179,7 +212,7 @@ export default function AdminFaqPage() {
           disabled={syncing || !configured}
           className="rounded-lg border border-retim-navy/20 bg-white px-4 py-2 text-sm font-semibold text-retim-navy hover:bg-retim-navy/5 disabled:opacity-50"
         >
-          {syncing ? "Aktarılıyor…" : "Site ile eşitle (tüm sorular)"}
+          {syncing ? "Aktarılıyor…" : "Site ile eşitle (veritabanına yaz)"}
         </button>
       </div>
 
@@ -263,7 +296,7 @@ export default function AdminFaqPage() {
       </div>
 
       <div className="mt-4 space-y-6">
-        {loading ? (
+        {loading && items.length === 0 ? (
           <p className="text-sm text-gray-500">Yükleniyor…</p>
         ) : (
           grouped.map(([categoryTitle, catItems]) => (

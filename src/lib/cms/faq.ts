@@ -132,11 +132,18 @@ export async function getFaqCategories(): Promise<FaqCategory[]> {
   return groupByCategory(data as DbFaqItem[]);
 }
 
-export async function getAllFaqAdmin(): Promise<DbFaqItem[]> {
+/**
+ * Panelde sitedeki Bilgi Merkezi soruları birebir görünsün:
+ * site listesi temel, DB UUID/güncellemeleri üzerine yazılır.
+ */
+async function mergeSiteFaqWithDb(): Promise<DbFaqItem[]> {
   const client = getSupabaseAdmin();
-  if (!client) return staticFaqAsDb();
+  const excluded = client ? await getExcludedQuestions() : new Set<string>();
+  const siteRows = staticFaqAsDb().filter((r) => !excluded.has(r.question));
 
-  // Eksik soruları otomatik aktar
+  if (!client) return siteRows;
+
+  // Eksikleri sessizce aktarmayı dene (tablo yoksa site listesi kalır)
   try {
     await syncSiteFaqToAdmin();
   } catch (error) {
@@ -144,9 +151,28 @@ export async function getAllFaqAdmin(): Promise<DbFaqItem[]> {
   }
 
   const { data } = await client.from("faq_items").select("*").order("sort_order", { ascending: true });
-  const rows = (data as DbFaqItem[]) ?? [];
-  if (rows.length > 0) return rows;
-  return staticFaqAsDb();
+  const dbRows = (data as DbFaqItem[]) ?? [];
+  const byQuestion = new Map(dbRows.map((r) => [r.question, r]));
+
+  const merged = siteRows.map((r) => byQuestion.get(r.question) ?? r);
+
+  // Panelden elle eklenen (sitede olmayan) sorular
+  const siteQuestions = new Set(siteRows.map((r) => r.question));
+  for (const row of dbRows) {
+    if (!siteQuestions.has(row.question) && !excluded.has(row.question)) {
+      merged.push(row);
+    }
+  }
+
+  return merged.sort((a, b) => a.sort_order - b.sort_order);
+}
+
+export async function getAllFaqAdmin(): Promise<DbFaqItem[]> {
+  return mergeSiteFaqWithDb();
+}
+
+export function getSiteFaqCount(): number {
+  return flattenFaqCategories(staticFaqCategories).length;
 }
 
 export async function createFaqItem(input: FaqInput): Promise<DbFaqItem | null> {

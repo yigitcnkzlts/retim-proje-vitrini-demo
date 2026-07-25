@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { requireAdminApi } from "@/lib/auth/require-admin";
-import { createFaqItem, getAllFaqAdmin, syncSiteFaqToAdmin } from "@/lib/cms/faq";
+import { createFaqItem, getAllFaqAdmin, getSiteFaqCount, syncSiteFaqToAdmin } from "@/lib/cms/faq";
 import { isCmsConfigured } from "@/lib/cms/supabase";
 import { faqInputSchema } from "@/lib/validation/schemas";
 
@@ -12,10 +12,11 @@ export async function GET() {
   const items = await getAllFaqAdmin();
   return NextResponse.json({
     configured: isCmsConfigured(),
+    siteFaqCount: getSiteFaqCount(),
     items,
     message: isCmsConfigured()
       ? undefined
-      : "Supabase yapılandırılmamış. Liste sitedeki statik sorulardır; kaydetmek için env + faq_items tablosu gerekli.",
+      : "Supabase yapılandırılmamış. Liste sitedeki soruları gösterir; kaydetmek için env + faq_items tablosu gerekli.",
   });
 }
 
