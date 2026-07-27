@@ -10,7 +10,8 @@
     "lint": "next lint",
     "seed": "tsx scripts/seed.ts",
     "hash-password": "tsx scripts/hash-admin-password.ts",
-    "generate:references": "tsx scripts/generate-references-archive.ts"
+    "generate:references": "tsx scripts/generate-references-archive.ts",
+    "setup:analytics": "tsx scripts/setup-site-visits.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.1",

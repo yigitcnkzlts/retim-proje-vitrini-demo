@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import {
   REFERENCES_PAGE_SIZE,
+  compareReferencesNewestFirst,
   references2023,
   references2024,
   referencesArchive,
@@ -204,14 +205,34 @@ export default function AdminReferencesPage() {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return list;
-    return list.filter(
-      (r) =>
-        r.ref_no.toLowerCase().includes(q) ||
-        r.project_name.toLowerCase().includes(q) ||
-        r.service.toLowerCase().includes(q) ||
-        r.district.toLowerCase().includes(q) ||
-        String(r.year).includes(q)
+    const base = !q
+      ? list
+      : list.filter(
+          (r) =>
+            r.ref_no.toLowerCase().includes(q) ||
+            r.project_name.toLowerCase().includes(q) ||
+            r.service.toLowerCase().includes(q) ||
+            r.district.toLowerCase().includes(q) ||
+            String(r.year).includes(q)
+        );
+    // İlk sayfa 2026'dan başlasın, eskiler sona doğru
+    return [...base].sort((a, b) =>
+      compareReferencesNewestFirst(
+        {
+          refNo: a.ref_no,
+          projectName: a.project_name,
+          service: a.service,
+          district: a.district,
+          year: a.year,
+        },
+        {
+          refNo: b.ref_no,
+          projectName: b.project_name,
+          service: b.service,
+          district: b.district,
+          year: b.year,
+        }
+      )
     );
   }, [list, search]);
 

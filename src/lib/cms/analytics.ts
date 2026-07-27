@@ -71,9 +71,12 @@ export async function getVisitStats(): Promise<VisitStats> {
   const yesterday = istanbulDate(-1);
   const weekFrom = weekStartIstanbul();
 
-  // Tablo var mı?
-  const { error: probeError } = await client.from("site_visits").select("id", { head: true, count: "exact" }).limit(1);
-  if (probeError) {
+  // Tablo var mı? (yokken error gelmeyebilir; count null ise tablo yok)
+  const { error: probeError, count: probeCount } = await client
+    .from("site_visits")
+    .select("id", { head: true, count: "exact" })
+    .limit(1);
+  if (probeError || probeCount === null) {
     return {
       todayVisitors: 0,
       yesterdayVisitors: 0,

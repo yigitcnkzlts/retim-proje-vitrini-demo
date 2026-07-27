@@ -20,6 +20,9 @@ const EXCLUDED_REFS_KEY = "excluded_project_refs";
 const PAGE_SIZE = 1000;
 const UPSERT_BATCH = 200;
 
+/** Statik arşivden kalıcı silinen ref'ler — DB'de kalsa bile panel/sitede görünmesin */
+const REMOVED_ARCHIVE_REF_NOS = new Set(["2412-2"]);
+
 function mapDbToReference(row: DbProjectRef): Reference {
   return {
     refNo: row.ref_no,
@@ -175,7 +178,9 @@ export async function syncSiteRefsToAdmin(maxInserts = 600): Promise<{
     (r) => !excluded.has(excludedKey("catalog", r.refNo))
   );
   const archiveSource = referencesArchive.filter(
-    (r) => !excluded.has(excludedKey("archive", r.refNo))
+    (r) =>
+      !REMOVED_ARCHIVE_REF_NOS.has(r.refNo) &&
+      !excluded.has(excludedKey("archive", r.refNo))
   );
 
   const haveCatalog = await fetchAllRefNos(client, "catalog");
@@ -226,13 +231,16 @@ export async function getCatalogReferences(): Promise<Reference[]> {
 }
 
 export async function getArchiveReferences(): Promise<Reference[]> {
-  if (!isCmsConfigured()) return referencesArchive;
+  const withoutRemoved = (items: Reference[]) =>
+    items.filter((r) => !REMOVED_ARCHIVE_REF_NOS.has(r.refNo));
+
+  if (!isCmsConfigured()) return withoutRemoved(referencesArchive);
   const rows = await fetchRefs("archive");
-  if (rows === null) return referencesArchive;
+  if (rows === null) return withoutRemoved(referencesArchive);
   // DB boş/eksikse sitede tam arşiv görünsün
-  if (rows.length === 0) return referencesArchive;
-  if (rows.length < referencesArchive.length * 0.9) return referencesArchive;
-  return rows.map(mapDbToReference);
+  if (rows.length === 0) return withoutRemoved(referencesArchive);
+  if (rows.length < referencesArchive.length * 0.9) return withoutRemoved(referencesArchive);
+  return withoutRemoved(rows.map(mapDbToReference));
 }
 
 export type FooterProjectLink = {
@@ -281,7 +289,9 @@ function staticRefsAsDb(type?: RefType): DbProjectRef[] {
 async function mergeSiteArchiveWithDb(client: AdminClient | null): Promise<DbProjectRef[]> {
   const excluded = client ? await getExcludedRefKeys() : new Set<string>();
   const siteRows = staticRefsAsDb("archive").filter(
-    (r) => !excluded.has(excludedKey("archive", r.ref_no))
+    (r) =>
+      !REMOVED_ARCHIVE_REF_NOS.has(r.ref_no) &&
+      !excluded.has(excludedKey("archive", r.ref_no))
   );
 
   if (!client) return siteRows;
@@ -294,7 +304,11 @@ async function mergeSiteArchiveWithDb(client: AdminClient | null): Promise<DbPro
   // Panelden elle eklenen (sitede olmayan) arşiv kayıtları
   const siteNos = new Set(siteRows.map((r) => r.ref_no));
   for (const row of dbRows) {
-    if (!siteNos.has(row.ref_no) && !excluded.has(excludedKey("archive", row.ref_no))) {
+    if (
+      !REMOVED_ARCHIVE_REF_NOS.has(row.ref_no) &&
+      !siteNos.has(row.ref_no) &&
+      !excluded.has(excludedKey("archive", row.ref_no))
+    ) {
       merged.push(row);
     }
   }

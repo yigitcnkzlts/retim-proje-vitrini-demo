@@ -3,10 +3,19 @@
 ## 1. Supabase projesi oluşturun
 
 1. [supabase.com](https://supabase.com) → Yeni proje oluşturun
-2. **SQL Editor** → önce `supabase/migrations/0001_init.sql`, ardından `supabase/migrations/0002_faq_items.sql` dosyalarını sırayla yapıştırıp **Run** ile çalıştırın
-   - 0001: tüm ana tablolar, indeksler, RLS ve `cms-uploads` storage bucket'ı
-   - 0002: Bilgi Merkezi SSS (`faq_items`) tablosu
+2. **SQL Editor** → migration dosyalarını sırayla yapıştırıp **Run** ile çalıştırın:
+   - `supabase/migrations/0001_init.sql` — ana tablolar, indeksler, RLS, `cms-uploads` bucket
+   - `supabase/migrations/0002_faq_items.sql` — Bilgi Merkezi SSS (`faq_items`)
+   - `supabase/migrations/0003_site_visits.sql` — **ziyaretçi / sayfa görüntüleme** (`site_visits`)
    - Bucket ayrıca otomatik oluşur; **Storage** sekmesinden `cms-uploads` bucket'ının **Public** olduğunu doğrulayın
+
+   Ziyaretçi tablosu için alternatif:
+
+   ```powershell
+   npm run setup:analytics
+   ```
+
+   `.env.local` içinde `SUPABASE_DB_URL` (Database → Connection string → URI) varsa migration otomatik uygulanır; yoksa komut hangi SQL dosyasını çalıştırmanız gerektiğini yazar.
 
 ## 2. Ortam değişkenleri
 
@@ -64,6 +73,7 @@ Bu komut mevcut projeleri, referansları, çözüm ortaklarını, hizmetleri, an
 | **Keşif Talepleri** | Formdan gelen talepler; durum (Yeni/Görüşüldü/Sürüyor/Kapandı), not, arama/filtre, CSV export |
 | **Bilgi Merkezi** | SSS soru-cevap ekle/düzenle/çıkar |
 | **Site Ayarları** | Telefon, WhatsApp, adres, e-posta, çalışma saatleri, harita |
+| **Dashboard** | Bugün/dün/7 gün benzersiz ziyaretçi ve sayfa görüntüleme (Supabase `site_visits`) |
 
 ## Notlar
 
