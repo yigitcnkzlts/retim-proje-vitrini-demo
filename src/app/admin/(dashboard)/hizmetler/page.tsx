@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import MediaPickerButton from "@/components/admin/MediaPickerButton";
 import type { DbService } from "@/lib/cms/types";
 
 type ServiceForm = {
@@ -13,6 +14,8 @@ type ServiceForm = {
   project_types: string;
   active: boolean;
   featured: boolean;
+  seo_title: string;
+  seo_description: string;
 };
 
 const EMPTY_FORM: ServiceForm = {
@@ -25,6 +28,8 @@ const EMPTY_FORM: ServiceForm = {
   project_types: "",
   active: true,
   featured: false,
+  seo_title: "",
+  seo_description: "",
 };
 
 export default function AdminServicesPage() {
@@ -34,6 +39,7 @@ export default function AdminServicesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -65,7 +71,28 @@ export default function AdminServicesPage() {
       project_types: s.project_types.join(", "),
       active: s.active,
       featured: s.featured,
+      seo_title: s.seo_title || "",
+      seo_description: s.seo_description || "",
     });
+  }
+
+  function buildPayload() {
+    return {
+      slug: form.slug.trim(),
+      name: form.name.trim(),
+      description: form.description.trim(),
+      detail: form.detail.trim(),
+      image_url: form.image_url || null,
+      image_alt: form.image_alt.trim(),
+      project_types: form.project_types
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean),
+      active: form.active,
+      featured: form.featured,
+      seo_title: form.seo_title.trim(),
+      seo_description: form.seo_description.trim(),
+    };
   }
 
   async function handleImageUpload(file: File) {
@@ -84,26 +111,30 @@ export default function AdminServicesPage() {
     setForm((prev) => ({ ...prev, image_url: data.url || "" }));
   }
 
+  async function handlePreview() {
+    setPreviewing(true);
+    setError("");
+    const res = await fetch("/api/admin/preview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "service", data: buildPayload() }),
+    });
+    const data = (await res.json()) as { url?: string; error?: string };
+    setPreviewing(false);
+    if (!res.ok || !data.url) {
+      setError(data.error || "Önizleme açılamadı.");
+      return;
+    }
+    window.open(data.url, "_blank", "noopener,noreferrer");
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setSaving(true);
     setError("");
     setMessage("");
 
-    const payload = {
-      slug: form.slug.trim(),
-      name: form.name.trim(),
-      description: form.description.trim(),
-      detail: form.detail.trim(),
-      image_url: form.image_url || null,
-      image_alt: form.image_alt.trim(),
-      project_types: form.project_types
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean),
-      active: form.active,
-      featured: form.featured,
-    };
+    const payload = buildPayload();
 
     const res = editingId
       ? await fetch(`/api/admin/services/${editingId}`, {
@@ -201,16 +232,22 @@ export default function AdminServicesPage() {
         <div className="mt-3 grid gap-3 md:grid-cols-2">
           <div>
             <label className="mb-1.5 block text-sm font-medium text-gray-700">Görsel</label>
-            <input
-              type="file"
-              accept="image/*"
-              disabled={uploading}
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) void handleImageUpload(file);
-              }}
-              className="input-field"
-            />
+            <div className="flex flex-wrap gap-2">
+              <input
+                type="file"
+                accept="image/*"
+                disabled={uploading}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) void handleImageUpload(file);
+                }}
+                className="input-field"
+              />
+              <MediaPickerButton
+                folderHint="services"
+                onSelect={(url) => setForm((prev) => ({ ...prev, image_url: url }))}
+              />
+            </div>
             {form.image_url && (
               <p className="mt-1 truncate text-xs text-gray-500">{form.image_url}</p>
             )}
@@ -220,6 +257,24 @@ export default function AdminServicesPage() {
             placeholder="Görsel alt metni"
             value={form.image_alt}
             onChange={(e) => setForm({ ...form, image_alt: e.target.value })}
+          />
+        </div>
+
+        <div className="mt-4 border-t border-gray-100 pt-4">
+          <p className="text-sm font-medium text-gray-700">SEO</p>
+          <p className="mt-0.5 text-xs text-gray-500">Boş bırakılırsa hizmet adı / açıklama kullanılır.</p>
+          <input
+            className="input-field mt-3"
+            placeholder="Meta başlık"
+            value={form.seo_title}
+            onChange={(e) => setForm({ ...form, seo_title: e.target.value })}
+          />
+          <textarea
+            className="input-field mt-3"
+            placeholder="Meta açıklama (120–155 karakter önerilir)"
+            rows={2}
+            value={form.seo_description}
+            onChange={(e) => setForm({ ...form, seo_description: e.target.value })}
           />
         </div>
 
@@ -245,9 +300,17 @@ export default function AdminServicesPage() {
         {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
         {message && <p className="mt-3 text-sm text-green-700">{message}</p>}
 
-        <div className="mt-4 flex gap-2">
+        <div className="mt-4 flex flex-wrap gap-2">
           <button type="submit" disabled={saving || uploading} className="btn-primary disabled:opacity-60">
             {saving ? "Kaydediliyor..." : editingId ? "Güncelle" : "Ekle"}
+          </button>
+          <button
+            type="button"
+            disabled={previewing}
+            className="btn-secondary"
+            onClick={() => void handlePreview()}
+          >
+            {previewing ? "Önizleme..." : "Kaydetmeden önizle →"}
           </button>
           {editingId && (
             <button type="button" onClick={resetForm} className="btn-secondary">

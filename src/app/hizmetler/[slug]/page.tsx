@@ -27,9 +27,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const service = await getServiceBySlugCms(slug);
   if (!service) return { title: "Hizmet" };
 
-  const title = `${service.name} | Retim Hizmetleri`;
-  const description =
-    service.description.length > 155
+  const title = service.seoTitle?.trim()
+    ? service.seoTitle.trim()
+    : `${service.name} | Retim Hizmetleri`;
+  const description = service.seoDescription?.trim()
+    ? service.seoDescription.trim()
+    : service.description.length > 155
       ? `${service.description.slice(0, 152)}...`
       : `${service.description} İstanbul ve seçili bölgelerde Retim uygulaması.`;
 

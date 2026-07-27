@@ -4,13 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const links = [
-  { href: "/admin", label: "Dashboard", exact: true },
+  { href: "/admin/dashboard", label: "Dashboard", exact: true },
+  { href: "/admin/raporlar", label: "Ziyaret Raporları" },
   { href: "/admin/ana-sayfa", label: "Ana Sayfa" },
   { href: "/admin/hizmetler", label: "Hizmetler" },
   { href: "/admin/hakkimizda", label: "Hakkımızda" },
   { href: "/admin/projeler", label: "Projeler" },
   { href: "/admin/referanslar", label: "Referanslar" },
   { href: "/admin/ortaklar", label: "Çözüm Ortakları" },
+  { href: "/admin/medya", label: "Medya Kütüphanesi" },
   { href: "/admin/formlar", label: "Keşif Talepleri" },
   { href: "/admin/bilgi-merkezi", label: "Bilgi Merkezi" },
   { href: "/admin/ayarlar", label: "Site Ayarları" },

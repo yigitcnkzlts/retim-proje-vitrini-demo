@@ -9,6 +9,12 @@ export const contactPayloadSchema = z.object({
   message: z.string().trim().optional().or(z.literal("")),
 });
 
+export const galleryImageSchema = z.object({
+  url: z.string().trim().min(1),
+  alt: z.string().trim().optional().default(""),
+  kind: z.enum(["before", "after", "gallery"]).default("gallery"),
+});
+
 export const projectInputSchema = z.object({
   slug: z.string().trim().min(2),
   name: z.string().trim().min(2),
@@ -28,6 +34,9 @@ export const projectInputSchema = z.object({
   image_url: z.string().trim().nullable().optional(),
   image_fallback: z.string().trim().nullable().optional(),
   image_alt: z.string().trim().nullable().optional(),
+  gallery: z.array(galleryImageSchema).optional().default([]),
+  seo_title: z.string().trim().optional().default(""),
+  seo_description: z.string().trim().optional().default(""),
 });
 
 export const serviceInputSchema = z.object({

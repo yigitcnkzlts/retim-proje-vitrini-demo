@@ -5,7 +5,36 @@ import {
   getFeaturedProjects as getStaticFeaturedProjects,
 } from "@/data/projects";
 import { getSupabaseAdmin, getSupabasePublic, isCmsConfigured } from "@/lib/cms/supabase";
-import type { DbProject, ProjectInput } from "@/lib/cms/types";
+import type { DbProject, GalleryImage, ProjectInput } from "@/lib/cms/types";
+
+function normalizeGallery(raw: unknown): GalleryImage[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === "object")
+    .map((item): GalleryImage | null => {
+      const url = String(item.url || "");
+      if (!url) return null;
+      const kind: GalleryImage["kind"] =
+        item.kind === "before" || item.kind === "after" || item.kind === "gallery"
+          ? item.kind
+          : "gallery";
+      return {
+        url,
+        alt: String(item.alt || ""),
+        kind,
+      };
+    })
+    .filter((item): item is GalleryImage => item !== null);
+}
+
+function normalizeProjectRow(row: Record<string, unknown>): DbProject {
+  return {
+    ...(row as unknown as DbProject),
+    gallery: normalizeGallery(row.gallery),
+    seo_title: String(row.seo_title ?? ""),
+    seo_description: String(row.seo_description ?? ""),
+  };
+}
 
 function mapDbToProject(row: DbProject): Project {
   return {
@@ -26,6 +55,9 @@ function mapDbToProject(row: DbProject): Project {
     image: row.image_url || row.image_fallback || "/images/projects/boya.svg",
     imageFallback: row.image_fallback || "/images/projects/boya.svg",
     imageAlt: row.image_alt || `${row.name} proje uygulama görseli`,
+    gallery: row.gallery ?? [],
+    seoTitle: row.seo_title || "",
+    seoDescription: row.seo_description || "",
   };
 }
 
@@ -50,6 +82,9 @@ function mapInputToDb(input: ProjectInput) {
     image_url: input.image_url ?? null,
     image_fallback: input.image_fallback ?? null,
     image_alt: input.image_alt ?? null,
+    gallery: input.gallery ?? [],
+    seo_title: input.seo_title ?? "",
+    seo_description: input.seo_description ?? "",
     updated_at: new Date().toISOString(),
   };
 }
@@ -66,7 +101,7 @@ async function fetchPublishedProjects(): Promise<Project[] | null> {
     .order("name", { ascending: true });
 
   if (error || !data) return null;
-  return (data as DbProject[]).map(mapDbToProject);
+  return (data as Record<string, unknown>[]).map((row) => mapDbToProject(normalizeProjectRow(row)));
 }
 
 async function fetchAllProjectsAdmin(): Promise<DbProject[] | null> {
@@ -80,7 +115,7 @@ async function fetchAllProjectsAdmin(): Promise<DbProject[] | null> {
     .order("name", { ascending: true });
 
   if (error || !data) return null;
-  return data as DbProject[];
+  return (data as Record<string, unknown>[]).map(normalizeProjectRow);
 }
 
 export async function getProjects(): Promise<Project[]> {
@@ -119,6 +154,9 @@ function staticProjectsAsDb(): DbProject[] {
     image_url: p.image,
     image_fallback: p.imageFallback,
     image_alt: p.imageAlt,
+    gallery: p.gallery ?? [],
+    seo_title: p.seoTitle ?? "",
+    seo_description: p.seoDescription ?? "",
     created_at: now,
     updated_at: now,
   }));
@@ -146,6 +184,9 @@ function projectToDbRow(p: Project) {
     image_url: p.image,
     image_fallback: p.imageFallback,
     image_alt: p.imageAlt,
+    gallery: p.gallery ?? [],
+    seo_title: p.seoTitle ?? "",
+    seo_description: p.seoDescription ?? "",
   };
 }
 
@@ -255,7 +296,7 @@ export async function getProjectBySlug(slug: string): Promise<Project | undefine
   if (!client) return getStaticProjectBySlug(slug);
 
   const { data } = await client.from("projects").select("*").eq("slug", slug).maybeSingle();
-  if (data) return mapDbToProject(data as DbProject);
+  if (data) return mapDbToProject(normalizeProjectRow(data as Record<string, unknown>));
   return getStaticProjectBySlug(slug);
 }
 
@@ -263,7 +304,8 @@ export async function getProjectBySlugAdmin(slug: string): Promise<DbProject | n
   const client = getSupabaseAdmin();
   if (!client) return null;
   const { data } = await client.from("projects").select("*").eq("slug", slug).maybeSingle();
-  return (data as DbProject) ?? null;
+  if (!data) return null;
+  return normalizeProjectRow(data as Record<string, unknown>);
 }
 
 export async function getFeaturedProjects(): Promise<Project[]> {
@@ -283,7 +325,7 @@ export async function createProject(input: ProjectInput): Promise<DbProject | nu
     .select()
     .single();
   if (error) throw new Error(error.message);
-  return data as DbProject;
+  return normalizeProjectRow(data as Record<string, unknown>);
 }
 
 export async function updateProject(slug: string, input: Partial<ProjectInput>): Promise<DbProject | null> {
@@ -307,6 +349,9 @@ export async function updateProject(slug: string, input: Partial<ProjectInput>):
   if (input.image_url !== undefined) payload.image_url = input.image_url;
   if (input.image_fallback !== undefined) payload.image_fallback = input.image_fallback;
   if (input.image_alt !== undefined) payload.image_alt = input.image_alt;
+  if (input.gallery !== undefined) payload.gallery = input.gallery;
+  if (input.seo_title !== undefined) payload.seo_title = input.seo_title;
+  if (input.seo_description !== undefined) payload.seo_description = input.seo_description;
   if (input.ref_id !== undefined) payload.ref_id = input.ref_id;
 
   const { data, error } = await client
@@ -316,7 +361,7 @@ export async function updateProject(slug: string, input: Partial<ProjectInput>):
     .select()
     .single();
   if (error) throw new Error(error.message);
-  return data as DbProject;
+  return normalizeProjectRow(data as Record<string, unknown>);
 }
 
 export async function deleteProject(slug: string): Promise<void> {

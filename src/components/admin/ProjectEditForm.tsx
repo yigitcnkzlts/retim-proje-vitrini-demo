@@ -1,7 +1,8 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import type { DbProject } from "@/lib/cms/types";
+import MediaPickerButton from "@/components/admin/MediaPickerButton";
+import type { DbProject, GalleryImage, GalleryImageKind } from "@/lib/cms/types";
 
 interface ProjectEditFormProps {
   project: DbProject;
@@ -19,6 +20,12 @@ function linesToArray(text: string): string[] {
 function arrayToLines(items: string[]): string {
   return items.join("\n");
 }
+
+const KIND_LABEL: Record<GalleryImageKind, string> = {
+  before: "Önce",
+  after: "Sonra",
+  gallery: "Galeri",
+};
 
 export default function ProjectEditForm({ project }: ProjectEditFormProps) {
   const [form, setForm] = useState({
@@ -38,12 +45,18 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
     highlights: arrayToLines(project.highlights),
     image_url: project.image_url || "",
     image_alt: project.image_alt || "",
+    seo_title: project.seo_title || "",
+    seo_description: project.seo_description || "",
   });
+  const [gallery, setGallery] = useState<GalleryImage[]>(project.gallery || []);
   const [saving, setSaving] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [galleryUploading, setGalleryUploading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [services, setServices] = useState<ServiceOption[]>([]);
+  const [galleryKind, setGalleryKind] = useState<GalleryImageKind>("gallery");
 
   useEffect(() => {
     void fetch("/api/admin/services")
@@ -70,6 +83,22 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
     }));
   }
 
+  function buildPayload() {
+    return {
+      ...form,
+      year: Number(form.year),
+      service_slug: form.service_slug,
+      service: form.service,
+      scope: linesToArray(form.scope),
+      highlights: linesToArray(form.highlights),
+      image_url: form.image_url || null,
+      image_alt: form.image_alt || null,
+      gallery,
+      seo_title: form.seo_title,
+      seo_description: form.seo_description,
+    };
+  }
+
   async function handleImageUpload(file: File) {
     setUploading(true);
     setError("");
@@ -88,6 +117,53 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
     updateField("image_url", data.url || "");
   }
 
+  async function handleGalleryUpload(file: File) {
+    setGalleryUploading(true);
+    setError("");
+    const body = new FormData();
+    body.append("file", file);
+    body.append("folder", "projects");
+    const res = await fetch("/api/admin/upload", { method: "POST", body });
+    const data = (await res.json()) as { url?: string; error?: string };
+    setGalleryUploading(false);
+    if (!res.ok) {
+      setError(data.error || "Galeri görseli yüklenemedi.");
+      return;
+    }
+    if (data.url) {
+      setGallery((prev) => [...prev, { url: data.url!, kind: galleryKind, alt: "" }]);
+    }
+  }
+
+  function addGalleryFromLibrary(url: string) {
+    setGallery((prev) => [...prev, { url, kind: galleryKind, alt: "" }]);
+  }
+
+  function removeGalleryItem(index: number) {
+    setGallery((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function updateGalleryKind(index: number, kind: GalleryImageKind) {
+    setGallery((prev) => prev.map((item, i) => (i === index ? { ...item, kind } : item)));
+  }
+
+  async function handlePreview() {
+    setPreviewing(true);
+    setError("");
+    const res = await fetch("/api/admin/preview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "project", data: buildPayload() }),
+    });
+    const data = (await res.json()) as { url?: string; error?: string };
+    setPreviewing(false);
+    if (!res.ok || !data.url) {
+      setError(data.error || "Önizleme açılamadı.");
+      return;
+    }
+    window.open(data.url, "_blank", "noopener,noreferrer");
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -97,16 +173,7 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
     const res = await fetch(`/api/admin/projects/${project.slug}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...form,
-        year: Number(form.year),
-        service_slug: form.service_slug,
-        service: form.service,
-        scope: linesToArray(form.scope),
-        highlights: linesToArray(form.highlights),
-        image_url: form.image_url || null,
-        image_alt: form.image_alt || null,
-      }),
+      body: JSON.stringify(buildPayload()),
     });
 
     const data = (await res.json()) as { error?: string };
@@ -234,20 +301,23 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           <div>
             <label className="mb-1.5 block text-sm font-medium text-gray-700">Görsel dosyası yükle</label>
-            <label className="block">
-              <span className="btn-secondary inline-flex cursor-pointer">
-                {uploading ? "Yükleniyor..." : "Dosya Yükle"}
-              </span>
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) void handleImageUpload(file);
-                }}
-              />
-            </label>
+            <div className="flex flex-wrap gap-2">
+              <label className="block">
+                <span className="btn-secondary inline-flex cursor-pointer">
+                  {uploading ? "Yükleniyor..." : "Dosya Yükle"}
+                </span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) void handleImageUpload(file);
+                  }}
+                />
+              </label>
+              <MediaPickerButton folderHint="projects" onSelect={(url) => updateField("image_url", url)} />
+            </div>
             <label className="mb-1.5 mt-3 block text-sm font-medium text-gray-700">veya görsel URL</label>
             <input
               className="input-field"
@@ -272,12 +342,116 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
         )}
       </div>
 
+      <div className="admin-card">
+        <h2 className="admin-card-title">6. Proje Galerisi (Önce / Sonra)</h2>
+        <p className="mt-1 text-sm text-gray-600">
+          Kapak dışında önce/sonra ve ek uygulama fotoğrafları. Önce + Sonra çifti sitede kaydırıcı olarak gösterilir.
+        </p>
+        <div className="mt-4 flex flex-wrap items-end gap-3">
+          <label className="text-sm">
+            <span className="mb-1 block font-medium text-gray-700">Eklenecek tür</span>
+            <select
+              className="input-field"
+              value={galleryKind}
+              onChange={(e) => setGalleryKind(e.target.value as GalleryImageKind)}
+            >
+              <option value="before">Önce</option>
+              <option value="after">Sonra</option>
+              <option value="gallery">Galeri</option>
+            </select>
+          </label>
+          <label>
+            <span className="btn-secondary inline-flex cursor-pointer">
+              {galleryUploading ? "Yükleniyor..." : "Dosya yükle"}
+            </span>
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) void handleGalleryUpload(file);
+                e.target.value = "";
+              }}
+            />
+          </label>
+          <MediaPickerButton folderHint="projects" label="Kütüphaneden ekle" onSelect={addGalleryFromLibrary} />
+        </div>
+
+        {gallery.length === 0 ? (
+          <p className="mt-4 text-sm text-gray-500">Henüz galeri görseli yok.</p>
+        ) : (
+          <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {gallery.map((item, index) => (
+              <li key={`${item.url}-${index}`} className="rounded border border-gray-200 p-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={item.url} alt="" className="h-28 w-full rounded object-cover" />
+                <select
+                  className="input-field mt-2 text-sm"
+                  value={item.kind}
+                  onChange={(e) => updateGalleryKind(index, e.target.value as GalleryImageKind)}
+                >
+                  {(Object.keys(KIND_LABEL) as GalleryImageKind[]).map((k) => (
+                    <option key={k} value={k}>
+                      {KIND_LABEL[k]}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  className="mt-2 text-xs text-red-600 underline"
+                  onClick={() => removeGalleryItem(index)}
+                >
+                  Kaldır
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div className="admin-card">
+        <h2 className="admin-card-title">7. SEO</h2>
+        <p className="mt-1 text-sm text-gray-600">
+          Boş bırakılırsa proje adı ve kısa açıklama kullanılır.
+        </p>
+        <div className="mt-4 space-y-3">
+          <Field
+            label="Meta başlık"
+            hint="Tarayıcı sekmesi ve arama sonuçlarında"
+            value={form.seo_title}
+            onChange={(v) => updateField("seo_title", v)}
+            placeholder={form.name}
+          />
+          <label>
+            <span className="mb-0.5 block text-sm font-medium text-gray-700">Meta açıklama</span>
+            <span className="mb-1.5 block text-xs text-gray-500">Önerilen 120–155 karakter</span>
+            <textarea
+              className="input-field min-h-20"
+              value={form.seo_description}
+              onChange={(e) => updateField("seo_description", e.target.value)}
+              placeholder={form.short_description}
+            />
+          </label>
+        </div>
+      </div>
+
       {error && <p className="text-sm text-red-600">{error}</p>}
       {message && <p className="text-sm text-green-700">{message}</p>}
 
-      <button type="submit" disabled={saving} className="btn-primary">
-        {saving ? "Kaydediliyor..." : "Değişiklikleri Kaydet"}
-      </button>
+      <div className="flex flex-wrap gap-3">
+        <button type="submit" disabled={saving} className="btn-primary">
+          {saving ? "Kaydediliyor..." : "Değişiklikleri Kaydet"}
+        </button>
+        <button
+          type="button"
+          disabled={previewing}
+          className="btn-secondary"
+          onClick={() => void handlePreview()}
+        >
+          {previewing ? "Önizleme hazırlanıyor..." : "Kaydetmeden önizle →"}
+        </button>
+      </div>
     </form>
   );
 }

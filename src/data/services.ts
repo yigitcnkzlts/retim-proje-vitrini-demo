@@ -5,6 +5,9 @@ export interface Service {
   projectTypes: string[];
   imageUrl?: string | null;
   imageAlt?: string;
+  detail?: string;
+  seoTitle?: string;
+  seoDescription?: string;
 }
 
 export const services: Service[] = [

@@ -46,29 +46,38 @@ export default async function AdminDashboardPage() {
       )}
 
       <section className="mb-8">
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
-          Site Etkileşimi
-        </h2>
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+            Site Etkileşimi
+          </h2>
+          <Link href="/admin/raporlar" className="text-sm font-medium text-retim-orange hover:underline">
+            Detaylı rapor →
+          </Link>
+        </div>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard
             label="Bugün ziyaretçi"
             value={visits.todayVisitors}
             hint="Benzersiz kişi (İstanbul saati)"
+            href="/admin/raporlar"
           />
           <StatCard
             label="Dün ziyaretçi"
             value={visits.yesterdayVisitors}
             hint="Benzersiz kişi"
+            href="/admin/raporlar"
           />
           <StatCard
             label="Son 7 gün"
             value={visits.weekVisitors}
             hint="Benzersiz ziyaretçi"
+            href="/admin/raporlar?gun=7"
           />
           <StatCard
             label="Bugün sayfa görüntüleme"
             value={visits.todayPageviews}
             hint="Toplam tıklama / sayfa"
+            href="/admin/raporlar"
           />
         </div>
       </section>
@@ -95,10 +104,12 @@ export default async function AdminDashboardPage() {
         <section className="admin-card">
           <h2 className="admin-card-title">Hızlı İşlemler</h2>
           <div className="mt-4 space-y-2">
+            <QuickLink href="/admin/raporlar" label="Ziyaret raporları (sayfa / grafik)" />
             <QuickLink href="/admin/ana-sayfa" label="Ana sayfa hero ve istatistikler" />
             <QuickLink href="/admin/hizmetler" label="Hizmetleri düzenle" />
             <QuickLink href="/admin/hakkimizda" label="Hakkımızda metinleri" />
             <QuickLink href="/admin/projeler" label="Proje detaylarını düzenle" />
+            <QuickLink href="/admin/medya" label="Medya kütüphanesi" />
             <QuickLink href="/admin/referanslar" label="Yeni referans ekle" />
             <QuickLink href="/admin/ortaklar" label="Çözüm ortağı yönet" />
             <QuickLink href="/admin/formlar" label="Keşif taleplerini görüntüle" />

@@ -64,16 +64,26 @@ Bu komut mevcut projeleri, referansları, çözüm ortaklarını, hizmetleri, an
 
 | Bölüm | Ne yapılır |
 |-------|------------|
+| **Dashboard** | Bugün/dün/7 gün benzersiz ziyaretçi ve sayfa görüntüleme |
+| **Ziyaret Raporları** | Sayfa bazlı görüntülenme (`/referanslar`, `/iletisim`…), son 7 / 30 gün grafik |
 | **Ana Sayfa** | Hero başlığı/açıklaması, istatistikler, keşif formu üst metni |
-| **Hizmetler** | Hizmet ekle/düzenle/sil, görsel yükleme, aktif/öne çıkan |
+| **Hizmetler** | Hizmet ekle/düzenle/sil, görsel, SEO meta, kaydetmeden önizleme |
 | **Hakkımızda** | Kurumsal metinler, kurucu adı/unvanı/görseli |
-| **Projeler** | Proje açıklaması, kapsam, öne çıkan maddeler, süre, görsel |
+| **Projeler** | Açıklama, kapsam, kapak, önce/sonra galeri, SEO, önizleme |
 | **Referanslar** | Katalog + arşiv ekleme/silme (katalog → otomatik proje) |
 | **Çözüm Ortakları** | Logo ve firma adı |
-| **Keşif Talepleri** | Formdan gelen talepler; durum (Yeni/Görüşüldü/Sürüyor/Kapandı), not, arama/filtre, CSV export |
+| **Medya Kütüphanesi** | Yüklenen görselleri listele, URL kopyala (tekrar kullan), sil |
+| **Keşif Talepleri** | Formdan gelen talepler; durum, not, arama/filtre, CSV export |
 | **Bilgi Merkezi** | SSS soru-cevap ekle/düzenle/çıkar |
 | **Site Ayarları** | Telefon, WhatsApp, adres, e-posta, çalışma saatleri, harita |
-| **Dashboard** | Bugün/dün/7 gün benzersiz ziyaretçi ve sayfa görüntüleme (Supabase `site_visits`) |
+
+## Ek migration (galeri + proje SEO)
+
+`0001`–`0003` sonrası:
+
+- `supabase/migrations/0005_project_gallery_seo.sql` — `projects.gallery`, `seo_title`, `seo_description`
+
+SQL Editor’da bu dosyayı da çalıştırın.
 
 ## Notlar
 

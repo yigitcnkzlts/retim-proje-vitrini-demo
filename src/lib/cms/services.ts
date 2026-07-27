@@ -10,6 +10,9 @@ function mapDbToService(row: DbService): Service {
     projectTypes: Array.isArray(row.project_types) ? row.project_types : [],
     imageUrl: row.image_url || null,
     imageAlt: row.image_alt || "",
+    detail: row.detail || "",
+    seoTitle: row.seo_title || "",
+    seoDescription: row.seo_description || "",
   };
 }
 

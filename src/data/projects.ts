@@ -9,6 +9,8 @@ import {
 } from "./images";
 import { getProjectImageSource } from "./mediaAssets";
 
+import type { GalleryImage } from "@/lib/cms/types";
+
 export interface Project {
   slug: string;
   name: string;
@@ -27,6 +29,9 @@ export interface Project {
   image: string;
   imageFallback: string;
   imageAlt: string;
+  gallery: GalleryImage[];
+  seoTitle: string;
+  seoDescription: string;
 }
 
 function buildingTypeFromName(name: string): string {
@@ -72,6 +77,9 @@ function projectFromReference(ref: Reference): Project {
     image: imageSource.primary,
     imageFallback: imageSource.fallback,
     imageAlt: imageSource.alt,
+    gallery: [],
+    seoTitle: "",
+    seoDescription: "",
   };
 }
 

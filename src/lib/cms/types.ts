@@ -1,5 +1,13 @@
 export type RefType = "catalog" | "archive";
 
+export type GalleryImageKind = "before" | "after" | "gallery";
+
+export interface GalleryImage {
+  url: string;
+  alt?: string;
+  kind: GalleryImageKind;
+}
+
 export interface DbProjectRef {
   id: string;
   ref_no: string;
@@ -33,6 +41,9 @@ export interface DbProject {
   image_url: string | null;
   image_fallback: string | null;
   image_alt: string | null;
+  gallery: GalleryImage[];
+  seo_title: string;
+  seo_description: string;
   created_at: string;
   updated_at: string;
 }
@@ -137,6 +148,9 @@ export interface ProjectInput {
   image_url?: string | null;
   image_fallback?: string | null;
   image_alt?: string | null;
+  gallery?: GalleryImage[];
+  seo_title?: string;
+  seo_description?: string;
   ref_id?: string | null;
 }
 

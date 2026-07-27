@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageHero from "@/components/ui/PageHero";
 import RetimImage from "@/components/ui/RetimImage";
+import ImageCompareSlider from "@/components/ui/ImageCompareSlider";
 import { slugAliases } from "@/data/images";
 import { getProjectBySlug, getProjectSlugs } from "@/lib/cms/projects";
 
@@ -26,8 +27,8 @@ export async function generateMetadata({ params }: ProjectDetailPageProps): Prom
   if (!project) return { title: "Proje Bulunamadı" };
 
   return {
-    title: project.name,
-    description: project.shortDescription,
+    title: project.seoTitle || project.name,
+    description: project.seoDescription || project.shortDescription,
   };
 }
 
@@ -38,6 +39,10 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   if (!project) {
     notFound();
   }
+
+  const before = project.gallery.find((g) => g.kind === "before");
+  const after = project.gallery.find((g) => g.kind === "after");
+  const galleryExtras = project.gallery.filter((g) => g.kind === "gallery");
 
   return (
     <>
@@ -72,6 +77,44 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
 
               <h2 className="text-xl font-semibold text-retim-navy">Proje Açıklaması</h2>
               <p className="mt-4 leading-relaxed text-gray-600">{project.description}</p>
+
+              {before && after && (
+                <div className="mt-10">
+                  <h2 className="text-xl font-semibold text-retim-navy">Önce / Sonra</h2>
+                  <div className="mt-4 overflow-hidden rounded-sm border border-retim-gray-dark">
+                    <ImageCompareSlider
+                      beforeSrc={before.url}
+                      afterSrc={after.url}
+                      beforeAlt={before.alt || `${project.name} önce`}
+                      afterAlt={after.alt || `${project.name} sonra`}
+                      beforeLabel="Önce"
+                      afterLabel="Sonra"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {galleryExtras.length > 0 && (
+                <div className="mt-10">
+                  <h2 className="text-xl font-semibold text-retim-navy">Proje Galerisi</h2>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    {galleryExtras.map((img) => (
+                      <div key={img.url} className="relative h-48 overflow-hidden rounded-sm md:h-56">
+                        <RetimImage
+                          source={{
+                            primary: img.url,
+                            fallback: img.url,
+                            alt: img.alt || project.imageAlt,
+                          }}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <h2 className="mt-10 text-xl font-semibold text-retim-navy">Uygulama Kapsamı</h2>
               <ul className="mt-4 space-y-2">
