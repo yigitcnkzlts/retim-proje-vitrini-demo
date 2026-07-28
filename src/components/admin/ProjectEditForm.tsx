@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import MediaPickerButton from "@/components/admin/MediaPickerButton";
+import AdminImageField from "@/components/admin/AdminImageField";
 import type { DbProject, GalleryImage, GalleryImageKind } from "@/lib/cms/types";
 
 interface ProjectEditFormProps {
@@ -51,8 +51,6 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
   const [gallery, setGallery] = useState<GalleryImage[]>(project.gallery || []);
   const [saving, setSaving] = useState(false);
   const [previewing, setPreviewing] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [galleryUploading, setGalleryUploading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [services, setServices] = useState<ServiceOption[]>([]);
@@ -99,43 +97,7 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
     };
   }
 
-  async function handleImageUpload(file: File) {
-    setUploading(true);
-    setError("");
-    const body = new FormData();
-    body.append("file", file);
-    body.append("folder", "projects");
-
-    const res = await fetch("/api/admin/upload", { method: "POST", body });
-    const data = (await res.json()) as { url?: string; error?: string };
-    setUploading(false);
-
-    if (!res.ok) {
-      setError(data.error || "Görsel yüklenemedi.");
-      return;
-    }
-    updateField("image_url", data.url || "");
-  }
-
-  async function handleGalleryUpload(file: File) {
-    setGalleryUploading(true);
-    setError("");
-    const body = new FormData();
-    body.append("file", file);
-    body.append("folder", "projects");
-    const res = await fetch("/api/admin/upload", { method: "POST", body });
-    const data = (await res.json()) as { url?: string; error?: string };
-    setGalleryUploading(false);
-    if (!res.ok) {
-      setError(data.error || "Galeri görseli yüklenemedi.");
-      return;
-    }
-    if (data.url) {
-      setGallery((prev) => [...prev, { url: data.url!, kind: galleryKind, alt: "" }]);
-    }
-  }
-
-  function addGalleryFromLibrary(url: string) {
+  function addGalleryImage(url: string) {
     setGallery((prev) => [...prev, { url, kind: galleryKind, alt: "" }]);
   }
 
@@ -145,6 +107,10 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
 
   function updateGalleryKind(index: number, kind: GalleryImageKind) {
     setGallery((prev) => prev.map((item, i) => (i === index ? { ...item, kind } : item)));
+  }
+
+  function updateGalleryAlt(index: number, alt: string) {
+    setGallery((prev) => prev.map((item, i) => (i === index ? { ...item, alt } : item)));
   }
 
   async function handlePreview() {
@@ -296,36 +262,20 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
         <h2 className="admin-card-title">5. Kapak Görseli</h2>
         <p className="mt-1 text-sm text-gray-600">
           Sitede proje detayındaki <strong>büyük kapak görseli</strong> ve /projeler listesindeki kart fotoğrafı
-          olarak görünür.
+          olarak görünür. Boyutlandırma / kırpma yüklemeden önce uygulanır.
         </p>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700">Görsel dosyası yükle</label>
-            <div className="flex flex-wrap gap-2">
-              <label className="block">
-                <span className="btn-secondary inline-flex cursor-pointer">
-                  {uploading ? "Yükleniyor..." : "Dosya Yükle"}
-                </span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) void handleImageUpload(file);
-                  }}
-                />
-              </label>
-              <MediaPickerButton folderHint="projects" onSelect={(url) => updateField("image_url", url)} />
-            </div>
-            <label className="mb-1.5 mt-3 block text-sm font-medium text-gray-700">veya görsel URL</label>
-            <input
-              className="input-field"
-              value={form.image_url}
-              onChange={(e) => updateField("image_url", e.target.value)}
-              placeholder="https://... veya /images/..."
-            />
-          </div>
+          <AdminImageField
+            folder="projects"
+            label="Kapak görseli yükle"
+            libraryLabel="Kütüphaneden seç"
+            showUrlInput
+            urlValue={form.image_url}
+            onUrlChange={(url) => updateField("image_url", url)}
+            previewUrl={form.image_url || undefined}
+            onClear={() => updateField("image_url", "")}
+            onUploaded={(url) => updateField("image_url", url)}
+          />
           <Field
             label="Görsel Alt Metni"
             hint="Erişilebilirlik için kısa açıklama"
@@ -333,19 +283,13 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
             onChange={(v) => updateField("image_alt", v)}
           />
         </div>
-        {form.image_url && (
-          <div className="mt-4">
-            <p className="mb-2 text-xs font-medium text-gray-500">Sitede görünecek önizleme:</p>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={form.image_url} alt="" className="h-40 w-auto rounded-lg border object-cover" />
-          </div>
-        )}
       </div>
 
       <div className="admin-card">
         <h2 className="admin-card-title">6. Proje Galerisi (Önce / Sonra)</h2>
         <p className="mt-1 text-sm text-gray-600">
-          Kapak dışında önce/sonra ve ek uygulama fotoğrafları. Önce + Sonra çifti sitede kaydırıcı olarak gösterilir.
+          Kapak dışında önce/sonra ve ek uygulama fotoğrafları. Toplu yükleme ve kütüphaneden seçim
+          desteklenir.
         </p>
         <div className="mt-4 flex flex-wrap items-end gap-3">
           <label className="text-sm">
@@ -360,22 +304,15 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
               <option value="gallery">Galeri</option>
             </select>
           </label>
-          <label>
-            <span className="btn-secondary inline-flex cursor-pointer">
-              {galleryUploading ? "Yükleniyor..." : "Dosya yükle"}
-            </span>
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) void handleGalleryUpload(file);
-                e.target.value = "";
-              }}
-            />
-          </label>
-          <MediaPickerButton folderHint="projects" label="Kütüphaneden ekle" onSelect={addGalleryFromLibrary} />
+        </div>
+        <div className="mt-3">
+          <AdminImageField
+            folder="projects"
+            multiple
+            label="Galeri fotoğrafı yükle (çoklu)"
+            libraryLabel="Kütüphaneden ekle"
+            onUploaded={addGalleryImage}
+          />
         </div>
 
         {gallery.length === 0 ? (
@@ -397,6 +334,12 @@ export default function ProjectEditForm({ project }: ProjectEditFormProps) {
                     </option>
                   ))}
                 </select>
+                <input
+                  className="input-field mt-2 text-sm"
+                  placeholder="Alt metin (opsiyonel)"
+                  value={item.alt || ""}
+                  onChange={(e) => updateGalleryAlt(index, e.target.value)}
+                />
                 <button
                   type="button"
                   className="mt-2 text-xs text-red-600 underline"

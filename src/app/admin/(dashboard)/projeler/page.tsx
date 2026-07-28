@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
+import AdminImageField from "@/components/admin/AdminImageField";
 import type { DbProject } from "@/lib/cms/types";
 
 function slugify(text: string): string {
@@ -49,7 +50,6 @@ export default function AdminProjectsPage() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [syncing, setSyncing] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
@@ -127,22 +127,6 @@ export default function AdminProjectsPage() {
         prev.highlights.trim() ||
         `Retim referans projesi\n${year} yılı uygulaması\n${district} bölgesi`,
     }));
-  }
-
-  async function handleImageUpload(file: File) {
-    setUploading(true);
-    setError("");
-    const body = new FormData();
-    body.append("file", file);
-    body.append("folder", "projects");
-    const res = await fetch("/api/admin/upload", { method: "POST", body });
-    const data = (await res.json()) as { url?: string; error?: string };
-    setUploading(false);
-    if (!res.ok) {
-      setError(data.error || "Görsel yüklenemedi.");
-      return;
-    }
-    setForm((prev) => ({ ...prev, image_url: data.url || "" }));
   }
 
   async function handleCreate(e: FormEvent) {
@@ -406,50 +390,33 @@ export default function AdminProjectsPage() {
             <h2 className="admin-card-title">5. Kapak Görseli</h2>
             <p className="mt-1 text-sm text-gray-600">
               Sitede proje detayındaki <strong>büyük kapak görseli</strong> ve /projeler listesindeki kart
-              fotoğrafı olarak görünür. Yüklediğiniz görsel canlı sitede aynı şekilde çıkar.
+              fotoğrafı olarak görünür. Boyutlandırma / kırpma veya kütüphaneden seçim kullanabilirsiniz.
             </p>
-            <div className="mt-4 grid gap-3 md:grid-cols-2">
-              <div>
-                <label className="mb-1.5 block text-sm font-medium text-gray-700">Görsel dosyası yükle</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  disabled={uploading}
-                  className="input-field"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) void handleImageUpload(file);
-                  }}
-                />
-                <label className="mb-1.5 mt-3 block text-sm font-medium text-gray-700">veya görsel URL</label>
-                <input
-                  className="input-field"
-                  placeholder="https://... veya /images/..."
-                  value={form.image_url}
-                  onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-                />
-              </div>
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <AdminImageField
+                folder="projects"
+                label="Kapak görseli yükle"
+                libraryLabel="Kütüphaneden seç"
+                showUrlInput
+                urlValue={form.image_url}
+                onUrlChange={(url) => setForm({ ...form, image_url: url })}
+                previewUrl={form.image_url || undefined}
+                onClear={() => setForm({ ...form, image_url: "" })}
+                onUploaded={(url) => setForm((prev) => ({ ...prev, image_url: url }))}
+              />
               <LabeledInput
                 label="Görsel Alt Metni"
                 hint="Erişilebilirlik için kısa açıklama"
                 value={form.image_alt}
                 onChange={(v) => setForm({ ...form, image_alt: v })}
                 placeholder="örn. Beyoğlu dış cephe uygulama görseli"
-                className="self-end"
+                className="self-start"
               />
             </div>
-            {form.image_url && (
-              <div className="mt-4">
-                <p className="mb-2 text-xs font-medium text-gray-500">Sitede görünecek önizleme:</p>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={form.image_url} alt="" className="h-40 w-auto rounded-lg border object-cover" />
-              </div>
-            )}
-            {uploading && <p className="mt-2 text-xs text-gray-500">Görsel yükleniyor...</p>}
           </div>
 
           {error && <p className="text-sm text-red-600">{error}</p>}
-          <button type="submit" disabled={saving || uploading} className="btn-primary disabled:opacity-60">
+          <button type="submit" disabled={saving} className="btn-primary disabled:opacity-60">
             {saving ? "Ekleniyor..." : "Projeyi Kaydet (sitede yayınla)"}
           </button>
         </form>
