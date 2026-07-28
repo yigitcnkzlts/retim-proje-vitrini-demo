@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdminApi } from "@/lib/auth/require-admin";
 import { getAllMediaAdmin } from "@/lib/cms/media";
+import { getMediaUsageMap } from "@/lib/cms/media-usage";
 import { isCmsConfigured } from "@/lib/cms/supabase";
 
 export async function GET() {
@@ -8,9 +9,9 @@ export async function GET() {
   if (denied) return denied;
 
   if (!isCmsConfigured()) {
-    return NextResponse.json({ configured: false, media: [] });
+    return NextResponse.json({ configured: false, media: [], usage: {} });
   }
 
-  const media = await getAllMediaAdmin();
-  return NextResponse.json({ configured: true, media });
+  const [media, usage] = await Promise.all([getAllMediaAdmin(), getMediaUsageMap()]);
+  return NextResponse.json({ configured: true, media, usage });
 }
