@@ -63,7 +63,18 @@ export default async function ServicesPage() {
         breadcrumb={[{ label: "Ana Sayfa", href: "/" }, { label: "Hizmetler" }]}
       />
 
-      <section className="border-b border-retim-gray-dark bg-retim-gray py-8 md:py-10">
+      <section className="py-12 md:py-16">
+        <div className="container-main">
+          <h2 className="mb-6 text-xl font-bold text-retim-navy">Tüm uygulama alanları</h2>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {services.map((service) => (
+              <ServiceCard key={service.slug} service={service} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-retim-gray-dark bg-retim-gray py-8 md:py-10">
         <div className="container-main">
           <h2 className="text-lg font-bold text-retim-navy">Öne çıkan hizmetler</h2>
           <p className="mt-2 max-w-3xl text-sm text-gray-600">
@@ -90,17 +101,6 @@ export default async function ServicesPage() {
               </li>
             ))}
           </ul>
-        </div>
-      </section>
-
-      <section className="py-12 md:py-16">
-        <div className="container-main">
-          <h2 className="mb-6 text-xl font-bold text-retim-navy">Tüm uygulama alanları</h2>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {services.map((service) => (
-              <ServiceCard key={service.slug} service={service} />
-            ))}
-          </div>
         </div>
       </section>
     </>
