@@ -38,7 +38,7 @@ export default function ProjectCard({ project, variant = "default" }: ProjectCar
       onMouseLeave={handleLeave}
     >
       <Link href={`/projeler/${project.slug}`} className="block">
-        <div className={`relative w-full overflow-hidden ${imageHeight}`}>
+        <div className={`relative w-full overflow-hidden bg-retim-gray ${imageHeight}`}>
           <RetimImage
             source={{
               primary: project.image,
@@ -46,7 +46,7 @@ export default function ProjectCard({ project, variant = "default" }: ProjectCar
               alt: project.imageAlt,
             }}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
+            className="object-cover object-center transition-transform duration-500 group-hover:scale-110"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-retim-navy/70 via-retim-navy/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />

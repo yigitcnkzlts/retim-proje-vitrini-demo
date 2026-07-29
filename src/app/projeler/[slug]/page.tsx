@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageHero from "@/components/ui/PageHero";
-import RetimImage from "@/components/ui/RetimImage";
+import ZoomableImage from "@/components/ui/ZoomableImage";
 import ImageCompareSlider from "@/components/ui/ImageCompareSlider";
 import { slugAliases } from "@/data/images";
 import { getProjectBySlug, getProjectSlugs } from "@/lib/cms/projects";
@@ -60,19 +60,20 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
         <div className="container-main">
           <div className="grid gap-10 lg:grid-cols-3">
             <div className="lg:col-span-2">
-              <div className="group relative mb-8 h-64 overflow-hidden rounded-sm md:h-96">
-                <RetimImage
+              <div className="relative mb-8 aspect-[16/10] overflow-hidden rounded-sm bg-retim-gray md:aspect-[21/10]">
+                <ZoomableImage
                   source={{
                     primary: project.image,
                     fallback: project.imageFallback,
                     alt: project.imageAlt,
                   }}
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="absolute inset-0 h-full"
+                  imageClassName="object-cover object-center transition-transform duration-700 group-hover:scale-105"
                   sizes="(max-width: 1024px) 100vw, 66vw"
                   priority
-                />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-retim-navy/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                >
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-retim-navy/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                </ZoomableImage>
               </div>
 
               <h2 className="text-xl font-semibold text-retim-navy">Proje Açıklaması</h2>
@@ -99,15 +100,15 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
                   <h2 className="text-xl font-semibold text-retim-navy">Proje Galerisi</h2>
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
                     {galleryExtras.map((img) => (
-                      <div key={img.url} className="relative h-48 overflow-hidden rounded-sm md:h-56">
-                        <RetimImage
+                      <div key={img.url} className="relative aspect-[4/3] overflow-hidden rounded-sm bg-retim-gray">
+                        <ZoomableImage
                           source={{
                             primary: img.url,
                             fallback: img.url,
                             alt: img.alt || project.imageAlt,
                           }}
-                          fill
-                          className="object-cover"
+                          className="absolute inset-0 h-full"
+                          imageClassName="object-cover object-center"
                           sizes="(max-width: 768px) 100vw, 33vw"
                         />
                       </div>
