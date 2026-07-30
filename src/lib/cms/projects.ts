@@ -316,6 +316,46 @@ export async function getFeaturedProjects(): Promise<Project[]> {
   return featured;
 }
 
+export type FooterProjectLink = {
+  name: string;
+  district: string;
+  href: string;
+};
+
+/**
+ * Footer "Son Projeler" — yayınlanan projelerden en son güncellenenler.
+ * Admin'den proje eklenince / güncellenince otomatik değişir.
+ */
+export async function getFooterLatestProjects(count = 5): Promise<FooterProjectLink[]> {
+  const client = getSupabasePublic() ?? getSupabaseAdmin();
+
+  if (client) {
+    const { data, error } = await client
+      .from("projects")
+      .select("name, district, slug, year, updated_at, created_at")
+      .eq("published", true)
+      .order("updated_at", { ascending: false })
+      .limit(count);
+
+    if (!error && data && data.length > 0) {
+      return data.map((row) => ({
+        name: String(row.name ?? ""),
+        district: String(row.district ?? ""),
+        href: `/projeler/${String(row.slug ?? "")}`,
+      }));
+    }
+  }
+
+  // CMS yoksa veya boşsa: statik öne çıkan projeler
+  return getStaticFeaturedProjects()
+    .slice(0, count)
+    .map((p) => ({
+      name: p.name,
+      district: p.district,
+      href: `/projeler/${p.slug}`,
+    }));
+}
+
 export async function createProject(input: ProjectInput): Promise<DbProject | null> {
   const client = getSupabaseAdmin();
   if (!client) throw new Error("CMS yapılandırılmamış — proje kaydedilemedi.");

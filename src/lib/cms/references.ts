@@ -2,7 +2,6 @@ import {
   referencesArchive,
   references2023,
   references2024,
-  sortReferencesNewestFirst,
   type Reference,
 } from "@/data/references";
 import { getSupabaseAdmin, getSupabasePublic, isCmsConfigured } from "@/lib/cms/supabase";
@@ -243,22 +242,8 @@ export async function getArchiveReferences(): Promise<Reference[]> {
   return withoutRemoved(rows.map(mapDbToReference));
 }
 
-export type FooterProjectLink = {
-  name: string;
-  district: string;
-  href: string;
-};
-
-/** Footer "Son Projeler" — en yeni 5 referans (admin'den eklenince otomatik güncellenir) */
-export async function getFooterLatestProjects(count = 5): Promise<FooterProjectLink[]> {
-  const refs = sortReferencesNewestFirst(await getArchiveReferences()).slice(0, count);
-
-  return refs.map((ref) => ({
-    name: ref.projectName,
-    district: ref.district,
-    href: "/referanslar",
-  }));
-}
+export type { FooterProjectLink } from "@/lib/cms/projects";
+export { getFooterLatestProjects } from "@/lib/cms/projects";
 
 function staticRefsAsDb(type?: RefType): DbProjectRef[] {
   const now = new Date().toISOString();

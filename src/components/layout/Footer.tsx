@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { footerLinks, siteConfig, socialLinks } from "@/data/site";
-import { getFooterLatestProjects } from "@/lib/cms/references";
+import { getFooterLatestProjects } from "@/lib/cms/projects";
 import { getSiteSettings } from "@/lib/cms/site-settings";
 import RetimLogo from "@/components/ui/RetimLogo";
 
