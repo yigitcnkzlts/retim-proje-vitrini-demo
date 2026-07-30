@@ -100,6 +100,7 @@ async function fetchPublishedProjects(): Promise<Project[] | null> {
     .select("*")
     .eq("published", true)
     .order("year", { ascending: false })
+    .order("created_at", { ascending: false })
     .order("name", { ascending: true });
 
   if (error || !data) return null;
@@ -315,7 +316,8 @@ export async function getFeaturedProjects(): Promise<Project[]> {
   const featured = all.filter((p) => p.featured);
   if (featured.length > 0) return featured;
   if (!isCmsConfigured()) return getStaticFeaturedProjects();
-  return featured;
+  // Öne çıkan yoksa yayınlananların en yenileri
+  return all.slice(0, 10);
 }
 
 export type FooterProjectLink = {
@@ -325,44 +327,24 @@ export type FooterProjectLink = {
 };
 
 /**
- * Footer "Son Projeler" — yayınlanan projelerden en son eklenenler.
- * Admin'den yeni proje eklenince otomatik güncellenir.
+ * Footer "Son Projeler" — /projeler sayfasındakiyle aynı kaynaktan ilk 5.
+ * Yeni proje eklenip "öne çıkan / yayında" olunca otomatik güncellenir.
  */
 export async function getFooterLatestProjects(count = 5): Promise<FooterProjectLink[]> {
-  // Layout önbelleğine takılmasın; proje eklenince hemen yansısın
   const { unstable_noStore: noStore } = await import("next/cache");
   noStore();
 
-  // Server'da service role ile oku (RLS/public anahtar sorunlarından kaçın)
-  const client = getSupabaseAdmin() ?? getSupabasePublic();
+  const featured = await getFeaturedProjects();
+  const source =
+    featured.length > 0
+      ? featured
+      : await getProjects();
 
-  if (client) {
-    const { data, error } = await client
-      .from("projects")
-      .select("name, district, slug, year, ref_no, created_at, updated_at")
-      .eq("published", true)
-      .order("created_at", { ascending: false })
-      .order("year", { ascending: false })
-      .limit(count);
-
-    if (!error && data && data.length > 0) {
-      return data.map((row) => ({
-        name: String(row.name ?? ""),
-        district: String(row.district ?? ""),
-        href: `/projeler/${String(row.slug ?? "")}`,
-      }));
-    }
-  }
-
-  // CMS yoksa: en yeni yıla göre statik öne çıkanlar
-  return [...getStaticFeaturedProjects()]
-    .sort((a, b) => b.year - a.year || b.refNo.localeCompare(a.refNo, "tr"))
-    .slice(0, count)
-    .map((p) => ({
-      name: p.name,
-      district: p.district,
-      href: `/projeler/${p.slug}`,
-    }));
+  return source.slice(0, count).map((p) => ({
+    name: p.name,
+    district: p.district,
+    href: `/projeler/${p.slug}`,
+  }));
 }
 
 export async function createProject(input: ProjectInput): Promise<DbProject | null> {
