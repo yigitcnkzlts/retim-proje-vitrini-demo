@@ -34,6 +34,7 @@ export async function PUT(request: Request, context: RouteContext) {
     const project = await updateProject(slug, body);
     revalidatePath("/projeler");
     revalidatePath(`/projeler/${slug}`);
+    revalidatePath("/");
     revalidatePath("/", "layout");
     return NextResponse.json({ project });
   } catch (error) {
@@ -52,6 +53,7 @@ export async function DELETE(_request: Request, context: RouteContext) {
     revalidatePath("/projeler");
     revalidatePath(`/projeler/${slug}`);
     revalidatePath("/hizmetler");
+    revalidatePath("/");
     revalidatePath("/", "layout");
     return NextResponse.json({ success: true });
   } catch (error) {

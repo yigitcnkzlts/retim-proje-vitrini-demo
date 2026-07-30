@@ -53,7 +53,7 @@ export default async function Footer() {
             </h3>
             <ul className="space-y-2">
               {latestProjects.map((project) => (
-                <li key={`${project.name}-${project.district}`}>
+                <li key={`${project.href}-${project.name}`}>
                   <Link
                     href={project.href}
                     className="group inline-flex text-sm text-gray-400 transition-all duration-200 hover:translate-x-1 hover:text-retim-orange"

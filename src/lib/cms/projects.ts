@@ -62,6 +62,7 @@ function mapDbToProject(row: DbProject): Project {
 }
 
 function mapInputToDb(input: ProjectInput) {
+  const now = new Date().toISOString();
   return {
     ref_id: input.ref_id ?? null,
     slug: input.slug,
@@ -85,7 +86,8 @@ function mapInputToDb(input: ProjectInput) {
     gallery: input.gallery ?? [],
     seo_title: input.seo_title ?? "",
     seo_description: input.seo_description ?? "",
-    updated_at: new Date().toISOString(),
+    created_at: now,
+    updated_at: now,
   };
 }
 
@@ -323,18 +325,24 @@ export type FooterProjectLink = {
 };
 
 /**
- * Footer "Son Projeler" — yayınlanan projelerden en son güncellenenler.
- * Admin'den proje eklenince / güncellenince otomatik değişir.
+ * Footer "Son Projeler" — yayınlanan projelerden en son eklenenler.
+ * Admin'den yeni proje eklenince otomatik güncellenir.
  */
 export async function getFooterLatestProjects(count = 5): Promise<FooterProjectLink[]> {
-  const client = getSupabasePublic() ?? getSupabaseAdmin();
+  // Layout önbelleğine takılmasın; proje eklenince hemen yansısın
+  const { unstable_noStore: noStore } = await import("next/cache");
+  noStore();
+
+  // Server'da service role ile oku (RLS/public anahtar sorunlarından kaçın)
+  const client = getSupabaseAdmin() ?? getSupabasePublic();
 
   if (client) {
     const { data, error } = await client
       .from("projects")
-      .select("name, district, slug, year, updated_at, created_at")
+      .select("name, district, slug, year, ref_no, created_at, updated_at")
       .eq("published", true)
-      .order("updated_at", { ascending: false })
+      .order("created_at", { ascending: false })
+      .order("year", { ascending: false })
       .limit(count);
 
     if (!error && data && data.length > 0) {
@@ -346,8 +354,9 @@ export async function getFooterLatestProjects(count = 5): Promise<FooterProjectL
     }
   }
 
-  // CMS yoksa veya boşsa: statik öne çıkan projeler
-  return getStaticFeaturedProjects()
+  // CMS yoksa: en yeni yıla göre statik öne çıkanlar
+  return [...getStaticFeaturedProjects()]
+    .sort((a, b) => b.year - a.year || b.refNo.localeCompare(a.refNo, "tr"))
     .slice(0, count)
     .map((p) => ({
       name: p.name,
